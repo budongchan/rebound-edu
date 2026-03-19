@@ -36,7 +36,7 @@ export default function AdminSettingsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-900">기본 수수료율</p>
-                <p className="text-xs text-gray-400">교사 매출에서 차감되는 플랫폼 수수료</p>
+                <p className="text-xs text-gray-400">전문가 매출에서 차감되는 플랫폼 수수료</p>
               </div>
               <div className="flex items-center gap-1">
                 <input
@@ -89,8 +89,8 @@ export default function AdminSettingsPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-900">학생 자동 승인</p>
-                <p className="text-xs text-gray-400">학생 가입 시 즉시 활성화 (교사/직원은 항상 수동 승인)</p>
+                <p className="text-sm font-medium text-gray-900">고객 자동 승인</p>
+                <p className="text-xs text-gray-400">고객 가입 시 즉시 활성화 (전문가/직원은 항상 수동 승인)</p>
               </div>
               <button
                 onClick={() => setAutoApproveStudents(!autoApproveStudents)}

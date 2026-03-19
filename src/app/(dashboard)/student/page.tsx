@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { CATEGORY_LABELS } from "@/types";
 import Badge from "@/components/ui/Badge";
 import Link from "next/link";
+import { MessageCircle } from "lucide-react";
 
 interface EnrollmentWithCourse {
   id: string;
@@ -15,6 +16,7 @@ interface EnrollmentWithCourse {
     title: string;
     total_lectures: number;
     category: string;
+    kakao_chat_url: string | null;
     instructor: { name: string } | null;
   } | null;
 }
@@ -64,7 +66,7 @@ export default function StudentDashboard() {
         .from("enrollments")
         .select(`
           id, status, progress_pct,
-          course:courses(id, title, total_lectures, category,
+          course:courses(id, title, total_lectures, category, kakao_chat_url,
             instructor:users!courses_instructor_id_fkey(name))
         `)
         .eq("user_id", profile.id)
@@ -160,6 +162,18 @@ export default function StudentDashboard() {
                     {done}/{e.course.total_lectures}강 ({e.progress_pct}%)
                   </span>
                 </div>
+                {e.course.kakao_chat_url && (
+                  <a
+                    href={e.course.kakao_chat_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(ev) => ev.stopPropagation()}
+                    className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#FEE500] text-[#391B1B] font-semibold text-xs hover:bg-[#F5DD00] transition w-fit"
+                  >
+                    <MessageCircle size={14} />
+                    수강생 카카오톡 단톡방 입장
+                  </a>
+                )}
               </Link>
             );
           })}

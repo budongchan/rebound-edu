@@ -98,7 +98,7 @@ export default function StaffTeachersPage() {
   return (
     <>
       <div className="flex items-center justify-between mb-5">
-        <h2 className="text-base font-bold">교사 DB</h2>
+        <h2 className="text-base font-bold">전문가 DB</h2>
         <span className="text-sm text-gray-400">총 {teachers.length}명</span>
       </div>
 
@@ -116,7 +116,7 @@ export default function StaffTeachersPage() {
       {filtered.length === 0 ? (
         <div className="bg-white rounded-lg border border-gray-100 p-12 text-center">
           <GraduationCap className="mx-auto mb-3 text-gray-300" size={40} />
-          <p className="text-gray-400">교사가 없습니다</p>
+          <p className="text-gray-400">전문가가 없습니다</p>
         </div>
       ) : (
         <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">

@@ -86,7 +86,7 @@ export default function TeacherQnaPage() {
         id: a.id,
         content: a.content,
         created_at: a.created_at,
-        userName: userName || "교사",
+        userName: userName || "전문가",
       });
     });
 

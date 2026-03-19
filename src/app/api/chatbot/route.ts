@@ -1,73 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
-import { CATEGORY_LABELS } from "@/types";
-import { formatPrice, formatDuration } from "@/lib/utils";
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "" });
 
 // ─── helpers ────────────────────────────────────────────
-interface CourseRow {
-  id: string;
-  title: string;
-  subtitle: string | null;
-  description: string | null;
-  price: number;
-  discount_price: number | null;
-  category: string;
-  difficulty: string | null;
-  total_lectures: number;
-  total_duration_sec: number;
-  instructor: { name: string } | { name: string }[] | null;
-}
-
-interface LectureRow {
-  title: string;
-  section_title: string | null;
-  duration_sec: number;
-  sort_order: number;
-}
-
-function instructorName(raw: { name: string } | { name: string }[] | null): string {
-  if (!raw) return "강사";
-  const inst = Array.isArray(raw) ? raw[0] : raw;
-  return inst?.name || "강사";
-}
-
-function buildSystemPrompt(
-  courses: CourseRow[],
-  specificCourse?: CourseRow | null,
-  lectures?: LectureRow[],
-) {
-  let courseContext = "";
-
-  if (specificCourse) {
-    courseContext = `
-## 현재 사용자가 보고 있는 강의
-- 제목: ${specificCourse.title}
-- 부제: ${specificCourse.subtitle || "없음"}
-- 카테고리: ${CATEGORY_LABELS[specificCourse.category] || specificCourse.category}
-- 가격: ${formatPrice(specificCourse.price)}원${specificCourse.discount_price ? ` (할인가: ${formatPrice(specificCourse.discount_price)}원)` : ""}
-- 강사: ${instructorName(specificCourse.instructor)}
-- 총 강의 수: ${specificCourse.total_lectures}강
-- 총 시간: ${formatDuration(specificCourse.total_duration_sec)}
-- 난이도: ${specificCourse.difficulty || "미정"}
-- 설명: ${(specificCourse.description || "").slice(0, 300)}
-${
-  lectures && lectures.length > 0
-    ? `\n커리큘럼:\n${lectures.map((l, i) => `  ${i + 1}. ${l.section_title ? `[${l.section_title}] ` : ""}${l.title} (${formatDuration(l.duration_sec)})`).join("\n")}`
-    : ""
-}`;
-  }
-
-  const catalogLines = courses
-    .slice(0, 30) // 최대 30개 강의
-    .map(
-      (c) =>
-        `- ${c.title} | ${CATEGORY_LABELS[c.category] || c.category} | ${formatPrice(c.price)}원${c.discount_price ? ` → ${formatPrice(c.discount_price)}원` : ""} | ${instructorName(c.instructor)} | ${c.total_lectures}강`,
-    )
-    .join("\n");
-
+function buildSystemPrompt(coursesText: string) {
   return `당신은 "리바운드에듀 AI 상담 도우미"입니다. 부동산·공간사업 전문 온라인 교육 플랫폼 리바운드에듀의 상담 챗봇입니다.
 
 ## 역할
@@ -93,21 +28,82 @@ ${
 - 쿠폰 코드 입력으로 할인 적용 가능
 - 결제 내역은 "결제 내역" 메뉴에서 확인
 
-${specificCourse ? courseContext : ""}
-
 ## 전체 강의 목록
-${catalogLines || "현재 등록된 강의가 없습니다."}
+${coursesText || "현재 등록된 강의가 없습니다. 곧 다양한 강의가 업로드될 예정입니다."}
 
 ## 주의사항
 - 항상 한국어로 답변하세요.
 - 친절하고 전문적인 톤을 유지하세요.
 - 간결하게 답변하세요 (2~4문장 정도).
 - 정확하지 않은 정보는 추측하지 말고, "정확한 답변을 위해 Q&A 게시판에 문의해 주세요"라고 안내하세요.
-- 환불, 결제 오류 등 복잡한 문제는 "고객센터를 통해 도움을 드리겠습니다"로 안내하세요.
-- 강의 내용에 대한 심층 질문은 해당 강의의 Q&A 게시판 이용을 권유하세요.`;
+- 환불, 결제 오류 등 복잡한 문제는 "고객센터를 통해 도움을 드리겠습니다"로 안내하세요.`;
 }
 
-// ─── Route handlers ─────────────────────────────────────
+// ─── Fallback: 키워드 기반 자동 응답 (API 키 없을 때) ────
+interface FallbackRule {
+  keywords: string[];
+  answer: string;
+}
+
+const FALLBACK_RULES: FallbackRule[] = [
+  {
+    keywords: ["수강", "방법", "어떻게", "시작", "신청"],
+    answer:
+      '수강 방법은 간단합니다!\n\n1️⃣ "강의 탐색" 메뉴에서 원하는 강의를 선택하세요.\n2️⃣ 강의 상세 페이지에서 "수강 신청" 버튼을 클릭하세요.\n3️⃣ 결제 완료 후 "내 강의실"에서 바로 VOD 시청이 가능합니다.\n4️⃣ 모든 차시를 완료하면 수료증이 자동 발급됩니다.',
+  },
+  {
+    keywords: ["추천", "뭐 들", "어떤 강의", "강의 추천", "배우고"],
+    answer:
+      "리바운드에듀에서는 다양한 분야의 강의를 제공하고 있습니다.\n\n📌 중개업 — 부동산 중개 실무\n📌 숙박업 — 호스텔/숙박 창업\n📌 공실·사업장 — 공실 해결, 사업장 운영\n📌 AI자동화 — AI 기반 업무 자동화\n📌 투자개발 — 부동산 투자 및 개발\n\n좌측 메뉴의 \"강의 탐색\"에서 카테고리별로 둘러보세요!",
+  },
+  {
+    keywords: ["결제", "카드", "페이", "가격", "비용", "얼마"],
+    answer:
+      "결제 관련 안내드립니다.\n\n💳 결제 수단: 신용카드, 카카오페이 등\n🎟️ 쿠폰 코드가 있다면 결제 시 입력하여 할인 적용 가능\n📋 결제 내역은 \"결제 내역\" 메뉴에서 확인하실 수 있습니다.\n\n결제 오류가 발생한 경우, 하단 채널톡 버튼으로 고객센터에 문의해 주세요.",
+  },
+  {
+    keywords: ["환불", "취소", "철회"],
+    answer:
+      "환불 관련 안내입니다.\n\n환불은 수강 시작 전이라면 전액 환불이 가능하며, 수강 진행 후에는 진도율에 따라 부분 환불이 적용됩니다.\n\n정확한 환불 처리를 위해 하단 채널톡 버튼이나 고객센터를 통해 문의해 주세요. 빠르게 도와드리겠습니다! 😊",
+  },
+  {
+    keywords: ["수료증", "증명서", "이수"],
+    answer:
+      '수료증은 해당 강의의 모든 차시를 시청 완료하면 자동으로 발급됩니다.\n\n발급된 수료증은 좌측 메뉴의 "수료증" 메뉴에서 확인하고 다운로드하실 수 있습니다. 📄',
+  },
+  {
+    keywords: ["문의", "상담", "고객센터", "연락", "전화", "이메일"],
+    answer:
+      "고객 상담을 원하시나요?\n\n💬 화면 우측 하단의 채널톡 버튼을 클릭하시면 실시간 상담이 가능합니다.\n📧 자세한 문의사항은 Q&A 게시판에 남겨주시면 빠르게 답변 드리겠습니다.",
+  },
+  {
+    keywords: ["의뢰", "용역", "프로젝트", "컨설팅"],
+    answer:
+      '전문가에게 의뢰를 요청하실 수 있습니다.\n\n좌측 메뉴의 "의뢰 관리"에서 새로운 의뢰를 신청하세요. 수강 중인 강의의 전문가에게 컨설팅, 개발, 디자인, 마케팅 등 다양한 서비스를 요청할 수 있습니다.',
+  },
+  {
+    keywords: ["로그인", "비밀번호", "계정", "가입"],
+    answer:
+      "계정 관련 안내입니다.\n\n🔐 로그인: 이메일, 카카오, Google 계정으로 로그인 가능\n📝 회원가입: 간단한 정보 입력 후 바로 가입 완료\n🔑 비밀번호 분실: 로그인 페이지의 \"비밀번호 찾기\"를 이용해 주세요.\n\n추가 문의는 채널톡으로 연락해 주세요!",
+  },
+  {
+    keywords: ["안녕", "하이", "반가", "ㅎㅇ", "헬로"],
+    answer:
+      "안녕하세요! 😊 리바운드에듀 AI 상담 도우미입니다.\n\n강의, 수강 방법, 결제 등 궁금한 점이 있으시면 편하게 질문해 주세요!",
+  },
+];
+
+function getFallbackReply(message: string): string {
+  const msg = message.toLowerCase();
+  for (const rule of FALLBACK_RULES) {
+    if (rule.keywords.some((kw) => msg.includes(kw))) {
+      return rule.answer;
+    }
+  }
+  return "궁금하신 내용에 대해 정확한 안내를 위해 아래 방법을 이용해 주세요.\n\n💬 화면 우측 하단 채널톡 버튼 → 실시간 상담\n📝 Q&A 게시판 → 강의 관련 질문\n\n수강 방법, 결제, 환불, 강의 추천 등에 대해서도 물어보실 수 있어요!";
+}
+
+// ─── Route handler ──────────────────────────────────────
 export async function POST(request: Request) {
   try {
     const supabase = createClient();
@@ -144,8 +140,11 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "잘못된 요청입니다." }, { status: 400 });
     }
   } catch (err) {
-    console.error("[chatbot] error:", err);
-    return NextResponse.json({ error: "서버 오류가 발생했습니다." }, { status: 500 });
+    console.error("[chatbot] top-level error:", err);
+    return NextResponse.json(
+      { error: "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요." },
+      { status: 500 },
+    );
   }
 }
 
@@ -201,28 +200,39 @@ async function handleSendMessage(
     return NextResponse.json({ error: "메시지를 입력해주세요." }, { status: 400 });
   }
 
-  // Rate limit: 30 messages per hour
-  const oneHourAgo = new Date(Date.now() - 3600_000).toISOString();
-  const { count } = await supabase
-    .from("chatbot_messages")
-    .select("id", { count: "exact", head: true })
-    .eq("conversation_id", conversationId)
-    .eq("role", "user")
-    .gte("created_at", oneHourAgo);
+  const hasApiKey = !!process.env.ANTHROPIC_API_KEY;
 
-  if ((count || 0) >= 30) {
-    return NextResponse.json(
-      { error: "메시지 제한에 도달했습니다. 잠시 후 다시 시도해주세요." },
-      { status: 429 },
-    );
+  // Rate limit: 30 messages per hour
+  try {
+    const oneHourAgo = new Date(Date.now() - 3600_000).toISOString();
+    const { count } = await supabase
+      .from("chatbot_messages")
+      .select("id", { count: "exact", head: true })
+      .eq("conversation_id", conversationId)
+      .eq("role", "user")
+      .gte("created_at", oneHourAgo);
+
+    if ((count || 0) >= 30) {
+      return NextResponse.json(
+        { error: "메시지 제한에 도달했습니다. 잠시 후 다시 시도해주세요." },
+        { status: 429 },
+      );
+    }
+  } catch (e) {
+    console.error("[chatbot] rate limit check error:", e);
   }
 
   // 1. Save user message
-  await supabase.from("chatbot_messages").insert({
+  const { error: insertErr } = await supabase.from("chatbot_messages").insert({
     conversation_id: conversationId,
     role: "user",
     content: message.trim(),
   });
+
+  if (insertErr) {
+    console.error("[chatbot] insert user message error:", insertErr);
+    return NextResponse.json({ error: "메시지 저장에 실패했습니다." }, { status: 500 });
+  }
 
   // 2. Load conversation history (last 20 messages)
   const { data: history } = await supabase
@@ -233,66 +243,83 @@ async function handleSendMessage(
     .order("created_at", { ascending: true })
     .limit(20);
 
-  // 3. Get conversation context (course_id if any)
-  const { data: conversation } = await supabase
-    .from("chatbot_conversations")
-    .select("course_id")
-    .eq("id", conversationId)
-    .single();
+  // 3. Fetch course data for context (with error handling)
+  let coursesText = "";
+  try {
+    const { data: courses } = await supabase
+      .from("courses")
+      .select("title, price, discount_price, category, total_lectures")
+      .eq("status", "published")
+      .order("published_at", { ascending: false })
+      .limit(30);
 
-  // 4. Fetch course data for context
-  const { data: allCourses } = await supabase
-    .from("courses")
-    .select(
-      "id, title, subtitle, description, price, discount_price, category, difficulty, total_lectures, total_duration_sec, instructor:users!courses_instructor_id_fkey(name)",
-    )
-    .eq("status", "published")
-    .order("published_at", { ascending: false });
-
-  let specificCourse: CourseRow | null = null;
-  let lectures: LectureRow[] = [];
-
-  if (conversation?.course_id) {
-    specificCourse =
-      (allCourses as CourseRow[] | null)?.find((c) => c.id === conversation.course_id) || null;
-
-    if (specificCourse) {
-      const { data: lectureData } = await supabase
-        .from("lectures")
-        .select("title, section_title, duration_sec, sort_order")
-        .eq("course_id", conversation.course_id)
-        .order("sort_order", { ascending: true });
-      lectures = (lectureData as LectureRow[]) || [];
+    if (courses && courses.length > 0) {
+      const categoryMap: Record<string, string> = {
+        vacancy: "공실·사업장",
+        brokerage: "중개업",
+        hostel: "숙박업",
+        ai_automation: "AI자동화",
+        investment: "투자개발",
+      };
+      coursesText = courses
+        .map(
+          (c) =>
+            `- ${c.title} | ${categoryMap[c.category] || c.category} | ${c.price?.toLocaleString()}원${c.discount_price ? ` → ${c.discount_price.toLocaleString()}원` : ""} | ${c.total_lectures}강`,
+        )
+        .join("\n");
     }
+  } catch (e) {
+    console.error("[chatbot] courses query error:", e);
+    // Continue without course data
   }
 
-  // 5. Build messages for OpenAI
-  const systemPrompt = buildSystemPrompt(
-    (allCourses as CourseRow[]) || [],
-    specificCourse,
-    lectures,
-  );
+  // 4. Build messages for Claude
+  const systemPrompt = buildSystemPrompt(coursesText);
 
-  const openaiMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-    { role: "system", content: systemPrompt },
-    ...(history || []).map((m) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content,
-    })),
-  ];
+  const claudeMessages: { role: "user" | "assistant"; content: string }[] = (
+    history || []
+  ).map((m) => ({
+    role: m.role as "user" | "assistant",
+    content: m.content,
+  }));
 
-  // 6. Call OpenAI
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: openaiMessages,
-    temperature: 0.7,
-    max_tokens: 500,
-  });
+  // Ensure messages alternate correctly and start with user
+  if (claudeMessages.length === 0 || claudeMessages[0].role !== "user") {
+    claudeMessages.unshift({ role: "user", content: message.trim() });
+  }
 
-  const reply = completion.choices[0]?.message?.content || "죄송합니다. 응답을 생성할 수 없습니다.";
+  // 5. Generate reply: Claude API or fallback
+  let reply = "";
+  if (hasApiKey) {
+    try {
+      const { default: Anthropic } = await import("@anthropic-ai/sdk");
+      const anthropic = new Anthropic({
+        apiKey: process.env.ANTHROPIC_API_KEY,
+      });
 
-  // 7. Save assistant message
-  const { data: savedMsg } = await supabase
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 500,
+        system: systemPrompt,
+        messages: claudeMessages,
+      });
+
+      reply =
+        response.content[0]?.type === "text"
+          ? response.content[0].text
+          : "죄송합니다. 응답을 생성할 수 없습니다.";
+    } catch (apiErr) {
+      console.error("[chatbot] Claude API error:", apiErr);
+      // API 실패 시 폴백 사용
+      reply = getFallbackReply(message);
+    }
+  } else {
+    // API 키 없으면 키워드 기반 폴백 응답
+    reply = getFallbackReply(message);
+  }
+
+  // 6. Save assistant message
+  const { data: savedMsg, error: saveErr } = await supabase
     .from("chatbot_messages")
     .insert({
       conversation_id: conversationId,
@@ -301,6 +328,19 @@ async function handleSendMessage(
     })
     .select("id, role, content, created_at")
     .single();
+
+  if (saveErr) {
+    console.error("[chatbot] save assistant message error:", saveErr);
+    // Still return the reply even if saving fails
+    return NextResponse.json({
+      message: {
+        id: `temp-${Date.now()}`,
+        role: "assistant",
+        content: reply,
+        created_at: new Date().toISOString(),
+      },
+    });
+  }
 
   return NextResponse.json({ message: savedMsg });
 }

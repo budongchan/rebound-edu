@@ -9,14 +9,14 @@ import {
   BookOpen, Search, CreditCard, MessageSquare, Award,
   LayoutDashboard, Calendar, Users, Wallet, GraduationCap,
   Headphones, ClipboardCheck, Megaphone, CheckCircle,
-  TrendingUp, Settings, Bell, LogOut, ArrowLeftRight,
+  TrendingUp, Settings, Bell, Briefcase, LogOut, ArrowLeftRight,
 } from "lucide-react";
 
 const iconMap: Record<string, React.ElementType> = {
   BookOpen, Search, CreditCard, MessageSquare, Award,
   LayoutDashboard, Calendar, Users, Wallet, GraduationCap,
   Headphones, ClipboardCheck, Megaphone, CheckCircle,
-  TrendingUp, Settings, Bell,
+  TrendingUp, Settings, Bell, Briefcase,
 };
 
 interface SidebarProps {

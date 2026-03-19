@@ -6,7 +6,9 @@ import { createClient } from "@/lib/supabase/client";
 import { CATEGORY_LABELS } from "@/types";
 import { formatPrice, formatDuration } from "@/lib/utils";
 import Badge from "@/components/ui/Badge";
-import { Star, Clock, BookOpen, PlayCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Star, Clock, BookOpen, PlayCircle, ChevronDown, ChevronUp, MessageCircle } from "lucide-react";
+import type { PaymentPrepareResponse } from "@/types";
+import * as PortOne from "@portone/browser-sdk/v2";
 
 interface CourseDetail {
   id: string;
@@ -20,6 +22,7 @@ interface CourseDetail {
   total_lectures: number;
   total_duration_sec: number;
   thumbnail_url: string | null;
+  kakao_chat_url: string | null;
   instructor: { id: string; name: string; avatar_url: string | null } | null;
 }
 
@@ -61,7 +64,7 @@ export default function CourseDetailPage() {
       // Course
       const { data: c } = await supabase
         .from("courses")
-        .select(`*, instructor:users!courses_instructor_id_fkey(id, name, avatar_url)`)
+        .select(`*, kakao_chat_url, instructor:users!courses_instructor_id_fkey(id, name, avatar_url)`)
         .eq("id", id)
         .single();
 
@@ -124,19 +127,84 @@ export default function CourseDetailPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/auth/login"); return; }
 
-    const { data: profile } = await supabase
-      .from("users").select("id").eq("auth_id", user.id).single();
-    if (!profile) return;
+    try {
+      // 1. 서버에 결제 준비 요청
+      const prepareRes = await fetch("/api/payment/prepare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ courseId: id }),
+      });
+      const prepareData: PaymentPrepareResponse = await prepareRes.json();
 
-    await supabase.from("enrollments").insert({
-      user_id: profile.id,
-      course_id: id,
-      status: "active",
-      progress_pct: 0,
-    });
+      if (!prepareRes.ok) {
+        alert(prepareData.error || "결제 준비에 실패했습니다.");
+        setEnrolling(false);
+        return;
+      }
 
-    setEnrolled(true);
-    setEnrolling(false);
+      // 2. 무료 강의인 경우 바로 등록 완료
+      if (prepareData.free) {
+        setEnrolled(true);
+        setEnrolling(false);
+        return;
+      }
+
+      // 3. 유료 강의: PortOne 결제창 호출
+      const storeId = process.env.NEXT_PUBLIC_PORTONE_STORE_ID;
+      const channelKey = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY;
+
+      if (!storeId || !channelKey) {
+        alert("결제 시스템이 설정되지 않았습니다. 관리자에게 문의해주세요.");
+        setEnrolling(false);
+        return;
+      }
+
+      const response = await PortOne.requestPayment({
+        storeId,
+        channelKey,
+        paymentId: prepareData.paymentId!,
+        orderName: prepareData.orderName!,
+        totalAmount: prepareData.totalAmount!,
+        currency: "CURRENCY_KRW",
+        payMethod: "CARD",
+        customer: {
+          fullName: prepareData.customer?.name,
+          email: prepareData.customer?.email,
+          phoneNumber: prepareData.customer?.phone || undefined,
+        },
+        redirectUrl: `${window.location.origin}/student/payment-result`,
+      });
+
+      // 4. 결제 결과 확인
+      if (response?.code != null) {
+        // 사용자가 결제를 취소하거나 오류 발생
+        if (response.code !== "FAILURE_TYPE_PG" && response.code !== "PAY_PROCESS_CANCELED") {
+          alert(response.message || "결제가 취소되었습니다.");
+        }
+        setEnrolling(false);
+        return;
+      }
+
+      // 5. 서버에 결제 완료 검증 요청
+      const completeRes = await fetch("/api/payment/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentId: prepareData.paymentId }),
+      });
+      const completeData = await completeRes.json();
+
+      if (completeRes.ok && completeData.success) {
+        setEnrolled(true);
+        alert("결제가 완료되었습니다! 수강을 시작하세요.");
+      } else {
+        alert(completeData.error || "결제 검증에 실패했습니다.");
+      }
+    } catch (err) {
+      console.error("결제 오류:", err);
+      alert("결제 처리 중 오류가 발생했습니다.");
+    } finally {
+      setEnrolling(false);
+    }
   };
 
   if (loading) {
@@ -208,19 +276,36 @@ export default function CourseDetailPage() {
             </span>
           </div>
           {enrolled ? (
-            <button
-              onClick={() => router.push("/student")}
-              className="px-6 py-2.5 rounded-lg bg-green-500 text-white font-semibold text-sm hover:bg-green-600 transition"
-            >
-              내 강의실로 이동
-            </button>
+            <div className="flex items-center gap-2">
+              {course.kakao_chat_url && (
+                <a
+                  href={course.kakao_chat_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-[#FEE500] text-[#391B1B] font-semibold text-sm hover:bg-[#F5DD00] transition"
+                >
+                  <MessageCircle size={16} />
+                  수강생 단톡방 입장
+                </a>
+              )}
+              <button
+                onClick={() => router.push("/student")}
+                className="px-6 py-2.5 rounded-lg bg-green-500 text-white font-semibold text-sm hover:bg-green-600 transition"
+              >
+                내 강의실로 이동
+              </button>
+            </div>
           ) : (
             <button
               onClick={handleEnroll}
               disabled={enrolling}
               className="px-6 py-2.5 rounded-lg bg-brand text-white font-semibold text-sm hover:bg-brand-dark transition disabled:opacity-50"
             >
-              {enrolling ? "처리 중..." : "수강 신청"}
+              {enrolling
+                ? "처리 중..."
+                : (course.discount_price || course.price) === 0
+                  ? "무료 수강 신청"
+                  : `수강 신청 · ₩${formatPrice(course.discount_price || course.price)}`}
             </button>
           )}
         </div>

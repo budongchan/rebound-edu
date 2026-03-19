@@ -73,7 +73,7 @@ export default function StaffReviewPage() {
         <div className="bg-white rounded-lg border border-gray-100 p-12 text-center">
           <ClipboardCheck className="mx-auto mb-3 text-gray-300" size={40} />
           <p className="text-gray-400 mb-1">검수할 콘텐츠가 없습니다</p>
-          <p className="text-sm text-gray-300">교사가 강의를 제출하면 여기에 표시됩니다</p>
+          <p className="text-sm text-gray-300">전문가가 강의를 제출하면 여기에 표시됩니다</p>
         </div>
       ) : (
         <div className="space-y-2.5">

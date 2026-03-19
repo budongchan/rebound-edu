@@ -100,8 +100,8 @@ export default function StaffDashboard() {
   return (
     <>
       <div className="grid grid-cols-4 gap-3 mb-7">
-        <StatCard label="전체 학생" value={data.totalStudents.toLocaleString()} />
-        <StatCard label="등록 교사" value={data.totalTeachers.toString()} />
+        <StatCard label="전체 고객" value={data.totalStudents.toLocaleString()} />
+        <StatCard label="등록 전문가" value={data.totalTeachers.toString()} />
         <StatCard label="대기 CS" value={data.pendingCS.toString()} accent={data.pendingCS > 0 ? "#e03131" : undefined} />
         <StatCard label="검수 대기" value={data.pendingReview.toString()} accent={data.pendingReview > 0 ? "#e67700" : undefined} />
       </div>

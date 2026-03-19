@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "리바운드에듀 | 부동산·공간사업 전문 교육",
+  title: "리바운드에듀 | 교육으로 신뢰를 판다.",
   description:
-    "공실 해결, 부동산 중개, 호스텔 창업, AI 업무자동화 등 실전 중심의 온라인 교육 플랫폼",
+    "부동산·공간사업 전문가의 교육 플랫폼. 중개업, 숙박업, 공실·사업장, AI자동화, 투자개발 분야의 실전 노하우를 배우세요.",
 };
 
 export default function RootLayout({
@@ -14,7 +14,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        {children}
+      </body>
     </html>
   );
 }

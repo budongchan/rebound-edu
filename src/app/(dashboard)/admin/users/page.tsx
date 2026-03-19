@@ -26,8 +26,8 @@ const ROLE_COLORS: Record<string, "blue" | "green" | "amber" | "red"> = {
 
 const ROLE_FILTERS = [
   { value: "all", label: "전체" },
-  { value: "student", label: "학생" },
-  { value: "teacher", label: "교사" },
+  { value: "student", label: "고객" },
+  { value: "teacher", label: "전문가" },
   { value: "staff", label: "직원" },
   { value: "admin", label: "관리자" },
 ];

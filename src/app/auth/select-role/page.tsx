@@ -2,17 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+
 import { createClient } from "@/lib/supabase/client";
 import { BookOpen, Calendar, Headphones, LayoutDashboard, ChevronRight } from "lucide-react";
-import ChannelTalk from "@/components/ui/ChannelTalk";
+import ChatBot from "@/components/ui/ChatBot";
 import type { UserRole, User } from "@/types";
 import { ROLE_LABELS, ROLE_COLORS } from "@/types";
 
 const ROLE_DESC: Record<UserRole, string> = {
   student: "강의 수강, Q&A, 수료증",
   teacher: "강의 관리, 스케줄, 정산",
-  staff: "학생·교사 DB, CS, 검수",
+  staff: "고객·전문가 DB, CS, 검수",
   admin: "전체 관리, 매출, 설정",
 };
 
@@ -46,11 +46,14 @@ export default function SelectRolePage() {
         .single();
 
       if (profile) {
+        // 미승인 사용자 → 승인 대기 페이지로 리디렉트
+        if (!profile.is_approved) {
+          router.push("/auth/pending");
+          return;
+        }
+
         setUser(profile as User);
-        // 사용자의 승인된 역할들 (데모에서는 해당 역할만)
-        // 실제로는 user_roles 조인 테이블로 복수 역할 지원 가능
         const roles: UserRole[] = [profile.role as UserRole];
-        // admin은 모든 역할 접근 가능
         if (profile.role === "admin") {
           setAvailableRoles(["student", "teacher", "staff", "admin"]);
         } else {
@@ -81,7 +84,7 @@ export default function SelectRolePage() {
         <div className="bg-white rounded-xl p-8 border border-gray-200">
           <div className="text-center mb-6">
             <div className="w-12 h-12 rounded-full bg-brand-light flex items-center justify-center mx-auto mb-3">
-              <svg width="24" height="24" fill="none" stroke="#FF6600" strokeWidth="2" viewBox="0 0 24 24">
+              <svg width="24" height="24" fill="none" stroke="#FF4620" strokeWidth="2" viewBox="0 0 24 24">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
                 <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
@@ -123,12 +126,19 @@ export default function SelectRolePage() {
         </div>
 
         <p className="text-center text-[13px] text-gray-500 mt-5">
-          <Link href="/auth/login" className="text-brand hover:underline">
+          <button
+            onClick={async () => {
+              const supabase = createClient();
+              await supabase.auth.signOut();
+              router.push("/auth/login");
+            }}
+            className="text-brand hover:underline"
+          >
             ← 다른 계정으로 로그인
-          </Link>
+          </button>
         </p>
       </div>
-      <ChannelTalk />
+      <ChatBot userId={user?.id} />
     </div>
   );
 }

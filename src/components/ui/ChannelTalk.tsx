@@ -1,55 +1,53 @@
 "use client";
 
-import { useState } from "react";
-import { MessageCircle, X, Send } from "lucide-react";
+import Script from "next/script";
+
+declare global {
+  interface Window {
+    ChannelIO?: (...args: unknown[]) => void;
+    ChannelIOInitialized?: boolean;
+  }
+}
+
+/**
+ * 채널톡 메신저를 프로그래밍 방식으로 엽니다.
+ */
+export function openChannelTalk() {
+  if (typeof window !== "undefined" && window.ChannelIO) {
+    window.ChannelIO("showMessenger");
+  }
+}
 
 export default function ChannelTalk() {
-  const [open, setOpen] = useState(false);
+  const bootScript = `
+    (function(){
+      var w=window;
+      if(w.ChannelIO){return w.console.error("ChannelIO script included twice.")}
+      var ch=function(){ch.c(arguments)};
+      ch.q=[];
+      ch.c=function(args){ch.q.push(args)};
+      w.ChannelIO=ch;
+      function l(){
+        if(w.ChannelIOInitialized){return}
+        w.ChannelIOInitialized=true;
+        var s=document.createElement("script");
+        s.type="text/javascript";
+        s.async=true;
+        s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";
+        var x=document.getElementsByTagName("script")[0];
+        if(x.parentNode){x.parentNode.insertBefore(s,x)}
+      }
+      if(document.readyState==="complete"){l()}
+      else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l)}
+    })();
+    ChannelIO('boot',{pluginKey:"69b6c7e70c354fbf74bd"});
+  `;
 
   return (
-    <>
-      {open && (
-        <div className="fixed bottom-[88px] right-6 w-[320px] bg-white rounded-2xl shadow-2xl z-50 overflow-hidden">
-          <div className="bg-brand px-5 py-4 text-white">
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-base font-bold">리바운드에듀 상담</span>
-              <button
-                onClick={() => setOpen(false)}
-                className="text-white/80 hover:text-white"
-              >
-                <X size={18} />
-              </button>
-            </div>
-            <p className="text-[13px] text-white/80">
-              안녕하세요! 무엇이든 물어보세요.
-            </p>
-          </div>
-          <div className="p-5">
-            <div className="bg-gray-50 rounded-xl px-4 py-3 mb-3">
-              <p className="text-[13px] text-gray-600">
-                안녕하세요! 리바운드에듀입니다. 강의, 결제, 환불 등 궁금하신
-                사항을 남겨주세요.
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <input
-                placeholder="메시지를 입력하세요..."
-                className="flex-1 h-10 px-3 border border-gray-200 rounded-lg text-[13px] outline-none focus:border-brand"
-              />
-              <button className="w-10 h-10 rounded-lg bg-brand text-white flex items-center justify-center hover:bg-brand-dark transition">
-                <Send size={16} />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <button
-        onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-brand text-white shadow-lg shadow-orange-200 flex items-center justify-center z-50 hover:scale-105 transition-transform"
-      >
-        {open ? <X size={24} /> : <MessageCircle size={24} />}
-      </button>
-    </>
+    <Script
+      id="channel-talk-boot"
+      strategy="afterInteractive"
+      dangerouslySetInnerHTML={{ __html: bootScript }}
+    />
   );
 }

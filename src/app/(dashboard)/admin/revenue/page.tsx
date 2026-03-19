@@ -149,7 +149,7 @@ export default function AdminRevenuePage() {
             tab === "settlements" ? "bg-brand text-white" : "bg-white text-gray-600 border border-gray-200"
           }`}
         >
-          교사 정산 ({settlements.length})
+          전문가 정산 ({settlements.length})
         </button>
       </div>
 
@@ -201,7 +201,7 @@ export default function AdminRevenuePage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-100">
-                  <th className="text-left text-xs text-gray-500 font-medium px-4 py-3">교사</th>
+                  <th className="text-left text-xs text-gray-500 font-medium px-4 py-3">전문가</th>
                   <th className="text-left text-xs text-gray-500 font-medium px-4 py-3">기간</th>
                   <th className="text-right text-xs text-gray-500 font-medium px-4 py-3">매출</th>
                   <th className="text-right text-xs text-gray-500 font-medium px-4 py-3">수수료</th>

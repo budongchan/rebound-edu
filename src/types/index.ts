@@ -72,6 +72,7 @@ export const ROLE_MENUS: Record<UserRole, NavItem[]> = {
     { label: "결제 내역", href: "/student/payments", icon: "CreditCard" },
     { label: "Q&A", href: "/student/qna", icon: "MessageSquare" },
     { label: "수료증", href: "/student/certificates", icon: "Award" },
+    { label: "의뢰 관리", href: "/student/commissions", icon: "Briefcase" },
   ],
   teacher: [
     { label: "대시보드", href: "/teacher", icon: "LayoutDashboard" },
@@ -80,14 +81,16 @@ export const ROLE_MENUS: Record<UserRole, NavItem[]> = {
     { label: "수강생", href: "/teacher/students", icon: "Users" },
     { label: "Q&A", href: "/teacher/qna", icon: "MessageSquare" },
     { label: "정산", href: "/teacher/settlements", icon: "Wallet" },
+    { label: "의뢰 관리", href: "/teacher/commissions", icon: "Briefcase" },
   ],
   staff: [
     { label: "운영 현황", href: "/staff", icon: "LayoutDashboard" },
-    { label: "학생 DB", href: "/staff/students", icon: "Users" },
-    { label: "교사 DB", href: "/staff/teachers", icon: "GraduationCap" },
+    { label: "고객 DB", href: "/staff/students", icon: "Users" },
+    { label: "전문가 DB", href: "/staff/teachers", icon: "GraduationCap" },
     { label: "CS 상담", href: "/staff/cs", icon: "Headphones" },
     { label: "콘텐츠 검수", href: "/staff/review", icon: "ClipboardCheck" },
     { label: "프로모션", href: "/staff/promotions", icon: "Megaphone" },
+    { label: "의뢰 관리", href: "/staff/commissions", icon: "Briefcase" },
   ],
   admin: [
     { label: "대시보드", href: "/admin", icon: "LayoutDashboard" },
@@ -96,12 +99,13 @@ export const ROLE_MENUS: Record<UserRole, NavItem[]> = {
     { label: "매출·정산", href: "/admin/revenue", icon: "TrendingUp" },
     { label: "설정", href: "/admin/settings", icon: "Settings" },
     { label: "공지", href: "/admin/announcements", icon: "Bell" },
+    { label: "의뢰 관리", href: "/admin/commissions", icon: "Briefcase" },
   ],
 };
 
 export const ROLE_LABELS: Record<UserRole, string> = {
-  student: "학생",
-  teacher: "교사",
+  student: "고객",
+  teacher: "전문가",
   staff: "직원",
   admin: "관리자",
 };
@@ -111,6 +115,93 @@ export const ROLE_COLORS: Record<UserRole, string> = {
   teacher: "#20c997",
   staff: "#fab005",
   admin: "#7950f2",
+};
+
+// Payment types
+export interface Payment {
+  id: string;
+  user_id: string;
+  pg_order_id: string | null;
+  pg_payment_key: string | null;
+  portone_tx_id: string | null;
+  total_amount: number;
+  discount_amount: number;
+  final_amount: number;
+  method: "card" | "bank_transfer" | "toss" | "kakao" | "naver" | null;
+  status: "pending" | "paid" | "cancelled" | "refunded" | "partial_refund";
+  receipt_url: string | null;
+  paid_at: string | null;
+  created_at: string;
+}
+
+export interface PaymentPrepareResponse {
+  success: boolean;
+  free: boolean;
+  paymentId?: string;
+  orderName?: string;
+  totalAmount?: number;
+  customer?: {
+    name: string;
+    email: string;
+    phone: string | null;
+  };
+  couponDiscount?: number;
+  message?: string;
+  error?: string;
+}
+
+// Commission types
+export type CommissionStatus = "requested" | "accepted" | "rejected" | "in_progress" | "completed" | "settled" | "cancelled";
+export type ServiceType = "consulting" | "development" | "design" | "marketing" | "filming" | "editing" | "other";
+
+export interface Commission {
+  id: string;
+  client_id: string;
+  expert_id: string;
+  course_id: string | null;
+  title: string;
+  description: string | null;
+  service_type: ServiceType;
+  estimated_amount: number;
+  final_amount: number;
+  platform_fee_pct: number;
+  platform_fee: number;
+  expert_payout: number;
+  status: CommissionStatus;
+  requested_at: string;
+  accepted_at: string | null;
+  started_at: string | null;
+  completed_at: string | null;
+  settled_at: string | null;
+  client_memo: string | null;
+  expert_memo: string | null;
+  admin_memo: string | null;
+  created_at: string;
+  updated_at: string;
+  // Joined fields
+  client?: { id: string; name: string } | null;
+  expert?: { id: string; name: string } | null;
+  course?: { id: string; title: string } | null;
+}
+
+export const SERVICE_TYPE_LABELS: Record<ServiceType, string> = {
+  consulting: "컨설팅",
+  development: "기획/개발",
+  design: "디자인",
+  marketing: "마케팅",
+  filming: "촬영",
+  editing: "편집",
+  other: "기타",
+};
+
+export const COMMISSION_STATUS_MAP: Record<CommissionStatus, { label: string; color: "blue" | "green" | "red" | "amber" | "orange" | "gray" }> = {
+  requested: { label: "의뢰 신청", color: "blue" },
+  accepted: { label: "수락됨", color: "green" },
+  rejected: { label: "거절됨", color: "red" },
+  in_progress: { label: "진행 중", color: "orange" },
+  completed: { label: "완료", color: "amber" },
+  settled: { label: "정산 완료", color: "green" },
+  cancelled: { label: "취소", color: "gray" },
 };
 
 // Chatbot types

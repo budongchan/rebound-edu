@@ -17,6 +17,65 @@ const QUICK_ACTIONS = [
   "결제 관련 문의",
 ];
 
+// ─── 비로그인 사용자용 키워드 기반 응답 ───
+const LOCAL_RULES: { keywords: string[]; answer: string }[] = [
+  {
+    keywords: ["수강", "방법", "어떻게", "시작", "신청"],
+    answer:
+      '수강 방법은 간단합니다!\n\n1️⃣ 회원가입 후 로그인하세요.\n2️⃣ "강의 탐색" 메뉴에서 원하는 강의를 선택하세요.\n3️⃣ 강의 상세 페이지에서 "수강 신청" 버튼을 클릭하세요.\n4️⃣ 결제 완료 후 바로 VOD 시청이 가능합니다.',
+  },
+  {
+    keywords: ["추천", "뭐 들", "어떤 강의", "강의 추천", "배우고"],
+    answer:
+      "리바운드에듀에서는 다양한 분야의 강의를 제공합니다.\n\n📌 중개업 — 부동산 중개 실무\n📌 숙박업 — 호스텔/숙박 창업\n📌 공실·사업장 — 공실 해결, 사업장 운영\n📌 AI자동화 — AI 기반 업무 자동화\n📌 투자개발 — 부동산 투자 및 개발\n\n회원가입 후 강의 탐색에서 카테고리별로 둘러보세요!",
+  },
+  {
+    keywords: ["결제", "카드", "페이", "가격", "비용", "얼마"],
+    answer:
+      "결제 관련 안내드립니다.\n\n💳 결제 수단: 신용카드, 카카오페이 등\n🎟️ 쿠폰 코드가 있다면 결제 시 입력하여 할인 적용 가능\n📋 결제 내역은 로그인 후 \"결제 내역\" 메뉴에서 확인 가능합니다.",
+  },
+  {
+    keywords: ["환불", "취소", "철회"],
+    answer:
+      "환불 관련 안내입니다.\n\n수강 시작 전이라면 전액 환불이 가능하며, 수강 진행 후에는 진도율에 따라 부분 환불이 적용됩니다.\n\n정확한 환불 처리를 위해 고객센터(admin@rebound.io.kr)로 문의해 주세요.",
+  },
+  {
+    keywords: ["수료증", "증명서", "이수"],
+    answer:
+      "수료증은 해당 강의의 모든 차시를 시청 완료하면 자동으로 발급됩니다.\n\n발급된 수료증은 로그인 후 \"수료증\" 메뉴에서 확인하고 다운로드하실 수 있습니다. 📄",
+  },
+  {
+    keywords: ["문의", "상담", "고객센터", "연락", "전화", "이메일"],
+    answer:
+      "고객 상담을 원하시나요?\n\n📧 이메일: admin@rebound.io.kr\n📝 로그인 후 Q&A 게시판에서도 질문 가능합니다.\n\n빠르게 답변 드리겠습니다!",
+  },
+  {
+    keywords: ["의뢰", "용역", "프로젝트", "컨설팅"],
+    answer:
+      "전문가에게 의뢰를 요청하실 수 있습니다.\n\n회원가입 후 \"의뢰 관리\" 메뉴에서 새로운 의뢰를 신청하세요. 컨설팅, 개발, 디자인, 마케팅 등 다양한 서비스를 요청할 수 있습니다.",
+  },
+  {
+    keywords: ["로그인", "비밀번호", "계정", "가입", "회원"],
+    answer:
+      "계정 관련 안내입니다.\n\n📝 회원가입: 상단 \"회원가입\" 버튼 클릭 → 간단한 정보 입력 후 바로 가입 완료\n🔐 로그인: 이메일과 비밀번호로 로그인\n🔑 비밀번호 분실: 로그인 페이지의 \"비밀번호 찾기\"를 이용해 주세요.",
+  },
+  {
+    keywords: ["안녕", "하이", "반가", "ㅎㅇ", "헬로"],
+    answer:
+      "안녕하세요! 😊 리바운드에듀 AI 상담 도우미입니다.\n\n강의, 수강 방법, 결제 등 궁금한 점이 있으시면 편하게 질문해 주세요!",
+  },
+];
+
+function getLocalReply(message: string): string {
+  const msg = message.toLowerCase();
+  for (const rule of LOCAL_RULES) {
+    if (rule.keywords.some((kw) => msg.includes(kw))) {
+      return rule.answer;
+    }
+  }
+  return "궁금하신 내용에 대해 안내해 드릴게요.\n\n수강 방법, 결제, 환불, 강의 추천 등에 대해 질문해 보세요!\n\n📧 더 자세한 문의: admin@rebound.io.kr";
+}
+
 interface ChatBotProps {
   userId?: string;
 }
@@ -29,6 +88,7 @@ export default function ChatBot({ userId }: ChatBotProps) {
   const [loading, setLoading] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [initializing, setInitializing] = useState(false);
+  const [guestMode] = useState(!userId);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Detect course context from URL
@@ -42,8 +102,13 @@ export default function ChatBot({ userId }: ChatBotProps) {
     }
   }, [messages, loading]);
 
-  // Create new conversation on first open
+  // Create new conversation on first open (only for logged-in users)
   const initConversation = useCallback(async () => {
+    if (guestMode) {
+      // 비로그인: 로컬 대화 ID 생성
+      setConversationId(`guest-${Date.now()}`);
+      return;
+    }
     if (conversationId || initializing || !userId) return;
     setInitializing(true);
     try {
@@ -64,7 +129,7 @@ export default function ChatBot({ userId }: ChatBotProps) {
     } finally {
       setInitializing(false);
     }
-  }, [conversationId, initializing, userId, courseIdFromUrl]);
+  }, [guestMode, conversationId, initializing, userId, courseIdFromUrl]);
 
   const handleOpen = () => {
     setOpen(true);
@@ -89,6 +154,24 @@ export default function ChatBot({ userId }: ChatBotProps) {
     setInput("");
     setLoading(true);
 
+    // 비로그인: 로컬 키워드 기반 응답
+    if (guestMode) {
+      await new Promise((r) => setTimeout(r, 500)); // 자연스러운 딜레이
+      const reply = getLocalReply(msgText);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `local-${Date.now()}`,
+          role: "assistant",
+          content: reply,
+          created_at: new Date().toISOString(),
+        },
+      ]);
+      setLoading(false);
+      return;
+    }
+
+    // 로그인: API 호출
     try {
       const res = await fetch("/api/chatbot", {
         method: "POST",
@@ -102,7 +185,6 @@ export default function ChatBot({ userId }: ChatBotProps) {
 
       if (!res.ok) {
         const err = await res.json();
-        // Show error as assistant message
         setMessages((prev) => [
           ...prev,
           {
@@ -148,20 +230,17 @@ export default function ChatBot({ userId }: ChatBotProps) {
   // Reset conversation when navigating to different course
   useEffect(() => {
     if (conversationId && courseIdFromUrl) {
-      // New course context detected -> start fresh conversation on next open
       setConversationId(null);
       setMessages([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseIdFromUrl]);
 
-  if (!userId) return null;
-
   return (
     <>
       {/* Chat Panel */}
       {open && (
-        <div className="fixed bottom-[88px] right-6 w-[360px] h-[500px] bg-white rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col">
+        <div className="fixed bottom-[88px] right-3 left-3 sm:left-auto sm:right-6 sm:w-[360px] sm:max-w-[calc(100vw-48px)] h-[min(500px,calc(100dvh-120px))] bg-white rounded-2xl shadow-2xl z-50 overflow-hidden flex flex-col">
           {/* Header */}
           <div className="bg-brand px-5 py-4 text-white flex-shrink-0">
             <div className="flex justify-between items-center">
@@ -248,8 +327,8 @@ export default function ChatBot({ userId }: ChatBotProps) {
           </div>
 
           {/* Input */}
-          <div className="px-4 py-3 border-t border-gray-100 flex-shrink-0">
-            <div className="flex gap-2">
+          <div className="px-3 py-3 border-t border-gray-100 flex-shrink-0">
+            <div className="flex items-center gap-2">
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -259,13 +338,13 @@ export default function ChatBot({ userId }: ChatBotProps) {
                     ? "메시지를 입력하세요..."
                     : "연결 중..."
                 }
-                className="flex-1 h-10 px-3 border border-gray-200 rounded-lg text-[13px] outline-none focus:border-brand"
+                className="flex-1 min-w-0 h-10 px-3 border border-gray-200 rounded-lg text-[13px] outline-none focus:border-brand"
                 disabled={loading || !conversationId}
               />
               <button
                 onClick={() => handleSend()}
                 disabled={!input.trim() || loading || !conversationId}
-                className="w-10 h-10 rounded-lg bg-brand text-white flex items-center justify-center hover:bg-brand-dark transition disabled:opacity-50"
+                className="w-10 h-10 min-w-[40px] flex-shrink-0 rounded-lg bg-brand text-white flex items-center justify-center hover:bg-brand-dark transition disabled:opacity-50"
               >
                 <Send size={16} />
               </button>
