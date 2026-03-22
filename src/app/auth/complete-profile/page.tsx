@@ -152,7 +152,11 @@ function CompleteProfileForm() {
     <div className="w-full max-w-[440px]">
       <div className="text-center mb-8">
         <Link href="/" className="inline-flex items-center gap-0.5">
-          <span className="text-2xl font-extrabold text-brand">리바운드</span>
+          
+            <div className="w-10 h-10 rounded-xl bg-brand flex items-center justify-center shadow-md mr-2">
+              <span className="text-white font-black text-xl">R</span>
+            </div>
+<span className="text-2xl font-extrabold text-brand">리바운드</span>
           <span className="text-2xl font-extrabold text-gray-900">에듀</span>
         </Link>
       </div>

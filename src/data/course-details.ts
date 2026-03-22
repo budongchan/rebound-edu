@@ -1,6 +1,25 @@
 // 강의별 상세 콘텐츠 (DB 외 정적 데이터)
 // course ID를 키로 매핑
 
+export interface ScheduleInfo {
+  duration: string;
+  enrollDeadline?: string;
+  date: string;
+  time: string;
+  online?: { label: string; url: string };
+  offline?: { label: string; address: string; mapUrl: string };
+  recording: string;
+  capacity?: { online: number; offline: number };
+}
+
+export interface BookCover {
+  title: string;
+  subtitle?: string;
+  author: string;
+  gradient: string;
+  accentColor: string;
+}
+
 export interface CourseContent {
   targets: string[];
   beforeAfter: { before: string; after: string }[];
@@ -8,12 +27,24 @@ export interface CourseContent {
     name: string;
     title: string;
     credentials: string[];
+    education?: string[];
+    career?: string[];
+    books?: string[];
+    awards?: string[];
     bio: string;
+    avatarInitial?: string;
+    avatarGradient?: string;
+    avatarUrl?: string;
+    youtubeUrl?: string;
   };
   curriculum: { part: string; items: string[] }[];
   materials: string[];
   faq: { q: string; a: string }[];
   highlights: string[];
+  schedule?: ScheduleInfo;
+  book?: BookCover;
+  requirements?: string[];
+  introSections?: { icon: string; title: string; description: string }[];
 }
 
 const COURSE_CONTENTS: Record<string, CourseContent> = {
@@ -21,34 +52,58 @@ const COURSE_CONTENTS: Record<string, CourseContent> = {
   "c0000000-0000-0000-0000-000000000001": {
     targets: [
       "2026년 안에 내집마련을 목표로 하는 실수요자",
-      "청약·매매·경매 중 어떤 방법이 맞는지 모르겠는 분",
-      "대출 규제 변화에 따른 자금 계획이 필요한 분",
+      "실거주와 투자를 동시에 잡고 싶은 분",
       "입지 분석 없이 감으로 매수하다 실패한 경험이 있는 분",
+      "‘좀 더 모으면 사야지’, ‘더 좋은 집은 없을까?’ 하며 기준이 계속 바뀌는 분",
+      "신중한 척하지만 사실은 결정 회피로 고민이 반복되는 분",
+      "앞으로 다가올 집값 상승, 자산 격차 등 미래 불안을 체감하는 분",
     ],
     beforeAfter: [
       {
-        before: "부동산 뉴스를 봐도 나에게 해당되는 건지 모르겠다",
-        after: "시장 흐름을 읽고 매수 타이밍을 스스로 판단할 수 있다",
+        before: "“이제는 사야 한다” 머리로는 알면서도 막연한 기대로 결정을 미루고 있다",
+        after: "AI의 데이터 분석과 현장 전문가의 직관을 결합해 명확한 매수 기준을 세운다",
       },
       {
-        before: "청약·매매·경매 뭐가 유리한지 감이 안 온다",
-        after: "자금 상황에 맞는 최적의 내집마련 루트를 설계한다",
+        before: "숫자가 말하는 이론적인 매수 적기(AI 지표)만 보고 판단하기 어렵다",
+        after: "지표 이면에 숨겨진 진실과 현장에서만 느껴지는 미묘한 변화를 읽어낸다",
       },
       {
-        before: "대출 한도가 얼마인지, 규제가 어떻게 바뀌는지 모른다",
-        after: "DSR·LTV 계산으로 실현 가능한 자금 조달 계획을 세운다",
+        before: "유튜브 속 넘쳐나는 가짜 정보에 지쳐 무엇이 진짜인지 혼란스럽다",
+        after: "수많은 위기 속에서 살아남은 전문가의 실전 지혜로 나만의 투자 기준을 완성한다",
       },
     ],
     instructor: {
       name: "투자N",
-      title: "부동산 투자 전문가",
+      title: "부동산 러너 · 경매 전문가",
       credentials: [
-        "부동산 투자 경력 15년",
-        "다주택 포트폴리오 운용 경험",
-        "유튜브 부동산 채널 운영",
-        "실수요자 내집마련 컨설팅 200건+",
+        "서울·수도권 17년째 매년 10건+ 낙찰",
+        "흙수저에서 26채 집주인",
+        "베스트셀러 작가 (동양북스 외 3권)",
+        "북콘서트·강연 다수 진행",
       ],
-      bio: "15년간 부동산 투자 현장에서 쌓은 경험을 바탕으로, 실수요자 관점의 내집마련 전략을 알려드립니다. 이론이 아닌 실전에서 검증된 방법론을 공유합니다.",
+      education: [
+        "부동산 경매 실전 투자 17년",
+        "서울·수도권 수십 채 임대인 경험",
+        "500만원 시드로 시작한 부동산 투자",
+      ],
+      career: [
+        "서울·수도권 매년 10건+ 낙찰 (17년 연속)",
+        "부동산 경매 전문 강사·컨설턴트",
+        "유튜브 투자앤TV 운영",
+        "북콘서트 및 대규모 강연 다수",
+      ],
+      books: [
+        "무조건 성공하는 내집마련 첫걸음 (동양북스)",
+        "경매 초보가 꼭 알아야 할 질문 TOP 88 (동양북스)",
+        "나는 당신이 경매공부를 시작했으면 좋겠습니다 (나비의왕국)",
+      ],
+      awards: [
+        "흙수저 인생 → 26채 집주인 달성",
+        "내집마련 실전 전도사 · 마라토너",
+      ],
+      bio: "500만원으로 시작해 서울·수도권에서 17년째 매년 10건 이상 낙찰받는 현역 경매 투자자입니다. 흙수저 출신으로 26채 집주인이 된 실전 경험을 바탕으로, 내집마련이 처음인 분들도 제대로 된 첫걸음을 뗄 수 있도록 안내합니다.",
+      avatarUrl: "/images/instructors/tuja-n.jpg",
+      youtubeUrl: "https://youtube.com/@tujaen",
     },
     curriculum: [
       {
@@ -60,11 +115,11 @@ const COURSE_CONTENTS: Record<string, CourseContent> = {
         ],
       },
       {
-        part: "Part 2. 채널별 내집마련 전략",
+        part: "Part 2. 실거주 + 투자를 동시에 잡는 전략",
         items: [
-          "청약: 가점 분석과 당첨 확률 높이는 법",
-          "매매: 급매 찾기와 네고 실전 테크닉",
-          "경매: 입문자를 위한 경매 프로세스 A to Z",
+          "실거주와 투자를 동시에 잡을 수 있는 타이밍 읽기",
+          "급매 찾기와 네고 실전 테크닉",
+          "자산 가치 상승이 예상되는 입지 선별법",
         ],
       },
       {
@@ -87,7 +142,7 @@ const COURSE_CONTENTS: Record<string, CourseContent> = {
     materials: [
       "입지 분석 체크리스트 (PDF)",
       "자금 조달 계획표 (엑셀)",
-      "청약 가점 계산기 (엑셀)",
+      "실거주+투자 비교 분석표 (엑셀)",
     ],
     faq: [
       {
@@ -95,8 +150,8 @@ const COURSE_CONTENTS: Record<string, CourseContent> = {
         a: "네, 내집마련이 처음인 실수요자를 위한 입문 과정입니다. 전문 용어도 쉽게 풀어서 설명합니다.",
       },
       {
-        q: "수도권 외 지방도 다루나요?",
-        a: "수도권 중심이지만, 지방 주요 도시의 시장 분석도 포함되어 있습니다.",
+        q: "실거주와 투자를 정말 동시에 할 수 있나요?",
+        a: "네, 2026년 현재 실거주 의무가 완화된 지역을 중심으로 실거주와 투자를 동시에 잡는 전략을 구체적으로 다룹니다.",
       },
       {
         q: "강의 후 개별 상담이 가능한가요?",
@@ -104,9 +159,31 @@ const COURSE_CONTENTS: Record<string, CourseContent> = {
       },
     ],
     highlights: [
-      "2026년 최신 시장 데이터 기반",
-      "실수요자 맞춤 전략",
-      "자금 조달 계획표 템플릿 제공",
+      "AI 데이터 vs 현장 직관 끝장 토론",
+      "이론적 매수 적기와 현장의 차이 분석",
+      "유튜브 속 가짜 정보 타파, 진짜 기준 세우기",
+    ],
+    introSections: [
+      {
+        icon: "🔥",
+        title: "끝장 토론: 데이터 vs 직관",
+        description: "방대한 데이터를 바탕으로 한 AI의 냉철한 분석과 수많은 위기 속에서 살아남은 20년 차 ‘투자N’의 현장감이 만나는 끝장 토론입니다."
+      },
+      {
+        icon: "📈",
+        title: "Q. 지금 집을 사도 될까요?",
+        description: "AI: '매수자 우위, 반등 확률 65% 분할 매수 타이밍' / 투자N: 현장의 진짜 분위기와 타이밍을 본 강의에서 공개합니다."
+      },
+      {
+        icon: "💡",
+        title: "Q. 소액 빌라 투자 괜찮을까요?",
+        description: "AI: '아파트 대비 환금성 낮고 감가상각 위험 큼' / 투자N: 이론이 놓치는 소액 투자의 실전 틈새 전략을 공개합니다."
+      },
+      {
+        icon: "🏢",
+        title: "Q. 상급지 구축 vs 하급지 신축?",
+        description: "AI: '부동산 가치의 70%는 입지, 상급지 구축 수익률 1.5배 높음' / 투자N: 매수자들이 실제로 반응하는 현장 트렌드를 공개합니다."
+      },
     ],
   },
 
@@ -133,17 +210,58 @@ const COURSE_CONTENTS: Record<string, CourseContent> = {
       },
     ],
     instructor: {
-      name: "김동찬",
-      title: "(주)리바운드 대표 | 부동산·공간사업 전문가",
-      credentials: [
-        "(주)리바운드 대표이사",
-        "숙박업 직접 창업·운영 경험",
-        "부동산 세금·법인 전문 컨설팅",
-        "중개법인 직영점 운영",
-        "부동산 세금 전문 도서 저자",
+      name: "김동찬(부동찬)",
+      title: "(주)리바운드 대표이사 · 중개법인 대표",
+      credentials: [],
+      education: [
+        "(23) 공인중개사 제33회 취득",
+        "(17~19) KAIST MBA — 전액 장학금",
+        "(09~12) 공군 중위 전역 · 정보/교육 장교",
+        "(05~09) 중국 인민대학교 법학사",
       ],
-      bio: "부동산 중개부터 숙박업 창업, 법인 설립까지 직접 경험한 실전형 전문가입니다. 이론이 아닌 현장에서 부딪히며 배운 노하우를 공유합니다.",
+      career: [
+        "(24~현재) (주)리바운드 대표 · 서울 7개구 직영 부동산 운영",
+        "(21~25) 홈즈컴퍼니 중개본부 본부장, 1호 직영점 개업/운영",
+        "(16~21) 만인의꿈 창업 · 쉐어하우스 57호점 · 10억 투자유치",
+        "이외 호스텔·공유오피스 등 20개+ 공간 창업·운영",
+      ],
+      books: [
+        "\"바로 써먹는 부동산 공부\" 시리즈 외 총 5권",
+      ],
+      awards: [
+        "(20) SC제일은행 청년제일프로젝트 선정",
+        "(18) 사회적기업 육성사업 최우수상",
+        "(17) 소셜벤처 혁신경연대회 우수상",
+        "(17~19) 서대문구 청년정책위원",
+      ],
+      bio: "부동산 중개부터 숙박업 창업, 법인 설립까지 직접 경험한 실전형 전문가입니다. KAIST MBA 기반의 전략과 현장 운영 경험을 결합해 이론이 아닌 실전에서 검증된 노하우를 공유합니다.",
+      avatarUrl: "/images/instructors/kim-dongchan.jpg",
+      avatarInitial: "김",
+      avatarGradient: "linear-gradient(135deg, #40c057, #69db7c)",
+      youtubeUrl: "https://www.youtube.com/@bu_dongchan",
     },
+    introSections: [
+      {
+        icon: "🏨",
+        title: "숙박업 시장 분석",
+        description: "국내 숙박 시장의 현황과 트렌드를 파악하고, 호스텔·게스트하우스·레지던스 중 최적의 업종을 선택합니다."
+      },
+      {
+        icon: "📍",
+        title: "입지 선정 & 인허가",
+        description: "수익성 높은 입지의 5가지 조건을 배우고, 숙박업 인허가 절차를 완전히 정복합니다."
+      },
+      {
+        icon: "💰",
+        title: "수익 구조 설계",
+        description: "객실 단가·가동률 기반 손익분기점을 계산하고, OTA 최적화 전략으로 매출을 극대화합니다."
+      },
+      {
+        icon: "⚙️",
+        title: "운영 자동화",
+        description: "셀프 체크인·무인 관리 시스템으로 최소 인력 운영 구조를 만들어 수익률을 높입니다."
+      },
+    ],
     curriculum: [
       {
         part: "Part 1. 숙박업 시장 분석",
@@ -227,17 +345,58 @@ const COURSE_CONTENTS: Record<string, CourseContent> = {
       },
     ],
     instructor: {
-      name: "김동찬",
-      title: "(주)리바운드 대표 | 부동산 세금·법인 전문가",
-      credentials: [
-        "(주)리바운드 대표이사",
-        "부동산 법인 설립·운영 직접 경험",
-        "부동산 세금 전문 도서 저자",
-        "법인 활용 절세 컨설팅 다수",
-        "중개법인 직영점 운영",
+      name: "김동찬(부동찬)",
+      title: "(주)리바운드 대표이사 · 중개법인 대표",
+      credentials: [],
+      education: [
+        "(23) 공인중개사 제33회 취득",
+        "(17~19) KAIST MBA — 전액 장학금",
+        "(09~12) 공군 중위 전역 · 정보/교육 장교",
+        "(05~09) 중국 인민대학교 법학사",
+      ],
+      career: [
+        "(24~현재) (주)리바운드 대표 · 서울 7개구 직영 부동산 운영",
+        "(21~25) 홈즈컴퍼니 중개본부 본부장, 1호 직영점 개업/운영",
+        "(16~21) 만인의꿈 창업 · 쉐어하우스 57호점 · 10억 투자유치",
+        "법인 직접 설립·운영 · 중개법인 11개 센터",
+      ],
+      books: [
+        "\"바로 써먹는 부동산 공부\" 시리즈 외 총 5권",
+      ],
+      awards: [
+        "(20) SC제일은행 청년제일프로젝트 선정",
+        "(18) 사회적기업 육성사업 최우수상",
+        "(17) 소셜벤처 혁신경연대회 우수상",
+        "(17~19) 서대문구 청년정책위원",
       ],
       bio: "법인을 직접 설립하고 부동산을 취득·운영·양도한 실전 경험을 바탕으로, 법인 활용의 장단점과 절세 전략을 현실적으로 알려드립니다.",
+      avatarUrl: "/images/instructors/kim-dongchan.jpg",
+      avatarInitial: "김",
+      avatarGradient: "linear-gradient(135deg, #fd7e14, #ffa94d)",
+      youtubeUrl: "https://www.youtube.com/@bu_dongchan",
     },
+    introSections: [
+      {
+        icon: "🏢",
+        title: "개인 vs 법인 세금 비교",
+        description: "상황별 세금 비교표로 개인과 법인 중 최적의 선택을 즉시 판단하는 방법을 배웁니다."
+      },
+      {
+        icon: "📋",
+        title: "법인 설립 실무",
+        description: "정관 작성부터 등기, 사업자등록까지 법인 설립의 전 과정을 직접 해볼 수 있도록 안내합니다."
+      },
+      {
+        icon: "💎",
+        title: "취득·보유·양도 절세",
+        description: "법인 부동산의 각 단계별 절세 포인트와 실전 세금 시뮬레이션을 다룹니다."
+      },
+      {
+        icon: "🚪",
+        title: "출구전략 설계",
+        description: "법인 청산 vs 주식 양도 등 출구전략과 반드시 피해야 할 세무 리스크를 정리합니다."
+      },
+    ],
     curriculum: [
       {
         part: "Part 1. 법인 기초와 설립",
@@ -321,17 +480,58 @@ const COURSE_CONTENTS: Record<string, CourseContent> = {
       },
     ],
     instructor: {
-      name: "김동찬",
-      title: "(주)리바운드 대표 | 중개법인 직영점 운영",
-      credentials: [
-        "(주)리바운드 대표이사",
-        "중개법인 직영점 운영 경험",
-        "신규 중개사 실무 교육 다수",
-        "부동산 세금·계약 전문",
-        "부동산 세금 전문 도서 저자",
+      name: "김동찬(부동찬)",
+      title: "(주)리바운드 대표이사 · 중개법인 대표",
+      credentials: [],
+      education: [
+        "(23) 공인중개사 제33회 취득",
+        "(17~19) KAIST MBA — 전액 장학금",
+        "(09~12) 공군 중위 전역 · 정보/교육 장교",
+        "(05~09) 중국 인민대학교 법학사",
       ],
-      bio: "중개법인을 직접 운영하며 수십 명의 신규 중개사를 교육한 경험을 바탕으로, 현장에서 바로 쓸 수 있는 실무 노하우를 전달합니다.",
+      career: [
+        "(24~현재) (주)리바운드 대표 · 서울 7개구 직영 부동산 운영",
+        "(21~25) 홈즈컴퍼니 중개본부 본부장 · 전국 100개 센터 오픈 총괄",
+        "40~50대 경력단절 여성 전문중개사 육성 시스템 구축",
+        "(16~21) 만인의꿈 창업 · 쉐어하우스 57호점 · 10억 투자유치",
+      ],
+      books: [
+        "\"바로 써먹는 부동산 공부\" 시리즈 외 총 5권",
+      ],
+      awards: [
+        "(20) SC제일은행 청년제일프로젝트 선정",
+        "(18) 사회적기업 육성사업 최우수상",
+        "(17) 소셜벤처 혁신경연대회 우수상",
+        "(17~19) 서대문구 청년정책위원",
+      ],
+      bio: "전국 100개 중개센터 오픈을 총괄하고, 현재 11개 직영센터를 운영하는 현장형 중개 전문가입니다. 수십 명의 신규 중개사를 교육한 경험을 바탕으로 현장에서 바로 쓸 수 있는 실무 노하우를 전달합니다.",
+      avatarUrl: "/images/instructors/kim-dongchan.jpg",
+      avatarInitial: "김",
+      avatarGradient: "linear-gradient(135deg, #228be6, #4dabf7)",
+      youtubeUrl: "https://www.youtube.com/@bu_dongchan",
     },
+    introSections: [
+      {
+        icon: "🏠",
+        title: "중개사무소 개설",
+        description: "개업 절차, 사무소 입지 선정, 초기 투자 비용까지 개업 준비의 모든 것을 체계적으로 안내합니다."
+      },
+      {
+        icon: "📦",
+        title: "매물 확보 & 관리",
+        description: "매물 확보 5대 채널과 DB 구축 시스템, 매물 홍보를 위한 사진·영상 촬영 기초를 배웁니다."
+      },
+      {
+        icon: "🤝",
+        title: "고객 응대 & 계약",
+        description: "전화·방문·온라인 응대 시나리오부터 표준 계약서 작성, 확인·설명 의무까지 실전 연습합니다."
+      },
+      {
+        icon: "📊",
+        title: "중개보수 & 세금",
+        description: "중개보수 산정 기준, 사업소득 신고, 신규 중개사가 자주 하는 실수 5가지를 정리합니다."
+      },
+    ],
     curriculum: [
       {
         part: "Part 1. 중개사무소 개설",
@@ -415,17 +615,58 @@ const COURSE_CONTENTS: Record<string, CourseContent> = {
       },
     ],
     instructor: {
-      name: "김동찬",
-      title: "(주)리바운드 대표 | 중개법인 직영점 운영",
-      credentials: [
-        "(주)리바운드 대표이사",
-        "중개법인 직영점 운영",
-        "상업용 부동산 중개 실전 경험",
-        "부동산 세금 전문 도서 저자",
-        "VIP 고객 대상 세금 컨설팅",
+      name: "김동찬(부동찬)",
+      title: "(주)리바운드 대표이사 · 중개법인 대표",
+      credentials: [],
+      education: [
+        "(23) 공인중개사 제33회 취득",
+        "(17~19) KAIST MBA — 전액 장학금",
+        "(09~12) 공군 중위 전역 · 정보/교육 장교",
+        "(05~09) 중국 인민대학교 법학사",
       ],
-      bio: "주거용에서 상업용까지, 개인에서 법인까지 중개 사업을 확장해온 실전 경험을 공유합니다. 세금 컨설팅을 결합한 차별화 전략으로 매출을 높이는 방법을 알려드립니다.",
+      career: [
+        "(24~현재) (주)리바운드 대표 · 서울 7개구 직영 부동산 운영",
+        "(21~25) 홈즈컴퍼니 중개본부 본부장 · 강북 상권 1등 직영센터",
+        "1년차 매출 1억 → 6개월 2억 → 3개월 3억 고속 성장 견인",
+        "상업용 부동산·토지 중개 실전 경험",
+      ],
+      books: [
+        "\"바로 써먹는 부동산 공부\" 시리즈 외 총 5권",
+      ],
+      awards: [
+        "(20) SC제일은행 청년제일프로젝트 선정",
+        "(18) 사회적기업 육성사업 최우수상",
+        "(17) 소셜벤처 혁신경연대회 우수상",
+        "(17~19) 서대문구 청년정책위원",
+      ],
+      bio: "주거용에서 상업용까지, 개인에서 법인까지 중개 사업을 확장해온 실전 경험을 공유합니다. 강북 상권 1등 직영센터를 만든 노하우와 세금 컨설팅을 결합한 차별화 전략으로 매출을 높이는 방법을 알려드립니다.",
+      avatarUrl: "/images/instructors/kim-dongchan.jpg",
+      avatarInitial: "김",
+      avatarGradient: "linear-gradient(135deg, #228be6, #4dabf7)",
+      youtubeUrl: "https://www.youtube.com/@bu_dongchan",
     },
+    introSections: [
+      {
+        icon: "💎",
+        title: "고가 물건 중개",
+        description: "고가 매물 확보, VIP 고객 관리, 프리미엄 서비스 설계로 건당 수수료를 높이는 전략을 배웁니다."
+      },
+      {
+        icon: "🏗️",
+        title: "상업용·토지 중개",
+        description: "상가·빌딩·토지 유형별 중개 포인트와 수익률 분석, 투자 보고서 작성법을 익힙니다."
+      },
+      {
+        icon: "📑",
+        title: "세금 컨설팅 차별화",
+        description: "양도세·취득세 핵심 상담으로 고객 신뢰를 확보하고, 세금 시뮬레이션 보고서를 작성합니다."
+      },
+      {
+        icon: "🚀",
+        title: "사업 확장 전략",
+        description: "개인 사업자에서 중개법인으로 전환, 직영점 운영, 온라인 마케팅·브랜딩 전략을 다룹니다."
+      },
+    ],
     curriculum: [
       {
         part: "Part 1. 고가 물건 중개 전략",
@@ -497,68 +738,83 @@ const COURSE_CONTENTS: Record<string, CourseContent> = {
     beforeAfter: [
       {
         before: "AI? 들어봤지만 내 업무에 어떻게 쓰는지 모른다",
-        after: "ChatGPT·Claude로 매일 1시간 이상의 반복 업무를 줄인다",
+        after: "나만의 AI 비서를 만들어 24시간 공짜로 일을 시킨다",
       },
       {
-        before: "보고서·제안서 작성에 반나절씩 쓴다",
-        after: "AI로 초안을 30분 만에 완성하고 검토만 한다",
+        before: "평소 1시간 걸리던 업무에 시간을 뺏긴다",
+        after: "AI로 5분 만에 끝내고, 진짜 중요한 일에 집중한다",
       },
       {
-        before: "콘텐츠 마케팅은 전문 업체에 맡겨야 한다고 생각한다",
-        after: "블로그·SNS·영상 대본을 직접 AI로 제작한다",
+        before: "좋은 아이디어가 있어도 실행에 옮기기 어렵다",
+        after: "아이디어를 AI로 빠르게 검증하고 사업화한다",
       },
     ],
     instructor: {
-      name: "김동찬",
-      title: "(주)리바운드 대표 | AI 업무 자동화 실전가",
-      credentials: [
-        "(주)리바운드 대표이사",
-        "AI 활용 업무 자동화 직접 구축·운영",
-        "Claude Code 기반 출판 파이프라인 설계",
-        "비개발자를 위한 AI 활용 강의 다수",
-        "부동산 세금 전문 도서 저자 (AI 활용 집필)",
+      name: "김동찬(부동찬)",
+      title: "(주)리바운드 대표이사 · 중개법인 대표 · 사업가",
+      credentials: [],
+      education: [
+        "(23) 공인중개사 제33회 취득",
+        "(17~19) KAIST MBA — 전액 장학금",
+        "(09~12) 공군 중위 전역 · 정보/교육 장교",
+        "(05~09) 중국 인민대학교 법학사",
       ],
-      bio: "개발자가 아닌 사업가 관점에서 AI를 실무에 적용해온 경험을 공유합니다. 도서 집필, 콘텐츠 제작, 업무 자동화까지 — AI로 '비싼 시간'을 아끼는 방법을 알려드립니다.",
+      career: [
+        "(24~현재) (주)리바운드 대표 · 서울 7개구 직영 부동산 운영",
+        "(21~25) 홈즈컴퍼니 중개본부 본부장, 1호 직영점 개업/운영",
+        "(16~21) 만인의꿈 창업 · 쉐어하우스 57호점 · 10억 투자유치",
+        "이외 호스텔·공유오피스 등 20개+ 공간 창업·운영",
+      ],
+      books: [
+        "\"바로 써먹는 부동산 공부\" 시리즈 외 총 5권",
+      ],
+      awards: [
+        "(20) SC제일은행 청년제일프로젝트 선정",
+        "(18) 사회적기업 육성사업 최우수상",
+        "(17) 소셜벤처 혁신경연대회 우수상",
+        "(17~19) 서대문구 청년정책위원",
+      ],
+      bio: "KAIST MBA 출신의 부동산 공실 해결 전문가이자 사업가입니다. 쉐어하우스 57호점 운영, 전국 100개 중개센터 오픈 총괄, 10억원 투자유치 등 현장에서 직접 부딪히며 성장해왔습니다. 개발자가 아닌 사업가 관점에서 AI를 실무에 적용해온 경험을 바탕으로, 일상·업무·사업에서 AI로 '비싼 시간'을 아끼는 방법을 알려드립니다.",
+      avatarUrl: "/images/instructors/kim-dongchan.jpg",
+      avatarInitial: "김",
+      avatarGradient: "linear-gradient(135deg, #7950f2, #9775fa)",
+      youtubeUrl: "https://www.youtube.com/@bu_dongchan",
     },
     curriculum: [
       {
-        part: "Part 1. AI 기초 — 30분 만에 시작하기",
+        part: "Part 1. 진단 — 나의 AI 수준 파악",
         items: [
-          "ChatGPT vs Claude vs Gemini — 뭘 쓸까",
-          "좋은 프롬프트의 3대 원칙",
-          "실전 프롬프트 5개로 바로 시작하기",
+          "AI를 얼마나 알고 있나? 현재 수준 자가진단",
+          "ChatGPT vs Claude vs Gemini — 나에게 맞는 AI 찾기",
+          "좋은 프롬프트의 3대 원칙과 실전 연습",
         ],
       },
       {
-        part: "Part 2. 반복 업무 자동화",
+        part: "Part 2. 일상에 적용 — 24시간 공짜로 일해주는 나만의 AI 비서",
         items: [
-          "이메일·보고서·제안서 — AI 초안 작성법",
-          "엑셀 데이터 분석을 AI에게 시키기",
-          "회의록 자동 정리와 액션 아이템 추출",
+          "일정 관리, 여행 계획, 장보기 — 일상의 AI 활용법",
+          "메일·메시지 작성을 AI에게 맡기기",
+          "나만의 AI 비서 세팅하고 바로 써먹기",
         ],
       },
       {
-        part: "Part 3. 콘텐츠 마케팅 with AI",
+        part: "Part 3. 업무에 적용 — 평소 1시간 걸리던 업무, 5분 만에 끝내기",
         items: [
-          "블로그·SNS 포스트 대량 생산 워크플로우",
-          "영상 대본·썸네일 카피 AI로 제작하기",
-          "AI로 고객 사례·후기 콘텐츠 만들기",
+          "보고서·제안서·회의록 — AI 초안 30분 완성법",
+          "엑셀 데이터 분석과 리포트 자동 생성",
+          "콘텐츠 제작 (블로그·SNS·영상 대본) 자동화",
         ],
       },
       {
-        part: "Part 4. 부동산·중개 특화 AI 활용",
+        part: "Part 4. 사업에 적용 — 아이디어와 인사이트를 사업화하기",
         items: [
-          "매물 설명글 자동 생성",
-          "세금 시뮬레이션 보고서 AI로 만들기",
-          "고객 상담 FAQ 챗봇 구축 맛보기",
+          "사업 아이디어 검증과 시장조사를 AI로 5분만에",
+          "사업계획서·제안서 AI로 빠르게 작성하기",
+          "고객 응대 자동화와 마케팅 콘텐츠 대량 생산",
         ],
       },
     ],
-    materials: [
-      "실전 프롬프트 모음집 (PDF)",
-      "업무 자동화 워크플로우 가이드 (PDF)",
-      "매물 설명글 프롬프트 템플릿 (TXT)",
-    ],
+    materials: [],
     faq: [
       {
         q: "프로그래밍을 몰라도 되나요?",
@@ -570,7 +826,7 @@ const COURSE_CONTENTS: Record<string, CourseContent> = {
       },
       {
         q: "부동산 업종이 아니어도 도움이 되나요?",
-        a: "Part 1~3은 모든 업종에 적용 가능합니다. Part 4만 부동산·중개 특화 내용입니다.",
+        a: "네! Part 1~3은 모든 업종에 적용 가능합니다. Part 4의 사업화 방법도 업종 불문입니다.",
       },
       {
         q: "무료 특강인데 퀄리티가 괜찮나요?",
@@ -580,11 +836,63 @@ const COURSE_CONTENTS: Record<string, CourseContent> = {
     highlights: [
       "3시간 무료 특강",
       "비개발자 맞춤",
-      "실전 프롬프트 모음집 제공",
+      "일상·업무·사업 3단계 활용법",
     ],
+    introSections: [
+      {
+        icon: "🔍",
+        title: "AI로 무엇을 할 수 있을까?",
+        description: "ChatGPT, Claude 등 생성형 AI를 활용해 일상·업무·사업의 효율을 극대화하는 방법을 배웁니다."
+      },
+      {
+        icon: "🏠",
+        title: "일상에 적용",
+        description: "일정 관리, 여행 계획, 메일 작성까지 — 24시간 공짜로 일해주는 나만의 AI 비서를 만들어보세요."
+      },
+      {
+        icon: "💼",
+        title: "업무에 적용",
+        description: "보고서·제안서·회의록 작성, 데이터 분석, 콘텐츠 제작 — 평소 1시간 걸리던 업무를 5분 만에 끝냅니다."
+      },
+      {
+        icon: "🚀",
+        title: "사업에 적용",
+        description: "아이디어 검증, 사업계획서 작성, 고객 응대 자동화까지 — 인사이트를 사업으로 바꾸는 AI 활용법을 익힙니다."
+      },
+    ],
+    schedule: {
+      duration: "3시간",
+      enrollDeadline: "2026년 3월 22일까지",
+      date: "2026년 3월 23일 (일)",
+      time: "19:00 - 22:00",
+      online: {
+        label: "온라인 (내 강의실에서 확인)",
+        url: "https://meet.google.com/ork-ftyi-zab",
+      },
+      offline: {
+        label: "오프라인",
+        address: "서울 종로구 돈화문로85, 리바운드 종로 B1 교육장",
+        mapUrl: "https://naver.me/GWiET7cv",
+      },
+      recording: "제공하지 않습니다",
+      capacity: { online: 50, offline: 20 },
+    },
+    requirements: ["애플 맥 PC (필수)"],
   },
 };
 
+// slug → course ID 매핑
+const SLUG_MAP: Record<string, string> = {
+  "ai-basics": "c0000000-0000-0000-0000-000000000006",
+  "my-home-2026": "c0000000-0000-0000-0000-000000000001",
+  "hostel-startup": "c0000000-0000-0000-0000-000000000002",
+  "corporation-tax": "c0000000-0000-0000-0000-000000000003",
+  "brokerage-intro": "c0000000-0000-0000-0000-000000000004",
+  "brokerage-advanced": "c0000000-0000-0000-0000-000000000005",
+};
+
 export function getCourseContent(courseId: string): CourseContent | null {
-  return COURSE_CONTENTS[courseId] || null;
+  // slug로 조회 시 UUID로 변환
+  const resolvedId = SLUG_MAP[courseId] || courseId;
+  return COURSE_CONTENTS[resolvedId] || null;
 }

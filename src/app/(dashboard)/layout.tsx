@@ -84,7 +84,7 @@ export default function DashboardLayout({
       <Sidebar role={role} userName={user.name} onLogout={handleLogout} />
       <div className="flex-1 ml-0 flex flex-col min-w-0">
         <Header role={role} />
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-4 md:p-6 overflow-auto pt-16 md:pt-6">
           <div className="max-w-[960px]">{children}</div>
         </main>
       </div>

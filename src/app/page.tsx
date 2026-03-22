@@ -199,7 +199,7 @@ export default function HomePage() {
         .from("courses")
         .select(
           `
-          id, title, price, discount_price, category, total_lectures,
+          id, slug, title, price, discount_price, category, total_lectures,
           instructor:users!courses_instructor_id_fkey(name)
         `,
         )
@@ -275,7 +275,11 @@ export default function HomePage() {
       <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
         <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="inline-flex items-center gap-0.5">
-            <span className="text-xl font-extrabold text-brand">리바운드</span>
+            
+            <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center shadow-sm mr-1.5">
+              <span className="text-white font-black text-lg">R</span>
+            </div>
+<span className="text-xl font-extrabold text-brand">리바운드</span>
             <span className="text-xl font-extrabold text-gray-900">에듀</span>
           </Link>
           <div className="flex items-center gap-4">
@@ -664,7 +668,7 @@ export default function HomePage() {
               {filtered.map((course) => (
                 <Link
                   key={course.id}
-                  href={`/courses/${course.id}`}
+                  href={`/courses/${(course as any).slug || course.id}`}
                   className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow"
                 >
                   <div
@@ -1024,7 +1028,11 @@ export default function HomePage() {
             {/* Left: Logo + description */}
             <div>
               <div className="inline-flex items-center gap-0.5 mb-4">
-                <span className="text-lg font-extrabold text-brand">
+                
+            <div className="w-7 h-7 bg-brand rounded-md flex items-center justify-center shadow-sm mr-1.5">
+              <span className="text-white font-black text-sm">R</span>
+            </div>
+<span className="text-lg font-extrabold text-brand">
                   리바운드
                 </span>
                 <span className="text-lg font-extrabold text-gray-900">

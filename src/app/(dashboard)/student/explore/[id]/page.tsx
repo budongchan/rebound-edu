@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { CATEGORY_LABELS } from "@/types";
 import { formatPrice, formatDuration } from "@/lib/utils";
 import Badge from "@/components/ui/Badge";
-import { Star, Clock, BookOpen, PlayCircle, ChevronDown, ChevronUp, MessageCircle } from "lucide-react";
+import { Star, Clock, BookOpen, PlayCircle, ChevronDown, ChevronUp, MessageCircle, Monitor, MapPin } from "lucide-react";
 import type { PaymentPrepareResponse } from "@/types";
 import * as PortOne from "@portone/browser-sdk/v2";
 
@@ -261,52 +261,73 @@ export default function CourseDetailPage() {
         </div>
 
         {/* Price + Enroll */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-          <div className="flex items-baseline gap-2">
-            {discountPct > 0 && (
-              <>
-                <span className="text-lg font-bold text-red-500">{discountPct}%</span>
-                <span className="text-sm text-gray-400 line-through">
-                  ₩{formatPrice(course.price)}
-                </span>
-              </>
+        <div className="pt-4 border-t border-gray-100 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-baseline gap-2">
+              {discountPct > 0 && (
+                <>
+                  <span className="text-lg font-bold text-red-500">{discountPct}%</span>
+                  <span className="text-sm text-gray-400 line-through">
+                    ₩{formatPrice(course.price)}
+                  </span>
+                </>
+              )}
+              <span className="text-2xl font-bold text-gray-900">
+                {(course.discount_price || course.price) === 0
+                  ? "무료"
+                  : `₩${formatPrice(course.discount_price || course.price)}`}
+              </span>
+            </div>
+            {!enrolled && (
+              <button
+                onClick={handleEnroll}
+                disabled={enrolling}
+                className="px-6 py-2.5 rounded-lg bg-brand text-white font-semibold text-sm hover:bg-brand-dark transition disabled:opacity-50"
+              >
+                {enrolling
+                  ? "처리 중..."
+                  : (course.discount_price || course.price) === 0
+                    ? "무료 수강 신청"
+                    : `수강 신청 · ₩${formatPrice(course.discount_price || course.price)}`}
+              </button>
             )}
-            <span className="text-2xl font-bold text-gray-900">
-              ₩{formatPrice(course.discount_price || course.price)}
-            </span>
           </div>
-          {enrolled ? (
-            <div className="flex items-center gap-2">
+          {enrolled && (
+            <div className="flex gap-2">
               {course.kakao_chat_url && (
                 <a
                   href={course.kakao_chat_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-[#FEE500] text-[#391B1B] font-semibold text-sm hover:bg-[#F5DD00] transition"
+                  className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl bg-[#FEE500] text-[#391B1B] font-semibold text-xs hover:bg-[#F5DD00] transition min-w-0"
                 >
-                  <MessageCircle size={16} />
-                  수강생 단톡방 입장
+                  <MessageCircle size={20} />
+                  <span className="truncate">단톡방</span>
                 </a>
               )}
-              <button
-                onClick={() => router.push("/student")}
-                className="px-6 py-2.5 rounded-lg bg-green-500 text-white font-semibold text-sm hover:bg-green-600 transition"
-              >
-                내 강의실로 이동
-              </button>
+              {course.category === "ai_automation" && (
+                <>
+                  <a
+                    href="https://meet.google.com/ork-ftyi-zab"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl bg-blue-500 text-white font-semibold text-xs hover:bg-blue-600 transition min-w-0"
+                  >
+                    <Monitor size={20} />
+                    <span className="truncate">구글 밋</span>
+                  </a>
+                  <a
+                    href="https://naver.me/GWiET7cv"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl bg-green-500 text-white font-semibold text-xs hover:bg-green-600 transition min-w-0"
+                  >
+                    <MapPin size={20} />
+                    <span className="truncate">찾아오는 길</span>
+                  </a>
+                </>
+              )}
             </div>
-          ) : (
-            <button
-              onClick={handleEnroll}
-              disabled={enrolling}
-              className="px-6 py-2.5 rounded-lg bg-brand text-white font-semibold text-sm hover:bg-brand-dark transition disabled:opacity-50"
-            >
-              {enrolling
-                ? "처리 중..."
-                : (course.discount_price || course.price) === 0
-                  ? "무료 수강 신청"
-                  : `수강 신청 · ₩${formatPrice(course.discount_price || course.price)}`}
-            </button>
           )}
         </div>
       </div>
