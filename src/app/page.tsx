@@ -312,47 +312,80 @@ export default function HomePage() {
       {/* ════════════════════════════════════════════ */}
       {/* Hero Section                                */}
       {/* ════════════════════════════════════════════ */}
-      <section className="bg-gradient-to-b from-brand-light to-white py-20 px-6">
-        <div className="max-w-[1200px] mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-white border border-brand/20 rounded-full px-4 py-1.5 mb-6">
-            <BadgeCheck size={14} className="text-brand" />
-            <span className="text-sm font-semibold text-brand">
-              부동산·공간사업 전문가 교육 플랫폼
-            </span>
+      <section className="bg-gradient-to-b from-brand-light to-white py-16 sm:py-20 px-6">
+        <div className="max-w-[1200px] mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+          {/* Left: Text */}
+          <div className="flex-1 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 bg-white border border-brand/20 rounded-full px-4 py-1.5 mb-6">
+              <BadgeCheck size={14} className="text-brand" />
+              <span className="text-sm font-semibold text-brand">
+                부동산·공간사업 전문가 교육 플랫폼
+              </span>
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-5">
+              현장 전문가가 <span className="text-brand">직접</span> 가르치는
+              <br />
+              부동산 <span className="text-brand">실전</span> 교육
+            </h1>
+
+            <p className="text-base sm:text-lg text-gray-600 leading-relaxed mb-4 font-medium">
+              중개업 · 숙박업 · 투자개발 · AI자동화 · 공실해결
+            </p>
+
+            <p className="text-sm text-gray-400 mb-8 leading-relaxed">
+              100개+ 센터 오픈을 총괄한 현직 CEO가
+              <br />
+              8년간의 현장 노하우를 강의로 공개합니다.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+              <button
+                onClick={() => scrollToCourses("all")}
+                className="inline-flex items-center justify-center gap-2 bg-brand text-white px-8 py-3.5 rounded-lg text-[15px] font-semibold hover:bg-brand-dark transition"
+              >
+                강의 둘러보기
+                <ArrowRight size={16} />
+              </button>
+              <Link
+                href="/auth/login"
+                className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-8 py-3.5 rounded-lg text-[15px] font-semibold hover:bg-gray-50 transition"
+              >
+                Google로 3초 가입
+              </Link>
+            </div>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-5">
-            현장 전문가가 <span className="text-brand">직접</span> 가르치는
-            <br />
-            부동산 <span className="text-brand">실전</span> 교육
-          </h1>
-
-          <p className="text-base sm:text-lg text-gray-600 leading-relaxed mb-4 max-w-[600px] mx-auto font-medium">
-            중개업 · 숙박업 · 투자개발 · AI자동화 · 공실해결
-          </p>
-
-          <p className="text-sm text-gray-400 mb-8 max-w-[520px] mx-auto leading-relaxed">
-            100개+ 센터 오픈을 총괄한 현직 CEO가
-            <br />
-            8년간의 현장 노하우를 강의로 공개합니다.
-            <br />
-            교육에서 의뢰까지, 신뢰가 연결되는 플랫폼.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              onClick={() => scrollToCourses("all")}
-              className="inline-flex items-center justify-center gap-2 bg-brand text-white px-8 py-3.5 rounded-lg text-[15px] font-semibold hover:bg-brand-dark transition"
-            >
-              강의 둘러보기
-              <ArrowRight size={16} />
-            </button>
-            <Link
-              href="/auth/login"
-              className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-8 py-3.5 rounded-lg text-[15px] font-semibold hover:bg-gray-50 transition"
-            >
-              Google로 3초 가입
-            </Link>
+          {/* Right: Instructor Photo + Credentials */}
+          <div className="flex-shrink-0 relative">
+            <div className="w-[280px] h-[340px] sm:w-[320px] sm:h-[380px] rounded-2xl overflow-hidden shadow-2xl relative">
+              <Image
+                src="/images/instructors/kim-dongchan.jpg"
+                alt="김동찬 대표"
+                fill
+                className="object-cover"
+                sizes="320px"
+                priority
+              />
+              {/* Gradient overlay at bottom */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-5">
+                <p className="text-white font-bold text-lg">김동찬 대표</p>
+                <p className="text-white/80 text-sm">리바운드 그룹 CEO · KAIST MBA</p>
+              </div>
+            </div>
+            {/* Floating credential badges */}
+            <div className="absolute -left-4 top-8 bg-white rounded-xl shadow-lg px-4 py-2.5 border border-gray-100">
+              <p className="text-xs font-bold text-gray-900">100+ 센터 오픈</p>
+              <p className="text-[10px] text-gray-400">전국 중개센터 총괄</p>
+            </div>
+            <div className="absolute -right-4 top-1/3 bg-white rounded-xl shadow-lg px-4 py-2.5 border border-gray-100">
+              <p className="text-xs font-bold text-gray-900">실무 도서 5권</p>
+              <p className="text-[10px] text-gray-400">부동산 실무 저자</p>
+            </div>
+            <div className="absolute -left-2 bottom-16 bg-white rounded-xl shadow-lg px-4 py-2.5 border border-gray-100">
+              <p className="text-xs font-bold text-brand">부동찬TV 2만+</p>
+              <p className="text-[10px] text-gray-400">유튜브 구독자</p>
+            </div>
           </div>
         </div>
       </section>
