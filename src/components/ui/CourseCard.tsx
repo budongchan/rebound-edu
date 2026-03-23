@@ -18,7 +18,7 @@ export default function CourseCard({
   return (
     <div className="bg-white rounded-lg overflow-hidden border border-gray-100 cursor-pointer hover:shadow-md transition-shadow">
       <div
-        className="h-[140px] flex items-center justify-center"
+        className="h-[160px] flex items-center justify-center"
         style={{ background: thumbnailColor || "linear-gradient(135deg, #f8f9fa, #e9ecef)" }}
       />
       <div className="p-4">
@@ -35,26 +35,30 @@ export default function CourseCard({
           {title}
         </h3>
         <p className="text-xs text-gray-500 mb-2">{instructor}</p>
-        <div className="flex items-center gap-1 mb-2">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Star
-              key={i}
-              size={13}
-              fill={i <= Math.floor(rating) ? "#FFB800" : "none"}
-              stroke="#FFB800"
-              strokeWidth={2}
-            />
-          ))}
-          <span className="text-[11px] text-gray-400 ml-1">({reviewCount})</span>
-        </div>
+        {reviewCount > 0 ? (
+          <div className="flex items-center gap-1 mb-2">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Star
+                key={i}
+                size={13}
+                fill={i <= Math.floor(rating) ? "#FFB800" : "none"}
+                stroke="#FFB800"
+                strokeWidth={2}
+              />
+            ))}
+            <span className="text-[11px] text-gray-400 ml-1">({reviewCount})</span>
+          </div>
+        ) : (
+          <p className="text-[11px] text-gray-300 mb-2">수강평 준비 중</p>
+        )}
         <div className="flex items-baseline gap-1.5">
           {originalPrice && (
             <span className="text-xs text-gray-400 line-through">
-              ₩{formatPrice(originalPrice)}
+              {formatPrice(originalPrice)}원
             </span>
           )}
           <span className="text-[15px] font-bold text-gray-900">
-            ₩{formatPrice(price)}
+            {price === 0 ? "무료" : `${formatPrice(price)}원`}
           </span>
         </div>
       </div>

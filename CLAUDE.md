@@ -6,7 +6,7 @@
 
 ## 기술 스택
 - **Framework**: Next.js 14 (App Router) + TypeScript
-- **Styling**: Tailwind CSS (Noto Sans KR 폰트)
+- **Styling**: Tailwind CSS + next/font (Noto Sans KR, self-hosted)
 - **Backend/DB**: Supabase (PostgreSQL + Auth + Storage + RLS)
 - **Deploy**: Vercel
 - **Payment**: 토스페이먼츠 (추후)
@@ -16,7 +16,7 @@
 ## 브랜드 가이드
 - Primary Color: `#FF6600` (Safety Orange)
 - Primary Light: `#FFF7ED`
-- Font: Noto Sans KR (300~900)
+- Font: Noto Sans KR (400, 500, 600, 700, 800) via next/font
 - 깔끔한 화이트 배경, 카드 기반 UI, 인프런 스타일 참고
 
 ## 사용자 역할 (RBAC)
@@ -27,11 +27,12 @@
 | staff (직원) | `/staff` | 관리자 승인 필요 |
 | admin (관리자) | `/admin` | 관리자 승인 필요 |
 
-## 인증 플로우
-1. 회원가입 시 역할 선택 (학생은 즉시, 나머지는 승인 대기)
-2. 로그인 후 → 역할 선택 화면 (보유 권한 목록 표시)
-3. 역할 선택 → 해당 대시보드 진입
-4. 사이드바 하단 "공간 전환"으로 역할 간 이동
+## 인증 플로우 (Google OAuth 전용)
+1. Google 로그인 → OAuth 콜백 → 첫 가입 시 추가정보 입력 (이름/연락처/역할)
+2. 학생은 즉시 활성화, 전문가/직원/관리자는 승인 대기
+3. 로그인 후 → 역할 선택 화면 (보유 권한 목록 표시)
+4. 역할 선택 → 해당 대시보드 진입
+5. 사이드바 하단 "공간 전환"으로 역할 간 이동
 
 ## 프로젝트 구조
 ```
@@ -41,8 +42,8 @@ src/
 │   ├── layout.tsx                  # 루트 레이아웃
 │   ├── globals.css                 # 글로벌 CSS
 │   ├── auth/
-│   │   ├── login/page.tsx          # 로그인 (카카오/Google/이메일)
-│   │   ├── signup/page.tsx         # 회원가입 (역할 선택 포함)
+│   │   ├── login/page.tsx          # 로그인 (Google OAuth 전용)
+│   │   ├── signup/page.tsx         # 회원가입 (Google OAuth → 추가정보 입력)
 │   │   ├── callback/route.ts       # OAuth 콜백
 │   │   └── select-role/page.tsx    # 로그인 후 역할 선택
 │   └── (dashboard)/

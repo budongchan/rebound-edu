@@ -6,9 +6,9 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: "#FF4620",
-          light: "#FFF5F2",
-          dark: "#E63D1A",
+          DEFAULT: "#FF6600",
+          light: "#FFF7ED",
+          dark: "#E55A00",
         },
       },
       fontFamily: {

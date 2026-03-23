@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import Image from "next/image";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { CATEGORIES, CATEGORY_LABELS } from "@/types";
 import { cn } from "@/lib/utils";
 import {
@@ -24,6 +25,7 @@ import {
   Bot,
   ChevronDown,
   LayoutGrid,
+  LogOut,
 } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import ChatBot from "@/components/ui/ChatBot";
@@ -62,46 +64,7 @@ const CATEGORY_ICON_MAP: Record<string, React.ElementType> = {
   investment: TrendingUp,
 };
 
-const CATEGORY_DESCRIPTIONS: Record<string, string> = {
-  vacancy: "공실 해결 및 사업장 운영 노하우",
-  brokerage: "부동산 중개 실무와 법률 지식",
-  hostel: "숙박업 창업과 운영 전략",
-  ai_automation: "업무 자동화와 AI 활용법",
-  investment: "부동산 투자 분석과 개발",
-};
-
-const CATEGORY_COLORS: Record<
-  string,
-  { text: string; bg: string; hoverBg: string }
-> = {
-  vacancy: {
-    text: "text-brand",
-    bg: "bg-brand-light",
-    hoverBg: "group-hover:bg-brand/10",
-  },
-  brokerage: {
-    text: "text-blue-600",
-    bg: "bg-blue-50",
-    hoverBg: "group-hover:bg-blue-100",
-  },
-  hostel: {
-    text: "text-green-600",
-    bg: "bg-green-50",
-    hoverBg: "group-hover:bg-green-100",
-  },
-  ai_automation: {
-    text: "text-purple-600",
-    bg: "bg-purple-50",
-    hoverBg: "group-hover:bg-purple-100",
-  },
-  investment: {
-    text: "text-amber-600",
-    bg: "bg-amber-50",
-    hoverBg: "group-hover:bg-amber-100",
-  },
-};
-
-// 전문가(강사) 후기 — 리바운드 그룹 실제 교육·컨설팅 실적 기반
+// 전문가(강사) 후기
 const EXPERT_TESTIMONIALS = [
   {
     quote: "전국 100개 이상의 중개센터 오픈을 총괄하면서 쌓은 노하우를, 교육으로 체계화했습니다. 가르치면서 저도 더 성장합니다.",
@@ -120,27 +83,27 @@ const EXPERT_TESTIMONIALS = [
   },
 ];
 
-// 수강생(고객) 후기 — 부동찬TV 구독자 및 기존 교육 수강생 피드백 기반
+// 수강생(고객) 후기
 const STUDENT_TESTIMONIALS = [
   {
     quote: "유튜브에서 부동찬TV를 보다가 깊이 있는 내용이 궁금해서 강의를 들었는데, 현장 데이터가 달랐습니다. 실전에서 바로 쓸 수 있었어요.",
-    name: "부동찬TV 구독자",
-    role: "공인중개사 개업 준비",
+    name: "김*호",
+    role: "공인중개사 개업 3년차",
   },
   {
     quote: "법인 투자에 대해 책으로만 공부하다가, 실제 운영 숫자를 보여주는 강의를 듣고 확신이 생겼습니다.",
-    name: "부동찬TV 구독자",
-    role: "법인 투자 검토 중",
+    name: "이*진",
+    role: "법인 투자자",
   },
   {
     quote: "AI 자동화로 중개 업무를 효율화하는 방법을 배웠습니다. 보고서 작성 시간이 3시간에서 30분으로 줄었어요.",
-    name: "부동찬TV 구독자",
-    role: "중개사무소 운영",
+    name: "박*수",
+    role: "중개사무소 운영 5년차",
   },
   {
     quote: "공실 해결 노하우를 배우고 나서 관리 물건의 공실률이 눈에 띄게 줄었습니다. 현장 경험에서 우러나온 강의라 다릅니다.",
-    name: "부동찬TV 구독자",
-    role: "건물 관리 실무",
+    name: "정*아",
+    role: "건물 관리 실무자",
   },
 ];
 
@@ -151,7 +114,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "전문가로 등록하려면 어떻게 하나요?",
-    a: "회원가입 시 '전문가' 역할을 선택하면 관리자 승인 후 강의를 등록할 수 있습니다. 기획부터 촬영, 편집, 마케팅까지 플랫폼이 지원합니다.",
+    a: "Google 계정으로 가입 후 '전문가' 역할을 선택하면 관리자 승인 후 강의를 등록할 수 있습니다. 기획부터 촬영, 편집, 마케팅까지 플랫폼이 지원합니다.",
   },
   {
     q: "강의 수강 후 전문가에게 직접 의뢰할 수 있나요?",
@@ -163,7 +126,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "환불 정책은 어떻게 되나요?",
-    a: "수강 시작 전에는 전액 환불이 가능하며, 수강 시작 후에는 진도율에 따라 부분 환불이 가능합니다. 자세한 사항은 이용약관을 확인해주세요.",
+    a: "수강 시작 전에는 7일 이내 전액 환불이 가능하며, 수강 시작 후에는 진도율에 따라 부분 환불이 가능합니다. 자세한 사항은 이용약관을 확인해주세요.",
   },
   {
     q: "수료증은 어떻게 받나요?",
@@ -177,10 +140,27 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("all");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [loggedInUser, setLoggedInUser] = useState<{ name: string } | null>(null);
 
   useEffect(() => {
     const load = async () => {
+      if (!isSupabaseConfigured()) {
+        setLoading(false);
+        return;
+      }
+
       const supabase = createClient();
+
+      // Check login state
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("users")
+          .select("name")
+          .eq("auth_id", user.id)
+          .single();
+        if (profile) setLoggedInUser(profile);
+      }
 
       const { data: coursesData } = await supabase
         .from("courses")
@@ -256,6 +236,12 @@ export default function HomePage() {
       ?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setLoggedInUser(null);
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* ════════════════════════════════════════════ */}
@@ -278,12 +264,6 @@ export default function HomePage() {
               >
                 강의
               </button>
-              <Link
-                href="/auth/signup"
-                className="text-sm text-gray-600 hover:text-gray-900 font-medium transition"
-              >
-                전문가 등록
-              </Link>
               <button
                 onClick={() => document.getElementById("faq-section")?.scrollIntoView({ behavior: "smooth" })}
                 className="text-sm text-gray-600 hover:text-gray-900 font-medium transition"
@@ -292,19 +272,39 @@ export default function HomePage() {
               </button>
             </nav>
           </div>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/auth/login"
-              className="text-sm text-gray-500 hover:text-gray-900 font-medium"
-            >
-              로그인
-            </Link>
-            <Link
-              href="/auth/signup"
-              className="text-sm text-white bg-brand px-5 py-2 rounded-lg font-semibold hover:bg-brand-dark transition"
-            >
-              회원가입
-            </Link>
+          <div className="flex items-center gap-3">
+            {loggedInUser ? (
+              <>
+                <Link
+                  href="/auth/select-role"
+                  className="text-sm text-white bg-brand px-5 py-2 rounded-lg font-semibold hover:bg-brand-dark transition"
+                >
+                  내 강의실
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition"
+                  title="로그아웃"
+                >
+                  <LogOut size={18} />
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  className="text-sm text-gray-500 hover:text-gray-900 font-medium"
+                >
+                  로그인
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="text-sm text-white bg-brand px-5 py-2 rounded-lg font-semibold hover:bg-brand-dark transition"
+                >
+                  시작하기
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -340,18 +340,18 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="/auth/signup"
+            <button
+              onClick={() => scrollToCourses("all")}
               className="inline-flex items-center justify-center gap-2 bg-brand text-white px-8 py-3.5 rounded-lg text-[15px] font-semibold hover:bg-brand-dark transition"
             >
-              전문가로 시작하기
+              강의 둘러보기
               <ArrowRight size={16} />
-            </Link>
+            </button>
             <Link
-              href="/auth/signup"
+              href="/auth/login"
               className="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-8 py-3.5 rounded-lg text-[15px] font-semibold hover:bg-gray-50 transition"
             >
-              고객으로 시작하기
+              Google로 3초 가입
             </Link>
           </div>
         </div>
@@ -432,19 +432,14 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* 전문가 */}
             <div className="bg-white rounded-2xl p-8 border border-gray-100">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-brand-light flex items-center justify-center">
                   <Lightbulb size={20} className="text-brand" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">
-                    전문가라면
-                  </h3>
-                  <p className="text-xs text-gray-400">
-                    나의 전문성이 곧 상품입니다
-                  </p>
+                  <h3 className="text-lg font-bold text-gray-900">전문가라면</h3>
+                  <p className="text-xs text-gray-400">나의 전문성이 곧 상품입니다</p>
                 </div>
               </div>
               <ul className="space-y-3.5">
@@ -456,35 +451,28 @@ export default function HomePage() {
                 ].map((item, i) => (
                   <li key={i} className="flex gap-3 text-sm text-gray-600">
                     <span className="w-5 h-5 rounded-full bg-brand-light flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-brand text-xs font-bold">
-                        {i + 1}
-                      </span>
+                      <span className="text-brand text-xs font-bold">{i + 1}</span>
                     </span>
                     {item}
                   </li>
                 ))}
               </ul>
               <Link
-                href="/auth/signup"
+                href="/auth/login"
                 className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline"
               >
                 전문가로 가입하기 <ArrowRight size={14} />
               </Link>
             </div>
 
-            {/* 고객 */}
             <div className="bg-white rounded-2xl p-8 border border-gray-100">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
                   <BookOpen size={20} className="text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">
-                    고객이라면
-                  </h3>
-                  <p className="text-xs text-gray-400">
-                    진짜 전문가에게 배웁니다
-                  </p>
+                  <h3 className="text-lg font-bold text-gray-900">고객이라면</h3>
+                  <p className="text-xs text-gray-400">진짜 전문가에게 배웁니다</p>
                 </div>
               </div>
               <ul className="space-y-3.5">
@@ -496,16 +484,14 @@ export default function HomePage() {
                 ].map((item, i) => (
                   <li key={i} className="flex gap-3 text-sm text-gray-600">
                     <span className="w-5 h-5 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-blue-600 text-xs font-bold">
-                        {i + 1}
-                      </span>
+                      <span className="text-blue-600 text-xs font-bold">{i + 1}</span>
                     </span>
                     {item}
                   </li>
                 ))}
               </ul>
               <Link
-                href="/auth/signup"
+                href="/auth/login"
                 className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 hover:underline"
               >
                 고객으로 가입하기 <ArrowRight size={14} />
@@ -521,71 +507,33 @@ export default function HomePage() {
       <section className="py-16 px-6 bg-gray-50">
         <div className="max-w-[1200px] mx-auto">
           <div className="text-center mb-12">
-            <p className="text-sm font-semibold text-brand mb-2">
-              HOW IT WORKS
-            </p>
+            <p className="text-sm font-semibold text-brand mb-2">HOW IT WORKS</p>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
               전문가의 <span className="text-brand">성장 사이클</span>
             </h2>
-            <p className="text-sm text-gray-500 mt-2">
-              교육에서 시작해 비즈니스로 확장하는 과정
-            </p>
+            <p className="text-sm text-gray-500 mt-2">교육에서 시작해 비즈니스로 확장하는 과정</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              {
-                step: "01",
-                icon: Lightbulb,
-                color: "text-brand",
-                bg: "bg-brand-light",
-                title: "강의 등록",
-                desc: "전문가가 자신의 노하우를 온라인 강의로 등록합니다. 플랫폼이 기획과 제작을 지원합니다.",
-              },
-              {
-                step: "02",
-                icon: Users,
-                color: "text-blue-600",
-                bg: "bg-blue-50",
-                title: "고객 확보",
-                desc: "플랫폼의 마케팅과 카테고리 노출로 고객이 유입됩니다. 교육으로 신뢰를 쌓습니다.",
-              },
-              {
-                step: "03",
-                icon: Target,
-                color: "text-green-600",
-                bg: "bg-green-50",
-                title: "의뢰 연결",
-                desc: "수업에 만족한 고객이 전문가에게 직접 컨설팅·서비스를 의뢰합니다.",
-              },
-              {
-                step: "04",
-                icon: Rocket,
-                color: "text-purple-600",
-                bg: "bg-purple-50",
-                title: "수익 창출",
-                desc: "강의 수익 + 의뢰 수수료를 통해 지속적으로 수익을 만들어냅니다.",
-              },
+              { step: "01", icon: Lightbulb, color: "text-brand", bg: "bg-brand-light", title: "강의 등록", desc: "전문가가 자신의 노하우를 온라인 강의로 등록합니다. 플랫폼이 기획과 제작을 지원합니다." },
+              { step: "02", icon: Users, color: "text-blue-600", bg: "bg-blue-50", title: "고객 확보", desc: "플랫폼의 마케팅과 카테고리 노출로 고객이 유입됩니다. 교육으로 신뢰를 쌓습니다." },
+              { step: "03", icon: Target, color: "text-green-600", bg: "bg-green-50", title: "의뢰 연결", desc: "수업에 만족한 고객이 전문가에게 직접 컨설팅·서비스를 의뢰합니다." },
+              { step: "04", icon: Rocket, color: "text-purple-600", bg: "bg-purple-50", title: "수익 창출", desc: "강의 수익 + 의뢰 수수료를 통해 지속적으로 수익을 만들어냅니다." },
             ].map((item) => {
               const Icon = item.icon;
               return (
                 <div key={item.step} className="text-center">
                   <div className="relative mb-4">
-                    <div
-                      className={`w-16 h-16 rounded-2xl ${item.bg} flex items-center justify-center mx-auto`}
-                    >
+                    <div className={`w-16 h-16 rounded-2xl ${item.bg} flex items-center justify-center mx-auto`}>
                       <Icon size={28} className={item.color} />
                     </div>
                     <span className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-gray-900 text-white text-xs font-bold flex items-center justify-center sm:right-auto sm:left-1/2 sm:translate-x-5">
                       {item.step}
                     </span>
                   </div>
-                  <h3 className="text-[15px] font-bold text-gray-900 mb-1.5">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">
-                    {item.desc}
-                  </p>
+                  <h3 className="text-[15px] font-bold text-gray-900 mb-1.5">{item.title}</h3>
+                  <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
                 </div>
               );
             })}
@@ -635,41 +583,26 @@ export default function HomePage() {
               <div className="w-8 h-8 border-2 border-brand border-t-transparent rounded-full animate-spin" />
             </div>
           ) : courses.length === 0 ? (
-            /* 강의가 아예 없을 때 (pre-launch) */
             <div className="text-center py-20">
               <div className="w-20 h-20 rounded-full bg-brand-light flex items-center justify-center mx-auto mb-6">
                 <Rocket size={36} className="text-brand" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                강의 준비 중입니다
-              </h3>
-              <p className="text-sm text-gray-500 mb-1">
-                현장 전문가들의 실전 강의가 곧 오픈됩니다.
-              </p>
-              <p className="text-sm text-gray-400 mb-6">
-                사전 등록하시면 오픈 시 알림을 보내드립니다.
-              </p>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">강의 준비 중입니다</h3>
+              <p className="text-sm text-gray-500 mb-1">현장 전문가들의 실전 강의가 곧 오픈됩니다.</p>
+              <p className="text-sm text-gray-400 mb-6">사전 등록하시면 오픈 시 알림을 보내드립니다.</p>
               <Link
-                href="/auth/signup"
+                href="/auth/login"
                 className="inline-flex items-center gap-2 bg-brand text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-brand-dark transition"
               >
                 사전 등록하기 <ArrowRight size={14} />
               </Link>
             </div>
           ) : filtered.length === 0 ? (
-            /* 해당 카테고리에 강의 없을 때 */
             <div className="text-center py-16 text-gray-400">
               <BookOpen size={32} className="mx-auto mb-3 text-gray-300" />
-              <p className="text-lg mb-1 text-gray-500">
-                이 카테고리에는 아직 강의가 없습니다
-              </p>
-              <p className="text-sm">
-                다른 카테고리를 선택하거나, 전체를 확인해보세요.
-              </p>
-              <button
-                onClick={() => setCategory("all")}
-                className="mt-4 text-sm text-brand font-semibold hover:underline"
-              >
+              <p className="text-lg mb-1 text-gray-500">이 카테고리에는 아직 강의가 없습니다</p>
+              <p className="text-sm">다른 카테고리를 선택하거나, 전체를 확인해보세요.</p>
+              <button onClick={() => setCategory("all")} className="mt-4 text-sm text-brand font-semibold hover:underline">
                 전체 강의 보기
               </button>
             </div>
@@ -682,7 +615,7 @@ export default function HomePage() {
                   className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow"
                 >
                   <div
-                    className="h-[140px] flex items-center justify-center relative overflow-hidden"
+                    className="h-[160px] flex items-center justify-center relative overflow-hidden"
                     style={{
                       background: course.thumbnail_url
                         ? undefined
@@ -690,15 +623,23 @@ export default function HomePage() {
                     }}
                   >
                     {course.thumbnail_url ? (
-                      <img
+                      <Image
                         src={course.thumbnail_url}
                         alt={course.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       />
                     ) : (
-                      <span className="text-white/80 text-sm font-medium">
-                        {CATEGORY_LABELS[course.category] || "기타"}
-                      </span>
+                      <div className="flex flex-col items-center gap-2">
+                        {(() => {
+                          const CatIcon = CATEGORY_ICON_MAP[course.category];
+                          return CatIcon ? <CatIcon size={32} className="text-white/70" /> : null;
+                        })()}
+                        <span className="text-white/80 text-sm font-medium">
+                          {CATEGORY_LABELS[course.category] || "기타"}
+                        </span>
+                      </div>
                     )}
                     {course.total_lectures === 0 && (
                       <span className="absolute top-3 right-3 bg-white/90 text-gray-600 text-[10px] font-semibold px-2 py-1 rounded-full">
@@ -718,17 +659,13 @@ export default function HomePage() {
                     <p className="text-xs text-gray-500 mb-2">
                       {course.instructorName} · {course.total_lectures > 0 ? `총 ${course.total_lectures}강` : "커리큘럼 준비 중"}
                     </p>
-                    {course.reviewCount > 0 && (
+                    {course.reviewCount > 0 ? (
                       <div className="flex items-center gap-1 mb-2">
                         {[1, 2, 3, 4, 5].map((i) => (
                           <Star
                             key={i}
                             size={13}
-                            fill={
-                              i <= Math.floor(course.avgRating)
-                                ? "#FFB800"
-                                : "none"
-                            }
+                            fill={i <= Math.floor(course.avgRating) ? "#FFB800" : "none"}
                             stroke="#FFB800"
                             strokeWidth={2}
                           />
@@ -737,15 +674,17 @@ export default function HomePage() {
                           ({course.reviewCount})
                         </span>
                       </div>
+                    ) : (
+                      <p className="text-[11px] text-gray-300 mb-2">수강평 준비 중</p>
                     )}
                     <div className="flex items-baseline gap-1.5">
                       {course.discount_price && (
                         <span className="text-xs text-gray-400 line-through">
-                          ₩{formatPrice(course.price)}
+                          {formatPrice(course.price)}원
                         </span>
                       )}
                       <span className="text-[15px] font-bold text-gray-900">
-                        ₩{formatPrice(course.discount_price || course.price)}
+                        {course.price === 0 ? "무료" : `${formatPrice(course.discount_price || course.price)}원`}
                       </span>
                     </div>
                   </div>
@@ -762,32 +701,18 @@ export default function HomePage() {
       <section className="py-16 px-6 bg-gray-50">
         <div className="max-w-[1200px] mx-auto">
           <div className="text-center mb-12">
-            <p className="text-sm font-semibold text-brand mb-2">
-              EXPERT REVIEWS
-            </p>
+            <p className="text-sm font-semibold text-brand mb-2">EXPERT REVIEWS</p>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
-              전문가(강사)의{" "}
-              <span className="text-brand">생생한 후기</span>
+              전문가(강사)의 <span className="text-brand">생생한 후기</span>
             </h2>
-            <p className="text-sm text-gray-500 mt-2">
-              건축사 · 행정사 · 변호사 · 감정평가사 · 투자자 · 공인중개사
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {EXPERT_TESTIMONIALS.slice(0, 3).map((t, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-2xl p-8 border border-gray-100"
-              >
+            {EXPERT_TESTIMONIALS.map((t, idx) => (
+              <div key={idx} className="bg-white rounded-2xl p-8 border border-gray-100">
                 <div className="flex gap-0.5 mb-4">
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      fill="#FFB800"
-                      stroke="#FFB800"
-                    />
+                    <Star key={i} size={16} fill="#FFB800" stroke="#FFB800" />
                   ))}
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed mb-6">
@@ -795,42 +720,7 @@ export default function HomePage() {
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-brand-light flex items-center justify-center">
-                    <span className="text-sm font-bold text-brand">
-                      {t.name[0]}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-gray-900">{t.name}</p>
-                    <p className="text-xs text-brand font-medium">{t.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-            {EXPERT_TESTIMONIALS.slice(3, 6).map((t, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-2xl p-8 border border-gray-100"
-              >
-                <div className="flex gap-0.5 mb-4">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      fill="#FFB800"
-                      stroke="#FFB800"
-                    />
-                  ))}
-                </div>
-                <p className="text-sm text-gray-600 leading-relaxed mb-6">
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-brand-light flex items-center justify-center">
-                    <span className="text-sm font-bold text-brand">
-                      {t.name[0]}
-                    </span>
+                    <span className="text-sm font-bold text-brand">{t.name[0]}</span>
                   </div>
                   <div>
                     <p className="text-sm font-bold text-gray-900">{t.name}</p>
@@ -849,32 +739,18 @@ export default function HomePage() {
       <section className="py-16 px-6 bg-white">
         <div className="max-w-[1200px] mx-auto">
           <div className="text-center mb-12">
-            <p className="text-sm font-semibold text-blue-600 mb-2">
-              STUDENT REVIEWS
-            </p>
+            <p className="text-sm font-semibold text-blue-600 mb-2">STUDENT REVIEWS</p>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
-              수강생(고객)의{" "}
-              <span className="text-blue-600">솔직한 후기</span>
+              수강생(고객)의 <span className="text-blue-600">솔직한 후기</span>
             </h2>
-            <p className="text-sm text-gray-500 mt-2">
-              숙박업 예비 창업자 · 중개사무소 실무자 · 전업투자자 · 건물주
-            </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {STUDENT_TESTIMONIALS.map((t, idx) => (
-              <div
-                key={idx}
-                className="bg-gray-50 rounded-2xl p-6 border border-gray-100"
-              >
+              <div key={idx} className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
                 <div className="flex gap-0.5 mb-3">
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <Star
-                      key={i}
-                      size={14}
-                      fill="#FFB800"
-                      stroke="#FFB800"
-                    />
+                    <Star key={i} size={14} fill="#FFB800" stroke="#FFB800" />
                   ))}
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed mb-5">
@@ -882,9 +758,7 @@ export default function HomePage() {
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center">
-                    <span className="text-sm font-bold text-blue-600">
-                      {t.name[0]}
-                    </span>
+                    <span className="text-sm font-bold text-blue-600">{t.name[0]}</span>
                   </div>
                   <div>
                     <p className="text-sm font-bold text-gray-900">{t.name}</p>
@@ -945,7 +819,7 @@ export default function HomePage() {
       </section>
 
       {/* ════════════════════════════════════════════ */}
-      {/* FAQ — 자주 묻는 질문                          */}
+      {/* FAQ — 자주 묻는 질문 (애니메이션 적용)         */}
       {/* ════════════════════════════════════════════ */}
       <section id="faq-section" className="py-16 px-6 bg-gray-50">
         <div className="max-w-[800px] mx-auto">
@@ -960,32 +834,33 @@ export default function HomePage() {
             {FAQ_ITEMS.map((faq, i) => (
               <div
                 key={i}
-                className={cn(
-                  i < FAQ_ITEMS.length - 1 && "border-b border-gray-100",
-                )}
+                className={cn(i < FAQ_ITEMS.length - 1 && "border-b border-gray-100")}
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-gray-50 transition"
                 >
-                  <span className="text-[15px] font-semibold text-gray-900 pr-4">
-                    {faq.q}
-                  </span>
+                  <span className="text-[15px] font-semibold text-gray-900 pr-4">{faq.q}</span>
                   <ChevronDown
                     size={18}
                     className={cn(
-                      "text-gray-400 transition-transform flex-shrink-0",
+                      "text-gray-400 transition-transform duration-300 flex-shrink-0",
                       openFaq === i && "rotate-180",
                     )}
                   />
                 </button>
-                {openFaq === i && (
-                  <div className="px-6 pb-5">
-                    <p className="text-sm text-gray-500 leading-relaxed">
-                      {faq.a}
-                    </p>
+                <div
+                  className={cn(
+                    "grid transition-all duration-300 ease-in-out",
+                    openFaq === i ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                  )}
+                >
+                  <div className="overflow-hidden">
+                    <div className="px-6 pb-5">
+                      <p className="text-sm text-gray-500 leading-relaxed">{faq.a}</p>
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             ))}
           </div>
@@ -1007,18 +882,18 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
-              href="/auth/signup"
+              href="/auth/login"
               className="inline-flex items-center justify-center gap-2 bg-brand text-white px-8 py-3.5 rounded-lg text-[15px] font-semibold hover:bg-brand-dark transition"
             >
-              전문가로 시작하기
+              Google로 시작하기
               <ArrowRight size={16} />
             </Link>
-            <Link
-              href="/auth/signup"
+            <button
+              onClick={() => scrollToCourses("all")}
               className="inline-flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 px-8 py-3.5 rounded-lg text-[15px] font-semibold hover:bg-gray-50 transition"
             >
-              고객으로 시작하기
-            </Link>
+              강의 먼저 둘러보기
+            </button>
           </div>
         </div>
       </section>
@@ -1027,22 +902,15 @@ export default function HomePage() {
       {/* Footer                                      */}
       {/* ════════════════════════════════════════════ */}
       <footer className="border-t border-gray-200 bg-gray-50">
-        {/* Top: Logo + Links */}
         <div className="max-w-[1200px] mx-auto px-6 py-10">
           <div className="flex flex-col sm:flex-row justify-between items-start gap-8">
-            {/* Left: Logo + description */}
             <div>
               <div className="inline-flex items-center gap-0.5 mb-4">
-                
-            <div className="w-7 h-7 bg-brand rounded-md flex items-center justify-center shadow-sm mr-1.5">
-              <span className="text-white font-black text-sm">R</span>
-            </div>
-<span className="text-lg font-extrabold text-brand">
-                  리바운드
-                </span>
-                <span className="text-lg font-extrabold text-gray-900">
-                  에듀
-                </span>
+                <div className="w-7 h-7 bg-brand rounded-md flex items-center justify-center shadow-sm mr-1.5">
+                  <span className="text-white font-black text-sm">R</span>
+                </div>
+                <span className="text-lg font-extrabold text-brand">리바운드</span>
+                <span className="text-lg font-extrabold text-gray-900">에듀</span>
               </div>
               <p className="text-xs text-gray-400 leading-relaxed max-w-[300px]">
                 부동산·공간사업 전문 온라인 교육 플랫폼.
@@ -1051,84 +919,46 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Right: Quick links */}
             <div className="flex gap-12">
               <div>
                 <p className="text-xs font-bold text-gray-700 mb-3">서비스</p>
                 <div className="space-y-2">
-                  <Link
-                    href="/auth/signup"
-                    className="block text-xs text-gray-400 hover:text-gray-600"
-                  >
-                    전문가 등록
+                  <Link href="/auth/login" className="block text-xs text-gray-400 hover:text-gray-600">
+                    시작하기
                   </Link>
-                  <Link
-                    href="/auth/signup"
-                    className="block text-xs text-gray-400 hover:text-gray-600"
-                  >
-                    고객 가입
-                  </Link>
-                  <Link
-                    href="/auth/login"
-                    className="block text-xs text-gray-400 hover:text-gray-600"
-                  >
+                  <Link href="/auth/login" className="block text-xs text-gray-400 hover:text-gray-600">
                     로그인
                   </Link>
                 </div>
               </div>
               <div>
-                <p className="text-xs font-bold text-gray-700 mb-3">
-                  고객지원
-                </p>
+                <p className="text-xs font-bold text-gray-700 mb-3">고객지원</p>
                 <div className="space-y-2">
-                  <span className="block text-xs text-gray-400">
-                    이메일: support@rebound.co.kr
-                  </span>
-                  <span className="block text-xs text-gray-400">
-                    운영: 평일 10:00~18:00
-                  </span>
+                  <span className="block text-xs text-gray-400">이메일: support@rebound.co.kr</span>
+                  <span className="block text-xs text-gray-400">운영: 평일 10:00~18:00</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom: Legal info */}
         <div className="border-t border-gray-200">
           <div className="max-w-[1200px] mx-auto px-6 py-5">
             <div className="text-[11px] text-gray-400 leading-relaxed space-y-1">
               <p>
-                상호: 주식회사 리바운드 | 대표: 김동찬 | 사업자등록번호:
-                234-86-03564 | 통신판매업신고번호: 제2025-서울중구-1637호
+                상호: 주식회사 리바운드 | 대표: 김동찬 | 사업자등록번호: 234-86-03564 | 통신판매업신고번호: 제2025-서울중구-1637호
               </p>
-              <p>
-                주소: 서울특별시 중구 청파로103길 7 | 이메일:
-                support@rebound.co.kr
-              </p>
+              <p>주소: 서울특별시 중구 청파로103길 7 | 이메일: support@rebound.co.kr</p>
               <div className="flex flex-wrap gap-3 mt-3 items-center">
-                <a href="#" className="hover:text-gray-600">
-                  이용약관
-                </a>
+                <Link href="/terms" className="hover:text-gray-600">이용약관</Link>
                 <span className="text-gray-300">|</span>
-                <a href="#" className="font-semibold hover:text-gray-600">
-                  개인정보처리방침
-                </a>
+                <Link href="/privacy" className="font-semibold hover:text-gray-600">개인정보처리방침</Link>
                 <span className="text-gray-300">|</span>
-                <a
-                  href="https://www.ftc.go.kr/bizCommPop.do"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-gray-600"
-                >
+                <a href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600">
                   사업자정보확인
                 </a>
                 <span className="text-gray-300">|</span>
-                <a
-                  href="mailto:admin@rebound.io.kr"
-                  className="hover:text-gray-600"
-                >
-                  고객센터
-                </a>
+                <a href="mailto:admin@rebound.io.kr" className="hover:text-gray-600">고객센터</a>
               </div>
             </div>
             <p className="text-[11px] text-gray-300 mt-4">

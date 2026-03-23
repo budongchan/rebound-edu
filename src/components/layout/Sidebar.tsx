@@ -144,7 +144,7 @@ export default function Sidebar({ role, userName, onLogout }: SidebarProps) {
       </button>
 
       {/* 데스크톱 사이드바 */}
-      <aside className="hidden md:flex w-[220px] bg-white border-r border-gray-200 flex-col flex-shrink-0 sticky top-0 h-screen">
+      <aside className="hidden md:flex w-[248px] bg-white border-r border-gray-200 flex-col flex-shrink-0 sticky top-0 h-screen">
         {sidebarContent}
       </aside>
 
