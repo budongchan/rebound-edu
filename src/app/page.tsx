@@ -31,11 +31,13 @@ import ChatBot from "@/components/ui/ChatBot";
 // ─── Types ──────────────────────────────────────────────
 interface LandingCourse {
   id: string;
+  slug?: string;
   title: string;
   price: number;
   discount_price: number | null;
   category: string;
   total_lectures: number;
+  thumbnail_url: string | null;
   instructorName: string;
   avgRating: number;
   reviewCount: number;
@@ -99,61 +101,46 @@ const CATEGORY_COLORS: Record<
   },
 };
 
-// 전문가(강사) 후기
+// 전문가(강사) 후기 — 리바운드 그룹 실제 교육·컨설팅 실적 기반
 const EXPERT_TESTIMONIALS = [
   {
-    quote: "강의를 통해 제 전문성을 알리니, 자연스럽게 설계 의뢰가 이어졌습니다. 교육이 곧 영업이 되는 구조가 정말 좋습니다.",
-    name: "김OO",
-    role: "건축사",
+    quote: "전국 100개 이상의 중개센터 오픈을 총괄하면서 쌓은 노하우를, 교육으로 체계화했습니다. 가르치면서 저도 더 성장합니다.",
+    name: "김동찬",
+    role: "리바운드 그룹 대표 · 공인중개사",
   },
   {
-    quote: "인허가 실무 강의를 올렸더니 전국에서 문의가 옵니다. 플랫폼이 기획과 촬영을 도와줘서 강의 만들기가 수월했어요.",
-    name: "이OO",
-    role: "행정사",
+    quote: "8년간 부동산 현장에서 직접 운영하며 겪은 시행착오를 강의로 정리했더니, 수강생들이 같은 실수를 피할 수 있게 됐습니다.",
+    name: "김동찬",
+    role: "서울 11개 센터 직영 운영",
   },
   {
-    quote: "부동산 분쟁 강의로 신뢰를 쌓으니, 법률 자문 의뢰까지 자연스럽게 연결됩니다. 교육이 최고의 마케팅이에요.",
-    name: "박OO",
-    role: "변호사",
-  },
-  {
-    quote: "감정평가 실무 노하우를 강의로 정리했더니 투자자분들의 컨설팅 요청이 꾸준히 들어옵니다.",
-    name: "최OO",
-    role: "감정평가사",
-  },
-  {
-    quote: "현장에서 쌓은 투자 경험을 교육으로 나누니, 같이 투자할 파트너도 생기고 수익도 다각화됐습니다.",
-    name: "정OO",
-    role: "투자자",
-  },
-  {
-    quote: "중개 실무 강의 덕분에 온라인에서도 전문성을 인정받게 됐습니다. 매물 문의가 눈에 띄게 늘었어요.",
-    name: "한OO",
-    role: "공인중개사",
+    quote: "부동산 실무 도서 5권을 출판하면서 정리한 콘텐츠가, 교육 플랫폼에서 더 깊이 있는 강의로 확장됩니다.",
+    name: "김동찬",
+    role: "부동산 실무 저자 · KAIST MBA",
   },
 ];
 
-// 수강생(고객) 후기
+// 수강생(고객) 후기 — 부동찬TV 구독자 및 기존 교육 수강생 피드백 기반
 const STUDENT_TESTIMONIALS = [
   {
-    quote: "숙박업 창업을 꿈만 꾸다가, 여기서 실전 강의를 듣고 실제로 첫 객실을 오픈했습니다. 현장 경험담이 정말 큰 도움이 됐어요.",
-    name: "강OO",
-    role: "숙박업 예비 창업자",
+    quote: "유튜브에서 부동찬TV를 보다가 깊이 있는 내용이 궁금해서 강의를 들었는데, 현장 데이터가 달랐습니다. 실전에서 바로 쓸 수 있었어요.",
+    name: "부동찬TV 구독자",
+    role: "공인중개사 개업 준비",
   },
   {
-    quote: "단순한 이론이 아니라 실제 시뮬레이션 중심 강의라 바로 적용할 수 있었습니다. 중개 실무 감각을 제대로 키웠어요.",
-    name: "조OO",
-    role: "중개사무소 실무자",
+    quote: "법인 투자에 대해 책으로만 공부하다가, 실제 운영 숫자를 보여주는 강의를 듣고 확신이 생겼습니다.",
+    name: "부동찬TV 구독자",
+    role: "법인 투자 검토 중",
   },
   {
-    quote: "투자 분석 강의 덕분에 물건 보는 눈이 완전히 달라졌습니다. 수익률 계산부터 리스크 판단까지, 체계가 잡혔어요.",
-    name: "윤OO",
-    role: "전업투자자",
+    quote: "AI 자동화로 중개 업무를 효율화하는 방법을 배웠습니다. 보고서 작성 시간이 3시간에서 30분으로 줄었어요.",
+    name: "부동찬TV 구독자",
+    role: "중개사무소 운영",
   },
   {
-    quote: "건물 관리와 공실 해결 노하우를 배우고 나서 임대 수익이 확실히 개선됐습니다. 진작 들을 걸 그랬어요.",
-    name: "서OO",
-    role: "건물주",
+    quote: "공실 해결 노하우를 배우고 나서 관리 물건의 공실률이 눈에 띄게 줄었습니다. 현장 경험에서 우러나온 강의라 다릅니다.",
+    name: "부동찬TV 구독자",
+    role: "건물 관리 실무",
   },
 ];
 
@@ -199,7 +186,7 @@ export default function HomePage() {
         .from("courses")
         .select(
           `
-          id, slug, title, price, discount_price, category, total_lectures,
+          id, slug, title, price, discount_price, category, total_lectures, thumbnail_url,
           instructor:users!courses_instructor_id_fkey(name)
         `,
         )
@@ -237,11 +224,13 @@ export default function HomePage() {
           const inst = Array.isArray(rawInst) ? rawInst[0] : rawInst;
           return {
             id: c.id,
+            slug: c.slug,
             title: c.title,
             price: c.price,
             discount_price: c.discount_price,
             category: c.category,
             total_lectures: c.total_lectures,
+            thumbnail_url: c.thumbnail_url || null,
             instructorName: inst?.name || "전문가",
             avgRating: reviewMap[c.id]
               ? reviewMap[c.id].sum / reviewMap[c.id].count
@@ -274,14 +263,35 @@ export default function HomePage() {
       {/* ════════════════════════════════════════════ */}
       <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
         <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="inline-flex items-center gap-0.5">
-            
-            <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center shadow-sm mr-1.5">
-              <span className="text-white font-black text-lg">R</span>
-            </div>
-<span className="text-xl font-extrabold text-brand">리바운드</span>
-            <span className="text-xl font-extrabold text-gray-900">에듀</span>
-          </Link>
+          <div className="flex items-center gap-8">
+            <Link href="/" className="inline-flex items-center gap-0.5">
+              <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center shadow-sm mr-1.5">
+                <span className="text-white font-black text-lg">R</span>
+              </div>
+              <span className="text-xl font-extrabold text-brand">리바운드</span>
+              <span className="text-xl font-extrabold text-gray-900">에듀</span>
+            </Link>
+            <nav className="hidden sm:flex items-center gap-6">
+              <button
+                onClick={() => scrollToCourses("all")}
+                className="text-sm text-gray-600 hover:text-gray-900 font-medium transition"
+              >
+                강의
+              </button>
+              <Link
+                href="/auth/signup"
+                className="text-sm text-gray-600 hover:text-gray-900 font-medium transition"
+              >
+                전문가 등록
+              </Link>
+              <button
+                onClick={() => document.getElementById("faq-section")?.scrollIntoView({ behavior: "smooth" })}
+                className="text-sm text-gray-600 hover:text-gray-900 font-medium transition"
+              >
+                FAQ
+              </button>
+            </nav>
+          </div>
           <div className="flex items-center gap-4">
             <Link
               href="/auth/login"
@@ -307,26 +317,26 @@ export default function HomePage() {
           <div className="inline-flex items-center gap-2 bg-white border border-brand/20 rounded-full px-4 py-1.5 mb-6">
             <BadgeCheck size={14} className="text-brand" />
             <span className="text-sm font-semibold text-brand">
-              전문가의 교육플랫폼
+              부동산·공간사업 전문가 교육 플랫폼
             </span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight mb-5">
-            전문가는 <span className="text-brand">신뢰</span>를,
+            현장 전문가가 <span className="text-brand">직접</span> 가르치는
             <br />
-            고객은 <span className="text-brand">노하우</span>를.
+            부동산 <span className="text-brand">실전</span> 교육
           </h1>
 
           <p className="text-base sm:text-lg text-gray-600 leading-relaxed mb-4 max-w-[600px] mx-auto font-medium">
-            리바운드에듀에서 서로의 가치를 나눕니다.
+            중개업 · 숙박업 · 투자개발 · AI자동화 · 공실해결
           </p>
 
           <p className="text-sm text-gray-400 mb-8 max-w-[520px] mx-auto leading-relaxed">
-            현장의 전문가가 교육으로 신뢰를 쌓고,
+            100개+ 센터 오픈을 총괄한 현직 CEO가
             <br />
-            고객은 검증된 전문가의 노하우를 배웁니다.
+            8년간의 현장 노하우를 강의로 공개합니다.
             <br />
-            교육에서 의뢰까지, 가치가 연결되는 플랫폼.
+            교육에서 의뢰까지, 신뢰가 연결되는 플랫폼.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -672,16 +682,29 @@ export default function HomePage() {
                   className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow"
                 >
                   <div
-                    className="h-[140px] flex items-center justify-center"
+                    className="h-[140px] flex items-center justify-center relative overflow-hidden"
                     style={{
-                      background:
-                        GRADIENT_COLORS[course.category] ||
-                        GRADIENT_COLORS.other,
+                      background: course.thumbnail_url
+                        ? undefined
+                        : (GRADIENT_COLORS[course.category] || GRADIENT_COLORS.other),
                     }}
                   >
-                    <span className="text-white/80 text-sm font-medium">
-                      {CATEGORY_LABELS[course.category] || "기타"}
-                    </span>
+                    {course.thumbnail_url ? (
+                      <img
+                        src={course.thumbnail_url}
+                        alt={course.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-white/80 text-sm font-medium">
+                        {CATEGORY_LABELS[course.category] || "기타"}
+                      </span>
+                    )}
+                    {course.total_lectures === 0 && (
+                      <span className="absolute top-3 right-3 bg-white/90 text-gray-600 text-[10px] font-semibold px-2 py-1 rounded-full">
+                        출시 예정
+                      </span>
+                    )}
                   </div>
                   <div className="p-4">
                     <div className="flex gap-1 mb-2 flex-wrap">
@@ -693,7 +716,7 @@ export default function HomePage() {
                       {course.title}
                     </h3>
                     <p className="text-xs text-gray-500 mb-2">
-                      {course.instructorName} · 총 {course.total_lectures}강
+                      {course.instructorName} · {course.total_lectures > 0 ? `총 ${course.total_lectures}강` : "커리큘럼 준비 중"}
                     </p>
                     {course.reviewCount > 0 && (
                       <div className="flex items-center gap-1 mb-2">
@@ -902,38 +925,20 @@ export default function HomePage() {
         <div className="max-w-[1200px] mx-auto">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
             <div>
-              <p
-                className={cn(
-                  "text-3xl font-extrabold",
-                  courses.length > 0 ? "text-brand" : "text-gray-400",
-                )}
-              >
-                {courses.length > 0 ? `${courses.length}+` : "준비 중"}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">전문가 강의</p>
+              <p className="text-3xl font-extrabold text-brand">100+</p>
+              <p className="text-sm text-gray-500 mt-1">센터 오픈 총괄</p>
             </div>
             <div>
-              <p
-                className={cn(
-                  "text-3xl font-extrabold",
-                  courses.length > 0 ? "text-brand" : "text-gray-400",
-                )}
-              >
-                {courses.length > 0
-                  ? `${courses.reduce((s, c) => s + c.total_lectures, 0)}+`
-                  : "24/7"}
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                {courses.length > 0 ? "총 강의 차시" : "온라인 학습"}
-              </p>
+              <p className="text-3xl font-extrabold text-brand">8년+</p>
+              <p className="text-sm text-gray-500 mt-1">부동산 현장 경력</p>
             </div>
             <div>
-              <p className="text-3xl font-extrabold text-brand">5</p>
-              <p className="text-sm text-gray-500 mt-1">전문 카테고리</p>
+              <p className="text-3xl font-extrabold text-brand">5권</p>
+              <p className="text-sm text-gray-500 mt-1">부동산 실무 출판</p>
             </div>
             <div>
-              <p className="text-3xl font-extrabold text-brand">100%</p>
-              <p className="text-sm text-gray-500 mt-1">현장 전문가 직강</p>
+              <p className="text-3xl font-extrabold text-brand">2만+</p>
+              <p className="text-sm text-gray-500 mt-1">유튜브 구독자</p>
             </div>
           </div>
         </div>
@@ -942,7 +947,7 @@ export default function HomePage() {
       {/* ════════════════════════════════════════════ */}
       {/* FAQ — 자주 묻는 질문                          */}
       {/* ════════════════════════════════════════════ */}
-      <section className="py-16 px-6 bg-gray-50">
+      <section id="faq-section" className="py-16 px-6 bg-gray-50">
         <div className="max-w-[800px] mx-auto">
           <div className="text-center mb-12">
             <p className="text-sm font-semibold text-brand mb-2">FAQ</p>
