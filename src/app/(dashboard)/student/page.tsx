@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import Badge from "@/components/ui/Badge";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
+import { getCourseContent } from "@/data/course-details";
 
 interface EnrollmentWithCourse {
   id: string;
@@ -139,28 +140,36 @@ export default function StudentDashboard() {
                       수강생 단톡방
                     </a>
                   )}
-                  {e.course.category === "ai_automation" && (
-                    <>
-                      <a
-                        href="https://meet.google.com/ork-ftyi-zab"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(ev) => ev.stopPropagation()}
-                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-500 text-white font-semibold text-xs hover:bg-blue-600 transition"
-                      >
-                        🌐 온라인 강의장
-                      </a>
-                      <a
-                        href="https://naver.me/GWiET7cv"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(ev) => ev.stopPropagation()}
-                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-green-500 text-white font-semibold text-xs hover:bg-green-600 transition"
-                      >
-                        📍 오프라인 강의장
-                      </a>
-                    </>
-                  )}
+                  {(() => {
+                    const courseContent = getCourseContent(e.course.id);
+                    const schedule = courseContent?.schedule;
+                    return (
+                      <>
+                        {schedule?.online && (
+                          <a
+                            href={schedule.online.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(ev) => ev.stopPropagation()}
+                            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-500 text-white font-semibold text-xs hover:bg-blue-600 transition"
+                          >
+                            🌐 {schedule.online.label}
+                          </a>
+                        )}
+                        {schedule?.offline && (
+                          <a
+                            href={schedule.offline.mapUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(ev) => ev.stopPropagation()}
+                            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-green-500 text-white font-semibold text-xs hover:bg-green-600 transition"
+                          >
+                            📍 {schedule.offline.label}
+                          </a>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               </Link>
             );

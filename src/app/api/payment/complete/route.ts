@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import { getPortOnePayment } from "@/lib/portone";
+import { confirmPayment } from "@/lib/tosspayments";
 
 export async function POST(request: Request) {
   try {
@@ -31,10 +31,10 @@ export async function POST(request: Request) {
     }
 
     // 2. 요청 파싱
-    const { paymentId } = await request.json();
-    if (!paymentId) {
+    const { paymentKey, orderId, amount } = await request.json();
+    if (!paymentKey || !orderId || !amount) {
       return NextResponse.json(
-        { error: "paymentId가 필요합니다." },
+        { error: "paymentKey, orderId, amount가 필요합니다." },
         { status: 400 }
       );
     }
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     const { data: pendingPayment } = await supabase
       .from("payments")
       .select("id, user_id, final_amount, status")
-      .eq("pg_payment_key", paymentId)
+      .eq("pg_order_id", orderId)
       .eq("user_id", profile.id)
       .single();
 
@@ -61,65 +61,52 @@ export async function POST(request: Request) {
       });
     }
 
-    // 4. PortOne API로 실제 결제 상태 조회
-    let portonePayment;
-    try {
-      portonePayment = await getPortOnePayment(paymentId);
-    } catch (apiErr) {
-      console.error("[payment/complete] PortOne API error:", apiErr);
+    // 4. 금액 검증 (위/변조 방지)
+    if (amount !== pendingPayment.final_amount) {
+      console.error(
+        `[payment/complete] 금액 불일치: expected=${pendingPayment.final_amount}, actual=${amount}`
+      );
       return NextResponse.json(
-        { error: "결제 상태를 확인할 수 없습니다. 잠시 후 다시 시도해주세요." },
+        { error: "결제 금액이 일치하지 않습니다." },
+        { status: 400 }
+      );
+    }
+
+    // 5. 토스페이먼츠 결제 승인 API 호출
+    let tossPayment;
+    try {
+      tossPayment = await confirmPayment(paymentKey, orderId, amount);
+    } catch (apiErr) {
+      console.error("[payment/complete] Toss confirm error:", apiErr);
+      return NextResponse.json(
+        { error: "결제 승인에 실패했습니다. 잠시 후 다시 시도해주세요." },
         { status: 502 }
       );
     }
 
-    // 5. 결제 상태 확인
-    if (portonePayment.status !== "PAID") {
-      return NextResponse.json(
-        {
-          error: `결제가 완료되지 않았습니다. (상태: ${portonePayment.status})`,
-        },
-        { status: 400 }
-      );
-    }
-
-    // 6. 금액 검증 (위/변조 방지)
-    const paidAmount = portonePayment.amount?.total;
-    if (paidAmount !== pendingPayment.final_amount) {
-      console.error(
-        `[payment/complete] 금액 불일치: expected=${pendingPayment.final_amount}, actual=${paidAmount}`
-      );
-      return NextResponse.json(
-        { error: "결제 금액이 일치하지 않습니다. 관리자에게 문의해주세요." },
-        { status: 400 }
-      );
-    }
-
-    // 7. 결제 방법 매핑
-    const methodType = portonePayment.method?.type || "";
-    const easyPayProvider = portonePayment.method?.easyPay?.provider || "";
+    // 6. 결제 방법 매핑
     let method = "card";
-    if (methodType === "TRANSFER") {
-      method = "bank_transfer";
-    } else if (methodType === "EASY_PAY" || easyPayProvider) {
-      if (easyPayProvider === "KAKAOPAY") method = "kakao";
-      else if (easyPayProvider === "NAVERPAY") method = "naver";
-      else if (easyPayProvider === "TOSSPAY") method = "toss";
-    }
+    const tossMethod = tossPayment.method || "";
+    if (tossMethod === "계좌이체") method = "bank_transfer";
+    else if (tossMethod === "가상계좌") method = "bank_transfer";
+    else if (tossPayment.easyPay?.provider === "카카오페이") method = "kakao";
+    else if (tossPayment.easyPay?.provider === "네이버페이") method = "naver";
+    else if (tossPayment.easyPay?.provider === "토스페이") method = "toss";
 
-    // 8. payments 테이블 업데이트
+    // 7. payments 테이블 업데이트
     await supabase
       .from("payments")
       .update({
         status: "paid",
         method,
-        receipt_url: portonePayment.receiptUrl || null,
-        portone_tx_id: portonePayment.pgTxId || null,
-        paid_at: new Date().toISOString(),
+        pg_payment_key: paymentKey,
+        receipt_url: tossPayment.receipt?.url || null,
+        portone_tx_id: tossPayment.transactionKey || null,
+        paid_at: tossPayment.approvedAt || new Date().toISOString(),
       })
       .eq("id", pendingPayment.id);
 
-    // 9. enrollments 생성
+    // 8. enrollments 생성
     const { data: items } = await supabase
       .from("payment_items")
       .select("course_id")
@@ -127,7 +114,6 @@ export async function POST(request: Request) {
 
     if (items) {
       for (const item of items) {
-        // upsert: 이미 수강 중이면 무시
         const { data: existing } = await supabase
           .from("enrollments")
           .select("id")

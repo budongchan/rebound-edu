@@ -524,27 +524,19 @@ export default function PublicCourseDetailPage() {
     const cid = courseUuid || course?.id || id;
     const { data: questions } = await sb
       .from("qna_questions")
-      .select(`*, user:users!qna_questions_user_id_fkey(name, avatar_url)`)
+      .select(`*, user:users!qna_questions_user_id_fkey(name, avatar_url), answers:qna_answers(*, user:users!qna_answers_user_id_fkey(name, avatar_url))`)
       .eq("course_id", cid)
       .order("created_at", { ascending: false });
 
     if (questions) {
-      const qList: QnaQuestion[] = [];
-      for (const q of questions) {
-        const { data: answers } = await sb
-          .from("qna_answers")
-          .select(`*, user:users!qna_answers_user_id_fkey(name, avatar_url)`)
-          .eq("question_id", q.id)
-          .order("created_at", { ascending: true });
-        qList.push({
-          ...q,
-          user: Array.isArray(q.user) ? q.user[0] : q.user,
-          answers: (answers || []).map((a: any) => ({
-            ...a,
-            user: Array.isArray(a.user) ? a.user[0] : a.user,
-          })),
-        });
-      }
+      const qList: QnaQuestion[] = questions.map((q: any) => ({
+        ...q,
+        user: Array.isArray(q.user) ? q.user[0] : q.user,
+        answers: (q.answers || []).map((a: any) => ({
+          ...a,
+          user: Array.isArray(a.user) ? a.user[0] : a.user,
+        })),
+      }));
       setQnaQuestions(qList);
     }
   };
@@ -649,51 +641,30 @@ export default function PublicCourseDetailPage() {
         alert("수강 신청이 완료되었습니다!");
         return;
       }
-      const PortOne = await import("@portone/browser-sdk/v2");
-      const storeId = process.env.NEXT_PUBLIC_PORTONE_STORE_ID;
-      const channelKey = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY;
-      if (!storeId || !channelKey) {
+      // 토스페이먼츠 결제창 호출
+      const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY;
+      if (!clientKey) {
         alert("결제 시스템이 설정되지 않았습니다.");
         setEnrolling(false);
         return;
       }
-      const response = await PortOne.requestPayment({
-        storeId,
-        channelKey,
-        paymentId: prepareData.paymentId!,
+      const supabase = (await import("@/lib/supabase/client")).createClient();
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+
+      const { loadTossPayments } = await import("@tosspayments/tosspayments-sdk");
+      const tossPayments = await loadTossPayments(clientKey);
+      const tossPayment = tossPayments.payment({ customerKey: authUser?.id || "guest" });
+
+      await tossPayment.requestPayment({
+        method: "CARD" as const,
+        amount: { currency: "KRW" as const, value: prepareData.totalAmount! },
+        orderId: prepareData.orderId!,
         orderName: prepareData.orderName!,
-        totalAmount: prepareData.totalAmount!,
-        currency: "CURRENCY_KRW",
-        payMethod: "CARD",
-        customer: {
-          fullName: prepareData.customer?.name,
-          email: prepareData.customer?.email,
-          phoneNumber: prepareData.customer?.phone || undefined,
-        },
-        redirectUrl: `${window.location.origin}/student/payment-result`,
+        customerName: prepareData.customerName || undefined,
+        customerEmail: prepareData.customerEmail || undefined,
+        successUrl: `${window.location.origin}/student/payment-result?orderId=${prepareData.orderId}&amount=${prepareData.totalAmount}`,
+        failUrl: `${window.location.origin}/student/payment-result?error=true`,
       });
-      if (response?.code != null) {
-        if (
-          response.code !== "FAILURE_TYPE_PG" &&
-          response.code !== "PAY_PROCESS_CANCELED"
-        ) {
-          alert(response.message || "결제가 취소되었습니다.");
-        }
-        setEnrolling(false);
-        return;
-      }
-      const completeRes = await fetch("/api/payment/complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentId: prepareData.paymentId }),
-      });
-      const completeData = await completeRes.json();
-      if (completeRes.ok && completeData.success) {
-        setEnrolled(true);
-        alert("결제가 완료되었습니다!");
-      } else {
-        alert(completeData.error || "결제 검증에 실패했습니다.");
-      }
     } catch (err) {
       console.error("결제 오류:", err);
       alert("결제 처리 중 오류가 발생했습니다.");

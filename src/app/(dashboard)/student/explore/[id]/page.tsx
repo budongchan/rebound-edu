@@ -8,7 +8,7 @@ import { formatPrice, formatDuration } from "@/lib/utils";
 import Badge from "@/components/ui/Badge";
 import { Star, Clock, BookOpen, PlayCircle, ChevronDown, ChevronUp, MessageCircle, Monitor, MapPin } from "lucide-react";
 import type { PaymentPrepareResponse } from "@/types";
-import * as PortOne from "@portone/browser-sdk/v2";
+import { getCourseContent } from "@/data/course-details";
 
 interface CourseDetail {
   id: string;
@@ -149,56 +149,28 @@ export default function CourseDetailPage() {
         return;
       }
 
-      // 3. 유료 강의: PortOne 결제창 호출
-      const storeId = process.env.NEXT_PUBLIC_PORTONE_STORE_ID;
-      const channelKey = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY;
-
-      if (!storeId || !channelKey) {
+      // 3. 유료 강의: 토스페이먼츠 결제창 호출
+      const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY;
+      if (!clientKey) {
         alert("결제 시스템이 설정되지 않았습니다. 관리자에게 문의해주세요.");
         setEnrolling(false);
         return;
       }
 
-      const response = await PortOne.requestPayment({
-        storeId,
-        channelKey,
-        paymentId: prepareData.paymentId!,
+      const { loadTossPayments } = await import("@tosspayments/tosspayments-sdk");
+      const tossPayments = await loadTossPayments(clientKey);
+      const tossPayment = tossPayments.payment({ customerKey: user.id });
+
+      await tossPayment.requestPayment({
+        method: "CARD" as const,
+        amount: { currency: "KRW" as const, value: prepareData.totalAmount! },
+        orderId: prepareData.orderId!,
         orderName: prepareData.orderName!,
-        totalAmount: prepareData.totalAmount!,
-        currency: "CURRENCY_KRW",
-        payMethod: "CARD",
-        customer: {
-          fullName: prepareData.customer?.name,
-          email: prepareData.customer?.email,
-          phoneNumber: prepareData.customer?.phone || undefined,
-        },
-        redirectUrl: `${window.location.origin}/student/payment-result`,
+        customerName: prepareData.customerName || undefined,
+        customerEmail: prepareData.customerEmail || undefined,
+        successUrl: `${window.location.origin}/student/payment-result?orderId=${prepareData.orderId}&amount=${prepareData.totalAmount}`,
+        failUrl: `${window.location.origin}/student/payment-result?error=true`,
       });
-
-      // 4. 결제 결과 확인
-      if (response?.code != null) {
-        // 사용자가 결제를 취소하거나 오류 발생
-        if (response.code !== "FAILURE_TYPE_PG" && response.code !== "PAY_PROCESS_CANCELED") {
-          alert(response.message || "결제가 취소되었습니다.");
-        }
-        setEnrolling(false);
-        return;
-      }
-
-      // 5. 서버에 결제 완료 검증 요청
-      const completeRes = await fetch("/api/payment/complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentId: prepareData.paymentId }),
-      });
-      const completeData = await completeRes.json();
-
-      if (completeRes.ok && completeData.success) {
-        setEnrolled(true);
-        alert("결제가 완료되었습니다! 수강을 시작하세요.");
-      } else {
-        alert(completeData.error || "결제 검증에 실패했습니다.");
-      }
     } catch (err) {
       console.error("결제 오류:", err);
       alert("결제 처리 중 오류가 발생했습니다.");
@@ -305,28 +277,36 @@ export default function CourseDetailPage() {
                   <span className="truncate">단톡방</span>
                 </a>
               )}
-              {course.category === "ai_automation" && (
-                <>
-                  <a
-                    href="https://meet.google.com/ork-ftyi-zab"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl bg-blue-500 text-white font-semibold text-xs hover:bg-blue-600 transition min-w-0"
-                  >
-                    <Monitor size={20} />
-                    <span className="truncate">구글 밋</span>
-                  </a>
-                  <a
-                    href="https://naver.me/GWiET7cv"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl bg-green-500 text-white font-semibold text-xs hover:bg-green-600 transition min-w-0"
-                  >
-                    <MapPin size={20} />
-                    <span className="truncate">찾아오는 길</span>
-                  </a>
-                </>
-              )}
+              {(() => {
+                const courseContent = getCourseContent(course.id);
+                const schedule = courseContent?.schedule;
+                return (
+                  <>
+                    {schedule?.online && (
+                      <a
+                        href={schedule.online.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl bg-blue-500 text-white font-semibold text-xs hover:bg-blue-600 transition min-w-0"
+                      >
+                        <Monitor size={20} />
+                        <span className="truncate">{schedule.online.label}</span>
+                      </a>
+                    )}
+                    {schedule?.offline && (
+                      <a
+                        href={schedule.offline.mapUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl bg-green-500 text-white font-semibold text-xs hover:bg-green-600 transition min-w-0"
+                      >
+                        <MapPin size={20} />
+                        <span className="truncate">{schedule.offline.label}</span>
+                      </a>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           )}
         </div>

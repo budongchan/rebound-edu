@@ -35,10 +35,13 @@ export async function generateMetadata({
     };
   }
 
-  const content = getCourseContent(id);
-  const instructorName = Array.isArray(course.instructor)
-    ? (course.instructor[0] as any)?.name
-    : (course.instructor as any)?.name;
+  const content = getCourseContent(course.id);
+  const rawInstructor = Array.isArray(course.instructor)
+    ? course.instructor[0]
+    : course.instructor;
+  const instructorName = rawInstructor && typeof rawInstructor === "object" && "name" in rawInstructor
+    ? (rawInstructor as { name: string }).name
+    : undefined;
   const displayPrice =
     (course.discount_price || course.price) === 0
       ? "무료"

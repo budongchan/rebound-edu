@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
-import { generatePaymentId } from "@/lib/portone";
+import { generateOrderId } from "@/lib/tosspayments";
 
 export async function POST(request: Request) {
   try {
@@ -116,15 +116,14 @@ export async function POST(request: Request) {
       });
     }
 
-    // 7. 유료 결제: paymentId 생성 & pending 레코드 생성
-    const paymentId = generatePaymentId();
+    // 7. 유료 결제: orderId 생성 & pending 레코드 생성
+    const orderId = generateOrderId();
 
     const { data: pendingPayment, error: insertErr } = await supabase
       .from("payments")
       .insert({
         user_id: profile.id,
-        pg_payment_key: paymentId,
-        pg_order_id: `order-${paymentId}`,
+        pg_order_id: orderId,
         total_amount: course.price,
         discount_amount: discountAmount,
         final_amount: finalAmount,
@@ -152,14 +151,12 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       free: false,
-      paymentId,
+      orderId,
       orderName: course.title,
       totalAmount: finalAmount,
-      customer: {
-        name: profile.name,
-        email: profile.email,
-        phone: profile.phone || null,
-      },
+      customerName: profile.name,
+      customerEmail: profile.email,
+      customerPhone: profile.phone || null,
     });
   } catch (err) {
     console.error("[payment/prepare] error:", err);

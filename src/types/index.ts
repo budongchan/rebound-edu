@@ -137,15 +137,12 @@ export interface Payment {
 export interface PaymentPrepareResponse {
   success: boolean;
   free: boolean;
-  paymentId?: string;
+  orderId?: string;
   orderName?: string;
   totalAmount?: number;
-  customer?: {
-    name: string;
-    email: string;
-    phone: string | null;
-  };
-  couponDiscount?: number;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string | null;
   message?: string;
   error?: string;
 }
