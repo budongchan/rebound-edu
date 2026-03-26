@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>조직도 — (주)리바운드에듀</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Noto Sans KR',sans-serif;padding:40px;background:#fff}
+.title{text-align:center;font-size:22px;font-weight:700;margin-bottom:4px}
+.sub{text-align:center;font-size:13px;color:#666;margin-bottom:30px}
+.org{display:flex;flex-direction:column;align-items:center;gap:0}
+.node{border:2px solid #ddd;border-radius:10px;padding:12px 20px;text-align:center;min-width:160px;background:#fff;position:relative}
+.node.ceo{border-color:#FF4500;background:#FFF8F5}
+.node .name{font-weight:700;font-size:15px}.node .role{font-size:12px;color:#666;margin-top:2px}
+.node .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;margin-top:6px}
+.tag.filled{background:#FF4500;color:#fff}.tag.planned{background:#E8E8E8;color:#555;border:1px dashed #999}
+.line{width:2px;height:24px;background:#ccc}.hline{height:2px;background:#ccc}
+.row{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;position:relative}
+.row::before{content:'';position:absolute;top:-24px;left:50%;width:2px;height:24px;background:#ccc}
+.col{display:flex;flex-direction:column;align-items:center;gap:0}
+.col .line{width:2px;height:16px;background:#ccc}
+.section{margin-top:16px;text-align:center}
+.section h3{font-size:14px;font-weight:700;margin-bottom:12px;color:#333}
+.note{text-align:center;font-size:11px;color:#999;margin-top:30px}
+</style></head><body>
+<div class="title">조직도 — (주)리바운드에듀</div>
+<div class="sub">2026-03-17 기준 | 현재 인원 + 채용 예정(점선)</div>
+
+<div class="org">
+  <div class="node ceo"><div class="name">김동찬</div><div class="role">대표이사 (CEO)</div><span class="tag filled">현재</span></div>
+  <div class="line"></div>
+
+  <div style="width:70%;max-width:500px" class="hline"></div>
+
+  <div class="row" style="margin-top:0">
+    <div class="col">
+      <div class="line"></div>
+      <div class="node"><div class="name">[주주B]</div><div class="role">이사 / [역할]</div><span class="tag filled">현재</span></div>
+    </div>
+    <div class="col">
+      <div class="line"></div>
+      <div class="node"><div class="name">[주주C]</div><div class="role">이사 / [역할]</div><span class="tag filled">현재</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="line" style="margin:16px auto"></div>
+    <h3>초기 채용 계획 (M3~M6)</h3>
+    <div class="row">
+      <div class="col">
+        <div class="node" style="border-style:dashed"><div class="name">콘텐츠 매니저</div><div class="role">강의 기획·촬영·편집</div><span class="tag planned">M3 채용</span></div>
+      </div>
+      <div class="col">
+        <div class="node" style="border-style:dashed"><div class="name">마케터</div><div class="role">그로스·SNS·퍼포먼스</div><span class="tag planned">M4 채용</span></div>
+      </div>
+      <div class="col">
+        <div class="node" style="border-style:dashed"><div class="name">운영 매니저</div><div class="role">수강생 관리·CS·정산</div><span class="tag planned">M6 채용</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="line" style="margin:16px auto"></div>
+    <h3>프리랜서 강사 풀</h3>
+    <div class="row">
+      <div class="col"><div class="node" style="border-color:#0F6E56"><div class="name">부동산 강사</div><div class="role">중개·투자·세무</div><span class="tag" style="background:#E1F5EE;color:#0F6E56">프리랜서</span></div></div>
+      <div class="col"><div class="node" style="border-color:#0F6E56"><div class="name">숙박/공간 강사</div><div class="role">호스텔·스터디카페</div><span class="tag" style="background:#E1F5EE;color:#0F6E56">프리랜서</span></div></div>
+      <div class="col"><div class="node" style="border-color:#0F6E56"><div class="name">AI/코딩 강사</div><div class="role">바이브코딩·자동화</div><span class="tag" style="background:#E1F5EE;color:#0F6E56">프리랜서</span></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="note">⚠️ 점선 박스는 채용 예정 포지션입니다. 실선은 현재 인원. | REBOUND-EDU</div>
+</body></html>

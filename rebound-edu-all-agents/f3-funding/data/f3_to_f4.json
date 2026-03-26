@@ -1,0 +1,12 @@
+{
+  "_meta": {
+    "source": "F3_초기자금_에이전트",
+    "generated": "2026-03-17",
+    "target": "F4_MVP구축_에이전트"
+  },
+  "monthly_budget_for_platform": 494000,
+  "total_available_budget": 80000000,
+  "platform_budget_constraint": "월 50만원 이하 권장 (부트스트랩 모드 시 월 10만원 이하)",
+  "bootstrap_mode_available": true,
+  "recommendation": "초기에는 노코드 플랫폼(무료/저가) + Zoom으로 시작, 수강생 200명+ 돌파 후 유료 플랫폼 전환"
+}

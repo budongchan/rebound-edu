@@ -1,0 +1,175 @@
+{
+  "platforms": [
+    {
+      "name": "Teachable",
+      "type": "노코드 SaaS",
+      "monthly_cost_krw": { "free": 0, "basic": 55000, "pro": 140000 },
+      "features": { "video_hosting": true, "payment_kr": false, "payment_global": true, "quiz": true, "certificate": true, "community": true, "mobile_app": false, "api": true, "custom_domain": true, "drip_content": true },
+      "kr_payment": "Stripe 연동 (한국 카드 가능하나 불편). 토스/카카오페이 직접 불가",
+      "pros": ["UI 직관적", "무료 플랜 가능", "글로벌 확장 용이"],
+      "cons": ["한국 PG 미지원", "한국어 UI 없음", "세금계산서 자동 발행 불가"],
+      "fit_score": 55,
+      "best_for": "글로벌 시장 타겟 시"
+    },
+    {
+      "name": "Class101 Creator",
+      "type": "마켓플레이스",
+      "monthly_cost_krw": { "free": 0, "note": "매출의 30~50% 수수료" },
+      "features": { "video_hosting": true, "payment_kr": true, "payment_global": false, "quiz": false, "certificate": false, "community": false, "mobile_app": true, "api": false, "custom_domain": false, "drip_content": false },
+      "kr_payment": "클래스101이 결제 처리 (수수료 30~50%)",
+      "pros": ["한국 결제 완벽 지원", "기존 트래픽 활용", "마케팅 불필요"],
+      "cons": ["높은 수수료 (30~50%)", "브랜드 독립성 없음", "수강생 DB 미소유", "커리큘럼 자유도 제한"],
+      "fit_score": 35,
+      "best_for": "초기 테스트용 (메인 플랫폼으로 부적합)"
+    },
+    {
+      "name": "Thinkific",
+      "type": "노코드 SaaS",
+      "monthly_cost_krw": { "free": 0, "basic": 50000, "start": 120000, "grow": 250000 },
+      "features": { "video_hosting": true, "payment_kr": false, "payment_global": true, "quiz": true, "certificate": true, "community": true, "mobile_app": true, "api": true, "custom_domain": true, "drip_content": true },
+      "kr_payment": "Stripe/PayPal (한국 카드 제한적). 한국 PG 별도 연동 필요",
+      "pros": ["무료 플랜 가능", "커뮤니티 기능 강점", "모바일앱 지원"],
+      "cons": ["한국 PG 미지원", "한국어 UI 없음", "고급 기능은 고가 플랜"],
+      "fit_score": 50,
+      "best_for": "영어권 시장 또는 글로벌 확장 시"
+    },
+    {
+      "name": "자체 구축 (Notion + Zoom + 포트원)",
+      "type": "조합형 (부트스트랩 최적)",
+      "monthly_cost_krw": { "free": 0, "basic": 30000, "note": "Notion Pro + Zoom Pro + 포트원 수수료" },
+      "features": { "video_hosting": false, "payment_kr": true, "payment_global": false, "quiz": false, "certificate": false, "community": true, "mobile_app": false, "api": true, "custom_domain": true, "drip_content": false },
+      "kr_payment": "포트원(아임포트) 연동 → 토스페이먼츠/KG이니시스/카카오페이 모두 가능. 세금계산서 자동 발행 가능",
+      "pros": ["한국 결제 완벽", "초기 비용 최소", "완전한 데이터 소유", "유연한 커스터마이징", "리바운드 그룹 기존 Notion 활용"],
+      "cons": ["UI 세련도 낮음", "영상 호스팅 별도(YouTube 비공개/Vimeo)", "초기 세팅 노력 필요"],
+      "fit_score": 85,
+      "best_for": "부트스트랩 모드 최적. 한국 시장 우선. 수강생 200명까지 충분"
+    },
+    {
+      "name": "자체 개발 (Next.js + LMS)",
+      "type": "풀 커스텀 개발",
+      "monthly_cost_krw": { "basic": 500000, "note": "서버비 + 개발 인력비 별도" },
+      "features": { "video_hosting": true, "payment_kr": true, "payment_global": true, "quiz": true, "certificate": true, "community": true, "mobile_app": true, "api": true, "custom_domain": true, "drip_content": true },
+      "kr_payment": "포트원 연동으로 모든 한국 PG 지원 가능",
+      "pros": ["완전한 커스터마이징", "풀퍼널 데이터 소유", "그룹 시너지 시스템 통합", "스케일링 무한"],
+      "cons": ["초기 개발비 3천~5천만원", "개발 인력 필요", "유지보수 비용", "MVP까지 2~3개월 소요"],
+      "fit_score": 45,
+      "best_for": "수강생 500명+ 이후. Series A 이후 전환 권장"
+    }
+  ],
+  "recommendation": {
+    "phase1": {
+      "platform": "자체 구축 (Notion + Zoom + 포트원)",
+      "reason": "부트스트랩 모드에 최적. 월 3만원으로 시작 가능. 한국 결제 완벽 지원. 리바운드 그룹 기존 Notion 활용. 수강생 200명까지 충분.",
+      "stack": {
+        "landing": "HTML/CSS 랜딩페이지 (리바운드 브랜드) 또는 Notion 공개 페이지",
+        "payment": "포트원(아임포트) → 토스페이먼츠",
+        "video": "YouTube 비공개 링크 (무료) 또는 Vimeo Pro (월 $20)",
+        "live": "Zoom Pro (월 $13.33)",
+        "lms": "Notion DB (수강생 관리, 커리큘럼, 진도 추적)",
+        "community": "카카오톡 오픈채팅 또는 디스코드 (무료)",
+        "email": "스티비(Stibee) 무료 플랜 (구독자 500명까지)",
+        "analytics": "Google Analytics 4 (무료)"
+      },
+      "total_monthly_cost": 50000
+    },
+    "phase2_trigger": "수강생 200명 돌파 또는 월 매출 1,000만원 돌파 시",
+    "phase2": {
+      "platform": "자체 개발 (Next.js + LMS) 또는 Teachable/Thinkific Pro",
+      "reason": "스케일링 필요 시점. 자동화 에이전트(O4) 연동을 위해 API 필수."
+    }
+  },
+  "pg_comparison": [
+    {
+      "name": "토스페이먼츠",
+      "fee_card_pct": 3.2,
+      "fee_virtual_account_krw": 300,
+      "setup_fee": 0,
+      "monthly_fee": 0,
+      "tax_invoice": true,
+      "approval_days": "3~5영업일",
+      "pros": ["가장 빠른 심사", "개발자 문서 우수", "토스 간편결제 연동"],
+      "recommendation": "1순위 추천"
+    },
+    {
+      "name": "KG이니시스",
+      "fee_card_pct": 3.3,
+      "fee_virtual_account_krw": 300,
+      "setup_fee": 0,
+      "monthly_fee": 0,
+      "tax_invoice": true,
+      "approval_days": "5~7영업일",
+      "pros": ["가장 넓은 결제 수단", "안정성 검증"],
+      "recommendation": "2순위 (안정성 우선 시)"
+    },
+    {
+      "name": "포트원 (아임포트)",
+      "fee_card_pct": 0,
+      "fee_virtual_account_krw": 0,
+      "setup_fee": 0,
+      "monthly_fee": 0,
+      "tax_invoice": false,
+      "approval_days": "즉시 (PG사 심사 별도)",
+      "pros": ["멀티 PG 통합", "무료", "한 번 연동으로 여러 PG 전환 가능"],
+      "recommendation": "포트원으로 연동 → 토스페이먼츠를 기본 PG로 설정"
+    }
+  ],
+  "curriculum": {
+    "launch_courses": [
+      {
+        "id": "C01",
+        "category": "스터디카페 창업 과정",
+        "tier": "입문",
+        "price": 99000,
+        "format": "Zoom 라이브 3시간 + 녹화본 VOD",
+        "content": "기존 75슬라이드 강의 활용. 수익모델 분석, 입지 선정, 인테리어, 운영 노하우",
+        "ready": true,
+        "launch_priority": 1,
+        "note": "이미 콘텐츠 준비 완료. 즉시 런칭 가능"
+      },
+      {
+        "id": "C02",
+        "category": "호스텔 창업 풀사이클",
+        "tier": "심화",
+        "price": 499000,
+        "format": "VOD 20시간 + 라이브 Q&A 4회 + 교재",
+        "content": "「호스텔 창업 바이블」 기반. 입지→사업계획→인허가→시공→운영→매각",
+        "ready": false,
+        "launch_priority": 2,
+        "note": "교재 집필 중 (권진수 공저). M2~3에 런칭 목표"
+      },
+      {
+        "id": "C03",
+        "category": "바이브코딩 캠프",
+        "tier": "프리미엄",
+        "price": 1500000,
+        "format": "1박 2일 오프라인 + 사전 온라인 5시간 + 사후 멘토링 3회",
+        "content": "「고연봉 전문직 AI 시스템 설계서」 기반. Claude Code 실습. 비개발자 대상",
+        "ready": false,
+        "launch_priority": 3,
+        "note": "캠프 교재 편집 중. M4~5에 첫 회차 목표"
+      },
+      {
+        "id": "C04",
+        "category": "부동산 법인 투자 입문",
+        "tier": "입문",
+        "price": 149000,
+        "format": "VOD 8시간 + PDF 교재",
+        "content": "법인 설립, 세무, 매입 전략, 실전 사례 (기존 저서 5권 기반)",
+        "ready": true,
+        "launch_priority": 2,
+        "note": "기존 콘텐츠 활용. VOD 촬영 필요"
+      },
+      {
+        "id": "C05",
+        "category": "무료 맛보기 (리드 확보)",
+        "tier": "무료",
+        "price": 0,
+        "format": "유튜브 공개 영상 3개 + PDF 가이드",
+        "content": "호스텔 창업 체크리스트, 스터디카페 수익 시뮬레이터, AI 활용 미리보기",
+        "ready": true,
+        "launch_priority": 1,
+        "note": "리드 수집 목적. 부동찬TV 연동"
+      }
+    ]
+  }
+}

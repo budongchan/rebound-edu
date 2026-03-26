@@ -1,0 +1,418 @@
+{
+  "_meta": {
+    "source": "O4_교육운영_허브",
+    "generated": "2026-03-17",
+    "version": "1.0"
+  },
+  "hub": {
+    "name": "O4_Operations_Hub",
+    "role": "11개 서브에이전트 오케스트레이션 + 데이터 통합 + 이상 감지",
+    "status": "active"
+  },
+  "sub_agents": [
+    {
+      "id": "S01",
+      "name": "리드 캡처",
+      "priority": "P1",
+      "status": "ready",
+      "trigger": {
+        "type": "event",
+        "event": "landing_page_form_submit"
+      },
+      "input": [
+        "visitor_info",
+        "utm_source",
+        "interest_area"
+      ],
+      "output": [
+        "lead_db_entry",
+        "interest_tag"
+      ],
+      "tools": [
+        "Stibee API",
+        "Google Analytics",
+        "Notion DB"
+      ],
+      "kpi": "월간 리드 수집 수",
+      "target": "500명/월"
+    },
+    {
+      "id": "S02",
+      "name": "상담 응대",
+      "priority": "P1",
+      "status": "ready",
+      "trigger": {
+        "type": "event",
+        "event": "inquiry_received"
+      },
+      "input": [
+        "question_text",
+        "channel(kakao/email/web)"
+      ],
+      "output": [
+        "auto_response",
+        "escalation_flag"
+      ],
+      "tools": [
+        "Claude API",
+        "카카오톡채널",
+        "이메일"
+      ],
+      "kpi": "자동 응답율",
+      "target": "80%",
+      "faq_categories": [
+        "수강료",
+        "환불",
+        "수강방법",
+        "커리큘럼",
+        "자격요건"
+      ]
+    },
+    {
+      "id": "S03",
+      "name": "콘텐츠 관리",
+      "priority": "P2",
+      "status": "ready",
+      "trigger": {
+        "type": "manual",
+        "event": "course_create_update"
+      },
+      "input": [
+        "course_files(video/ppt/pdf)",
+        "metadata"
+      ],
+      "output": [
+        "course_page",
+        "access_control"
+      ],
+      "tools": [
+        "YouTube/Vimeo",
+        "Notion",
+        "Google Drive"
+      ],
+      "kpi": "콘텐츠 업데이트 주기",
+      "target": "월 2회 이상"
+    },
+    {
+      "id": "S04",
+      "name": "콘텐츠 리퍼포징",
+      "priority": "P3",
+      "status": "planned",
+      "trigger": {
+        "type": "event",
+        "event": "new_course_published"
+      },
+      "input": [
+        "original_course(video/ppt)"
+      ],
+      "output": [
+        "youtube_clip",
+        "blog_post",
+        "sns_card",
+        "email_newsletter"
+      ],
+      "tools": [
+        "영상편집",
+        "Claude API(블로그 생성)",
+        "Canva/HTML"
+      ],
+      "kpi": "원본 1건당 파생 콘텐츠 수",
+      "target": "4개 이상"
+    },
+    {
+      "id": "S05",
+      "name": "수강생 온보딩",
+      "priority": "P0",
+      "status": "ready",
+      "trigger": {
+        "type": "event",
+        "event": "payment_completed"
+      },
+      "input": [
+        "student_info",
+        "course_id",
+        "payment_info"
+      ],
+      "output": [
+        "welcome_message",
+        "learning_roadmap",
+        "community_invite"
+      ],
+      "tools": [
+        "카카오톡 알림톡",
+        "Stibee",
+        "카카오 오픈채팅"
+      ],
+      "kpi": "결제 후 24시간 내 온보딩 완료율",
+      "target": "95%",
+      "sequence": [
+        {
+          "step": 1,
+          "timing": "결제 직후",
+          "action": "결제 확인 + 수강 안내 이메일"
+        },
+        {
+          "step": 2,
+          "timing": "결제 후 1시간",
+          "action": "환영 카카오톡 + 커뮤니티 초대링크"
+        },
+        {
+          "step": 3,
+          "timing": "결제 후 24시간",
+          "action": "학습 로드맵 + 첫 강의 안내"
+        },
+        {
+          "step": 4,
+          "timing": "결제 후 3일",
+          "action": "사전 설문 (학습 목표, 경험 수준)"
+        }
+      ]
+    },
+    {
+      "id": "S06",
+      "name": "학습 진도 추적",
+      "priority": "P2",
+      "status": "ready",
+      "trigger": {
+        "type": "scheduled",
+        "cron": "daily 09:00"
+      },
+      "input": [
+        "video_watch_log",
+        "quiz_scores",
+        "assignment_submissions"
+      ],
+      "output": [
+        "progress_rate",
+        "dropout_alert",
+        "completion_certificate"
+      ],
+      "tools": [
+        "Notion DB",
+        "카카오톡 알림톡"
+      ],
+      "kpi": "완강률",
+      "target": "60%",
+      "alerts": [
+        {
+          "condition": "3일 미접속",
+          "action": "리마인더 카카오톡"
+        },
+        {
+          "condition": "7일 미접속",
+          "action": "개인 연락 (운영팀)"
+        },
+        {
+          "condition": "진도 100%",
+          "action": "수료 축하 + 수료증 발급 + S07 트리거"
+        }
+      ]
+    },
+    {
+      "id": "S07",
+      "name": "수강 후 팔로업",
+      "priority": "P4",
+      "status": "planned",
+      "trigger": {
+        "type": "event",
+        "event": "course_completed"
+      },
+      "input": [
+        "student_profile",
+        "course_id",
+        "nps_score"
+      ],
+      "output": [
+        "completion_certificate",
+        "next_course_recommendation",
+        "o5_lead_data"
+      ],
+      "tools": [
+        "WeasyPrint(수료증)",
+        "카카오톡",
+        "O5 API"
+      ],
+      "kpi": "수료→그룹서비스 전환율",
+      "target": "15%",
+      "sequence": [
+        {
+          "step": 1,
+          "timing": "수료 즉시",
+          "action": "수료증 PDF 발급 + 축하 메시지"
+        },
+        {
+          "step": 2,
+          "timing": "수료 후 1일",
+          "action": "NPS 설문 발송"
+        },
+        {
+          "step": 3,
+          "timing": "수료 후 3일",
+          "action": "다음 과정 추천 + 수료생 할인 안내"
+        },
+        {
+          "step": 4,
+          "timing": "수료 후 7일",
+          "action": "O5 시너지 에이전트에 리드 전달 (동의 시)"
+        }
+      ]
+    },
+    {
+      "id": "S08",
+      "name": "결제/정산",
+      "priority": "P0",
+      "status": "ready",
+      "trigger": {
+        "type": "event",
+        "event": "payment_event(success/refund)"
+      },
+      "input": [
+        "pg_transaction_data"
+      ],
+      "output": [
+        "payment_confirmation",
+        "tax_invoice",
+        "o1_financial_data"
+      ],
+      "tools": [
+        "포트원 API",
+        "토스페이먼츠",
+        "Stibee(영수증)"
+      ],
+      "kpi": "결제 성공률",
+      "target": "98%",
+      "refund_rules": "O3 환불규정 참조"
+    },
+    {
+      "id": "S09",
+      "name": "마케팅 자동화",
+      "priority": "P3",
+      "status": "planned",
+      "trigger": {
+        "type": "scheduled_or_event",
+        "conditions": [
+          "campaign_schedule",
+          "segment_condition"
+        ]
+      },
+      "input": [
+        "student_segment",
+        "channel_config",
+        "campaign_content"
+      ],
+      "output": [
+        "email_campaign",
+        "kakao_campaign",
+        "performance_report"
+      ],
+      "tools": [
+        "Stibee",
+        "카카오톡 알림톡",
+        "Google Analytics"
+      ],
+      "kpi": "이메일 오픈율",
+      "target": "25%",
+      "segments": [
+        "잠재(리드)",
+        "무료수강",
+        "유료수강중",
+        "수료",
+        "이탈(30일+)"
+      ]
+    },
+    {
+      "id": "S10",
+      "name": "오케스트레이터",
+      "priority": "P4",
+      "status": "planned",
+      "trigger": {
+        "type": "continuous",
+        "event": "any_sub_agent_state_change"
+      },
+      "input": [
+        "S01~S09 상태 정보"
+      ],
+      "output": [
+        "execution_order",
+        "failure_detection",
+        "escalation"
+      ],
+      "tools": [
+        "내부 이벤트 버스",
+        "Slack/카카오톡 웹훅"
+      ],
+      "kpi": "서브에이전트 가동률",
+      "target": "99%",
+      "failure_handling": "장애 시 수동 폴백 경로 + 담당자 알림"
+    },
+    {
+      "id": "S11",
+      "name": "데이터 분석",
+      "priority": "P4",
+      "status": "planned",
+      "trigger": {
+        "type": "scheduled",
+        "cron": "daily 09:00, weekly Mon 09:00, monthly 5th 09:00"
+      },
+      "input": [
+        "all_sub_agent_data"
+      ],
+      "output": [
+        "daily_dashboard",
+        "weekly_summary",
+        "monthly_report",
+        "anomaly_alerts"
+      ],
+      "tools": [
+        "Notion DB",
+        "WeasyPrint(리포트)",
+        "Slack 웹훅(알림)"
+      ],
+      "kpi": "대시보드 갱신 적시율",
+      "target": "100% (매일 09:00)"
+    }
+  ],
+  "build_priority": [
+    {
+      "phase": "P0 (즉시)",
+      "agents": [
+        "S05 온보딩",
+        "S08 결제"
+      ],
+      "reason": "결제+온보딩이 없으면 사업 불가"
+    },
+    {
+      "phase": "P1 (1주 내)",
+      "agents": [
+        "S01 리드캡처",
+        "S02 상담"
+      ],
+      "reason": "유입 파이프라인"
+    },
+    {
+      "phase": "P2 (2주 내)",
+      "agents": [
+        "S03 콘텐츠",
+        "S06 진도추적"
+      ],
+      "reason": "수강 경험 품질"
+    },
+    {
+      "phase": "P3 (3주 내)",
+      "agents": [
+        "S04 리퍼포징",
+        "S09 마케팅"
+      ],
+      "reason": "성장 엔진"
+    },
+    {
+      "phase": "P4 (4주 내)",
+      "agents": [
+        "S07 팔로업",
+        "S10 오케스트레이터",
+        "S11 분석"
+      ],
+      "reason": "최적화+통합"
+    }
+  ]
+}

@@ -1,0 +1,344 @@
+{
+  "conservative": {
+    "scenario": "conservative",
+    "govGrant": 30000000,
+    "months": [
+      {
+        "month": 1,
+        "revenue": 1575000,
+        "government_grant": 0,
+        "total_inflow": 1575000,
+        "operating_cost": 19000000,
+        "net_cashflow": -17425000,
+        "closing_balance": 12575000
+      },
+      {
+        "month": 2,
+        "revenue": 1575000,
+        "government_grant": 0,
+        "total_inflow": 1575000,
+        "operating_cost": 19000000,
+        "net_cashflow": -17425000,
+        "closing_balance": -4850000
+      },
+      {
+        "month": 3,
+        "revenue": 1575000,
+        "government_grant": 0,
+        "total_inflow": 1575000,
+        "operating_cost": 19000000,
+        "net_cashflow": -17425000,
+        "closing_balance": -22275000
+      },
+      {
+        "month": 4,
+        "revenue": 3675000,
+        "government_grant": 30000000,
+        "total_inflow": 33675000,
+        "operating_cost": 19000000,
+        "net_cashflow": 14675000,
+        "closing_balance": -7600000
+      },
+      {
+        "month": 5,
+        "revenue": 3675000,
+        "government_grant": 0,
+        "total_inflow": 3675000,
+        "operating_cost": 19000000,
+        "net_cashflow": -15325000,
+        "closing_balance": -22925000
+      },
+      {
+        "month": 6,
+        "revenue": 3675000,
+        "government_grant": 0,
+        "total_inflow": 3675000,
+        "operating_cost": 19000000,
+        "net_cashflow": -15325000,
+        "closing_balance": -38250000
+      },
+      {
+        "month": 7,
+        "revenue": 5250000,
+        "government_grant": 0,
+        "total_inflow": 5250000,
+        "operating_cost": 21280000,
+        "net_cashflow": -16030000,
+        "closing_balance": -54280000
+      },
+      {
+        "month": 8,
+        "revenue": 5250000,
+        "government_grant": 0,
+        "total_inflow": 5250000,
+        "operating_cost": 21280000,
+        "net_cashflow": -16030000,
+        "closing_balance": -70310000
+      },
+      {
+        "month": 9,
+        "revenue": 5250000,
+        "government_grant": 0,
+        "total_inflow": 5250000,
+        "operating_cost": 21280000,
+        "net_cashflow": -16030000,
+        "closing_balance": -86340000
+      },
+      {
+        "month": 10,
+        "revenue": 6825000,
+        "government_grant": 0,
+        "total_inflow": 6825000,
+        "operating_cost": 21280000,
+        "net_cashflow": -14455000,
+        "closing_balance": -100795000
+      },
+      {
+        "month": 11,
+        "revenue": 6825000,
+        "government_grant": 0,
+        "total_inflow": 6825000,
+        "operating_cost": 21280000,
+        "net_cashflow": -14455000,
+        "closing_balance": -115250000
+      },
+      {
+        "month": 12,
+        "revenue": 6825000,
+        "government_grant": 0,
+        "total_inflow": 6825000,
+        "operating_cost": 21280000,
+        "net_cashflow": -14455000,
+        "closing_balance": -129705000
+      }
+    ]
+  },
+  "base": {
+    "scenario": "base",
+    "govGrant": 50000000,
+    "months": [
+      {
+        "month": 1,
+        "revenue": 3150000,
+        "government_grant": 0,
+        "total_inflow": 3150000,
+        "operating_cost": 19000000,
+        "net_cashflow": -15850000,
+        "closing_balance": 14150000
+      },
+      {
+        "month": 2,
+        "revenue": 3150000,
+        "government_grant": 0,
+        "total_inflow": 3150000,
+        "operating_cost": 19000000,
+        "net_cashflow": -15850000,
+        "closing_balance": -1700000
+      },
+      {
+        "month": 3,
+        "revenue": 3150000,
+        "government_grant": 0,
+        "total_inflow": 3150000,
+        "operating_cost": 19000000,
+        "net_cashflow": -15850000,
+        "closing_balance": -17550000
+      },
+      {
+        "month": 4,
+        "revenue": 7350000,
+        "government_grant": 50000000,
+        "total_inflow": 57350000,
+        "operating_cost": 19000000,
+        "net_cashflow": 38350000,
+        "closing_balance": 20800000
+      },
+      {
+        "month": 5,
+        "revenue": 7350000,
+        "government_grant": 0,
+        "total_inflow": 7350000,
+        "operating_cost": 19000000,
+        "net_cashflow": -11650000,
+        "closing_balance": 9150000
+      },
+      {
+        "month": 6,
+        "revenue": 7350000,
+        "government_grant": 0,
+        "total_inflow": 7350000,
+        "operating_cost": 19000000,
+        "net_cashflow": -11650000,
+        "closing_balance": -2500000
+      },
+      {
+        "month": 7,
+        "revenue": 10500000,
+        "government_grant": 0,
+        "total_inflow": 10500000,
+        "operating_cost": 21280000,
+        "net_cashflow": -10780000,
+        "closing_balance": -13280000
+      },
+      {
+        "month": 8,
+        "revenue": 10500000,
+        "government_grant": 0,
+        "total_inflow": 10500000,
+        "operating_cost": 21280000,
+        "net_cashflow": -10780000,
+        "closing_balance": -24060000
+      },
+      {
+        "month": 9,
+        "revenue": 10500000,
+        "government_grant": 0,
+        "total_inflow": 10500000,
+        "operating_cost": 21280000,
+        "net_cashflow": -10780000,
+        "closing_balance": -34840000
+      },
+      {
+        "month": 10,
+        "revenue": 13650000,
+        "government_grant": 0,
+        "total_inflow": 13650000,
+        "operating_cost": 21280000,
+        "net_cashflow": -7630000,
+        "closing_balance": -42470000
+      },
+      {
+        "month": 11,
+        "revenue": 13650000,
+        "government_grant": 0,
+        "total_inflow": 13650000,
+        "operating_cost": 21280000,
+        "net_cashflow": -7630000,
+        "closing_balance": -50100000
+      },
+      {
+        "month": 12,
+        "revenue": 13650000,
+        "government_grant": 0,
+        "total_inflow": 13650000,
+        "operating_cost": 21280000,
+        "net_cashflow": -7630000,
+        "closing_balance": -57730000
+      }
+    ]
+  },
+  "optimistic": {
+    "scenario": "optimistic",
+    "govGrant": 70000000,
+    "months": [
+      {
+        "month": 1,
+        "revenue": 6000000,
+        "government_grant": 0,
+        "total_inflow": 6000000,
+        "operating_cost": 19000000,
+        "net_cashflow": -13000000,
+        "closing_balance": 17000000
+      },
+      {
+        "month": 2,
+        "revenue": 6000000,
+        "government_grant": 0,
+        "total_inflow": 6000000,
+        "operating_cost": 19000000,
+        "net_cashflow": -13000000,
+        "closing_balance": 4000000
+      },
+      {
+        "month": 3,
+        "revenue": 6000000,
+        "government_grant": 0,
+        "total_inflow": 6000000,
+        "operating_cost": 19000000,
+        "net_cashflow": -13000000,
+        "closing_balance": -9000000
+      },
+      {
+        "month": 4,
+        "revenue": 14000000,
+        "government_grant": 70000000,
+        "total_inflow": 84000000,
+        "operating_cost": 19000000,
+        "net_cashflow": 65000000,
+        "closing_balance": 56000000
+      },
+      {
+        "month": 5,
+        "revenue": 14000000,
+        "government_grant": 0,
+        "total_inflow": 14000000,
+        "operating_cost": 19000000,
+        "net_cashflow": -5000000,
+        "closing_balance": 51000000
+      },
+      {
+        "month": 6,
+        "revenue": 14000000,
+        "government_grant": 0,
+        "total_inflow": 14000000,
+        "operating_cost": 19000000,
+        "net_cashflow": -5000000,
+        "closing_balance": 46000000
+      },
+      {
+        "month": 7,
+        "revenue": 20000000,
+        "government_grant": 0,
+        "total_inflow": 20000000,
+        "operating_cost": 21280000,
+        "net_cashflow": -1280000,
+        "closing_balance": 44720000
+      },
+      {
+        "month": 8,
+        "revenue": 20000000,
+        "government_grant": 0,
+        "total_inflow": 20000000,
+        "operating_cost": 21280000,
+        "net_cashflow": -1280000,
+        "closing_balance": 43440000
+      },
+      {
+        "month": 9,
+        "revenue": 20000000,
+        "government_grant": 0,
+        "total_inflow": 20000000,
+        "operating_cost": 21280000,
+        "net_cashflow": -1280000,
+        "closing_balance": 42160000
+      },
+      {
+        "month": 10,
+        "revenue": 26000000,
+        "government_grant": 0,
+        "total_inflow": 26000000,
+        "operating_cost": 21280000,
+        "net_cashflow": 4720000,
+        "closing_balance": 46880000
+      },
+      {
+        "month": 11,
+        "revenue": 26000000,
+        "government_grant": 0,
+        "total_inflow": 26000000,
+        "operating_cost": 21280000,
+        "net_cashflow": 4720000,
+        "closing_balance": 51600000
+      },
+      {
+        "month": 12,
+        "revenue": 26000000,
+        "government_grant": 0,
+        "total_inflow": 26000000,
+        "operating_cost": 21280000,
+        "net_cashflow": 4720000,
+        "closing_balance": 56320000
+      }
+    ]
+  }
+}

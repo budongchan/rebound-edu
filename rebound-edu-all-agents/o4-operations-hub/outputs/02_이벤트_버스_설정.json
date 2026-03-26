@@ -1,0 +1,150 @@
+{
+  "_meta": {
+    "source": "O4_Hub",
+    "generated": "2026-03-17"
+  },
+  "events": [
+    {
+      "event": "landing_page_form_submit",
+      "source": "웹사이트",
+      "target": "S01",
+      "data": [
+        "name",
+        "email",
+        "phone",
+        "interest"
+      ]
+    },
+    {
+      "event": "inquiry_received",
+      "source": "카카오톡/이메일/웹",
+      "target": "S02",
+      "data": [
+        "channel",
+        "message",
+        "sender"
+      ]
+    },
+    {
+      "event": "payment_completed",
+      "source": "포트원/PG",
+      "target": [
+        "S05",
+        "S08"
+      ],
+      "data": [
+        "student_id",
+        "course_id",
+        "amount",
+        "method"
+      ]
+    },
+    {
+      "event": "payment_refund_requested",
+      "source": "수강생",
+      "target": "S08",
+      "data": [
+        "student_id",
+        "reason",
+        "amount"
+      ],
+      "rules": "O3 환불규정 적용"
+    },
+    {
+      "event": "video_watched",
+      "source": "YouTube/Vimeo",
+      "target": "S06",
+      "data": [
+        "student_id",
+        "video_id",
+        "watch_duration",
+        "completion_pct"
+      ]
+    },
+    {
+      "event": "course_completed",
+      "source": "S06",
+      "target": [
+        "S07",
+        "S11"
+      ],
+      "data": [
+        "student_id",
+        "course_id",
+        "completion_date",
+        "total_score"
+      ]
+    },
+    {
+      "event": "nps_submitted",
+      "source": "S07",
+      "target": [
+        "S11",
+        "O5"
+      ],
+      "data": [
+        "student_id",
+        "nps_score",
+        "feedback_text"
+      ]
+    },
+    {
+      "event": "new_course_published",
+      "source": "S03",
+      "target": [
+        "S04",
+        "S09"
+      ],
+      "data": [
+        "course_id",
+        "title",
+        "category",
+        "price"
+      ]
+    },
+    {
+      "event": "campaign_scheduled",
+      "source": "마케팅팀",
+      "target": "S09",
+      "data": [
+        "campaign_id",
+        "segment",
+        "channel",
+        "schedule"
+      ]
+    },
+    {
+      "event": "anomaly_detected",
+      "source": "S11",
+      "target": "S10",
+      "data": [
+        "metric",
+        "current_value",
+        "threshold",
+        "severity"
+      ]
+    },
+    {
+      "event": "sub_agent_failure",
+      "source": "any S01~S09",
+      "target": "S10",
+      "data": [
+        "agent_id",
+        "error_type",
+        "timestamp"
+      ]
+    }
+  ],
+  "escalation": {
+    "channels": [
+      "카카오톡 그룹채팅 (운영팀)",
+      "이메일 (대표이사)"
+    ],
+    "severity_levels": {
+      "low": "S11 알림만 (대시보드 표시)",
+      "medium": "카카오톡 운영팀 알림",
+      "high": "대표이사 직접 연락 + 수동 폴백 가동",
+      "critical": "전 에이전트 일시 중단 + 긴급 점검"
+    }
+  }
+}

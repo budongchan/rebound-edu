@@ -1,0 +1,167 @@
+{
+  "_meta": {
+    "source": "F2_사업계획서_에이전트",
+    "generated": "2026-03-17",
+    "note": "이 파일을 openpyxl로 변환하여 XLSX 생성 가능"
+  },
+  "scenarios": {
+    "conservative": {
+      "label": "보수적",
+      "years": [
+        {
+          "year": 1,
+          "students": 150,
+          "b2c_revenue": 52500000,
+          "b2b_count": 0,
+          "b2b_revenue": 0,
+          "total_revenue": 52500000,
+          "synergy_students": 23,
+          "synergy_revenue": 18400000,
+          "total_cost": 228000000,
+          "operating_income": -175500000,
+          "margin_pct": -334
+        },
+        {
+          "year": 2,
+          "students": 400,
+          "b2c_revenue": 140000000,
+          "b2b_count": 2,
+          "b2b_revenue": 20000000,
+          "total_revenue": 160000000,
+          "synergy_students": 60,
+          "synergy_revenue": 48000000,
+          "total_cost": 364800000,
+          "operating_income": -204800000,
+          "margin_pct": -128
+        },
+        {
+          "year": 3,
+          "students": 900,
+          "b2c_revenue": 315000000,
+          "b2b_count": 5,
+          "b2b_revenue": 50000000,
+          "total_revenue": 365000000,
+          "synergy_students": 135,
+          "synergy_revenue": 108000000,
+          "total_cost": 501600000.00000006,
+          "operating_income": -136600000.00000006,
+          "margin_pct": -37
+        }
+      ]
+    },
+    "base": {
+      "label": "기본",
+      "years": [
+        {
+          "year": 1,
+          "students": 250,
+          "b2c_revenue": 105000000,
+          "b2b_count": 0,
+          "b2b_revenue": 0,
+          "total_revenue": 105000000,
+          "synergy_students": 38,
+          "synergy_revenue": 30400000,
+          "total_cost": 228000000,
+          "operating_income": -123000000,
+          "margin_pct": -117
+        },
+        {
+          "year": 2,
+          "students": 700,
+          "b2c_revenue": 294000000,
+          "b2b_count": 4,
+          "b2b_revenue": 48000000,
+          "total_revenue": 342000000,
+          "synergy_students": 105,
+          "synergy_revenue": 84000000,
+          "total_cost": 364800000,
+          "operating_income": -22800000,
+          "margin_pct": -7
+        },
+        {
+          "year": 3,
+          "students": 1500,
+          "b2c_revenue": 630000000,
+          "b2b_count": 10,
+          "b2b_revenue": 120000000,
+          "total_revenue": 750000000,
+          "synergy_students": 225,
+          "synergy_revenue": 180000000,
+          "total_cost": 501600000.00000006,
+          "operating_income": 248399999.99999994,
+          "margin_pct": 33
+        }
+      ]
+    },
+    "optimistic": {
+      "label": "낙관",
+      "years": [
+        {
+          "year": 1,
+          "students": 400,
+          "b2c_revenue": 200000000,
+          "b2b_count": 0,
+          "b2b_revenue": 0,
+          "total_revenue": 200000000,
+          "synergy_students": 60,
+          "synergy_revenue": 48000000,
+          "total_cost": 228000000,
+          "operating_income": -28000000,
+          "margin_pct": -14
+        },
+        {
+          "year": 2,
+          "students": 1100,
+          "b2c_revenue": 550000000,
+          "b2b_count": 7,
+          "b2b_revenue": 105000000,
+          "total_revenue": 655000000,
+          "synergy_students": 165,
+          "synergy_revenue": 132000000,
+          "total_cost": 364800000,
+          "operating_income": 290200000,
+          "margin_pct": 44
+        },
+        {
+          "year": 3,
+          "students": 2500,
+          "b2c_revenue": 1250000000,
+          "b2b_count": 18,
+          "b2b_revenue": 270000000,
+          "total_revenue": 1520000000,
+          "synergy_students": 375,
+          "synergy_revenue": 300000000,
+          "total_cost": 501600000.00000006,
+          "operating_income": 1018400000,
+          "margin_pct": 67
+        }
+      ]
+    }
+  },
+  "costs": {
+    "y1": {
+      "personnel": 120000000,
+      "platform": 6000000,
+      "marketing": 36000000,
+      "office": 24000000,
+      "content": 18000000,
+      "legal_tax": 12000000,
+      "misc": 12000000
+    },
+    "y2_multiplier": 1.6,
+    "y3_multiplier": 2.2
+  },
+  "assumptions": {
+    "avg_price_note": "B2C 수강생 평균 결제 단가 (무료 제외)",
+    "b2b_avg_note": "기업교육 1건당 평균 계약액",
+    "synergy_rate": "수료생 중 그룹 서비스(PM/중개) 전환 비율 15%",
+    "synergy_referral_fee": "그룹 서비스 매출의 10%를 추천 수수료로 에듀가 수령",
+    "cost_growth": "Y2는 Y1 대비 1.6배, Y3는 2.2배 (인력 확충 + 마케팅 확대)"
+  },
+  "break_even": {
+    "monthly_fixed_cost": 19000000,
+    "avg_revenue_per_student": 420000,
+    "bep_students_per_month": 46,
+    "note": "월 고정비 19백만원 ÷ 수강생당 420,000원 = 월 46명 필요"
+  }
+}

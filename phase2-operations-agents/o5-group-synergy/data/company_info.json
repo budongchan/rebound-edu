@@ -1,0 +1,118 @@
+{
+  "company": {
+    "name_kr": "(주)리바운드에듀",
+    "name_en": "REBOUND EDU Co., Ltd.",
+    "type": "주식회사",
+    "headquarters": "[본점 소재지 입력 — 예: 서울특별시 종로구 ○○로 ○○, ○층]",
+    "capital": {
+      "total": 30000000,
+      "shares_total": 30000,
+      "par_value": 1000,
+      "currency": "KRW",
+      "note": "1주의 금액 1,000원 × 30,000주 = 자본금 3,000만원"
+    },
+    "business_purposes": [
+      "온라인 및 오프라인 교육 서비스업",
+      "교육 콘텐츠 기획, 제작 및 판매업",
+      "교육용 소프트웨어 개발 및 운영업",
+      "부동산 관련 교육 및 컨설팅업",
+      "숙박업 창업 교육 및 컨설팅업",
+      "공간사업(스터디카페, 코워킹스페이스) 창업 교육업",
+      "출판업 및 전자출판업",
+      "세미나, 강연, 워크숍 기획 및 운영업",
+      "프랜차이즈 교육 및 가맹사업",
+      "위 각 호에 관련된 부대사업 일체"
+    ],
+    "fiscal_year": {
+      "start": "1월 1일",
+      "end": "12월 31일"
+    }
+  },
+  "shareholders": [
+    {
+      "name": "김동찬",
+      "role": "대표이사 (CEO)",
+      "shares": 10000,
+      "share_pct": 33.3,
+      "resident_id": "[주민등록번호]",
+      "address": "[주소]",
+      "profile": "KAIST 사회적기업가 MBA, 중국 인민대학교 법학, 공인중개사, 리바운드 그룹 CEO, 만인의꿈 EXIT 경험, 저서 5권"
+    },
+    {
+      "name": "[주주B 이름]",
+      "role": "[이사/감사/대표이사 중 택1]",
+      "shares": 10000,
+      "share_pct": 33.3,
+      "resident_id": "[주민등록번호]",
+      "address": "[주소]",
+      "profile": "[주요 경력/역량]"
+    },
+    {
+      "name": "[주주C 이름]",
+      "role": "[이사/감사/대표이사 중 택1]",
+      "shares": 10000,
+      "share_pct": 33.4,
+      "resident_id": "[주민등록번호]",
+      "address": "[주소]",
+      "profile": "[주요 경력/역량]"
+    }
+  ],
+  "revenue_split": {
+    "reinvest_pct": 70,
+    "dividend_pct": 30,
+    "note": "운영이익의 70%는 사업 재투자, 30%는 주주 배당 (주주간계약서에 명시)"
+  },
+  "group_entities": [
+    {
+      "name": "(주)부동찬",
+      "representative": "김동찬",
+      "business": "PM/컨설팅 사업",
+      "relationship": "교육수료생 → PM컨설팅 의뢰 연계"
+    },
+    {
+      "name": "(주)리바운드",
+      "representative": "김동찬",
+      "business": "운영/교육 사업 (호스텔·코워킹·스터디카페)",
+      "relationship": "운영 노하우 콘텐츠 공급, 인턴/견학 연계"
+    },
+    {
+      "name": "(주)리바운드중개",
+      "representative": "김동찬",
+      "business": "중개 사업 (서울 강북권 11개 센터)",
+      "relationship": "수료생 → 상업용 매물 매칭"
+    },
+    {
+      "name": "(주)미스터홈즈중개",
+      "representative": "김동찬",
+      "business": "중개 사업",
+      "relationship": "수료생 → 매물 매칭"
+    }
+  ],
+  "special_terms": {
+    "non_compete": {
+      "scope": "온라인/오프라인 교육 서비스업, 부동산 교육업",
+      "duration_years": 2,
+      "geography": "대한민국 전역",
+      "exception": "기존 리바운드 그룹 4개 법인의 사업 활동은 경업금지 대상에서 제외"
+    },
+    "rofr": {
+      "enabled": true,
+      "notice_days": 30,
+      "note": "주주가 지분을 제3자에게 양도하고자 할 때, 나머지 주주에게 30일간 우선매수권 부여"
+    },
+    "drag_along": {
+      "enabled": true,
+      "threshold_pct": 66.7,
+      "note": "지분 66.7% 이상 주주가 매각에 동의하면 나머지 주주도 동일 조건으로 매각에 참여 의무"
+    },
+    "tag_along": {
+      "enabled": true,
+      "note": "1인 주주가 지분을 매각할 때, 나머지 주주도 동일 조건으로 매각에 참여할 권리"
+    },
+    "deadlock": {
+      "method": "외부 중재인 선임 (대한상사중재원)",
+      "escalation_days": 60,
+      "note": "주주 간 의사결정 교착 시 60일 내 해결 불가 시 외부 중재"
+    }
+  }
+}

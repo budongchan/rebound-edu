@@ -1,0 +1,41 @@
+{
+  "_meta": {
+    "source": "O1_재무회계",
+    "generated": "2026-03-17"
+  },
+  "monthly_budget": 19000000,
+  "bootstrap_budget": 8550000,
+  "tax_calendar": [
+    {
+      "month": 1,
+      "event": "부가세 2기 확정신고",
+      "deadline": "1/25"
+    },
+    {
+      "month": 3,
+      "event": "법인세 신고",
+      "deadline": "3/31"
+    },
+    {
+      "month": 7,
+      "event": "부가세 1기 확정신고",
+      "deadline": "7/25"
+    },
+    {
+      "month": 8,
+      "event": "법인세 중간예납",
+      "deadline": "8/31"
+    }
+  ],
+  "internal_transactions": [
+    "운영노하우 라이선스",
+    "PM추천 수수료",
+    "중개매칭 수수료",
+    "사무공간 임차",
+    "강사 파견"
+  ],
+  "revenue_split": {
+    "reinvest": 70,
+    "dividend": 30
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "_meta": {
+    "source": "F2_사업계획서_에이전트",
+    "generated": "2026-03-17",
+    "target": "F3_초기자금_에이전트"
+  },
+  "company": "(주)리바운드에듀",
+  "capital": 30000000,
+  "year1_revenue_estimate": {
+    "conservative": 52500000,
+    "base": 105000000,
+    "optimistic": 200000000
+  },
+  "year1_cost_estimate": 228000000,
+  "funding_needed": 123000000,
+  "break_even_students_per_month": 46,
+  "business_purposes": [
+    "온라인 및 오프라인 교육 서비스업",
+    "교육 콘텐츠 기획, 제작 및 판매업",
+    "교육용 소프트웨어 개발 및 운영업",
+    "부동산 관련 교육 및 컨설팅업",
+    "숙박업 창업 교육 및 컨설팅업",
+    "공간사업(스터디카페, 코워킹스페이스) 창업 교육업",
+    "출판업 및 전자출판업",
+    "세미나, 강연, 워크숍 기획 및 운영업",
+    "프랜차이즈 교육 및 가맹사업",
+    "위 각 호에 관련된 부대사업 일체"
+  ],
+  "team_profile": {
+    "ceo": "KAIST MBA, 공인중개사, 만인의꿈 EXIT, 저서 5권",
+    "shareholders": [
+      {
+        "name": "김동찬",
+        "share_pct": 33.3,
+        "role": "대표이사 (CEO)"
+      },
+      {
+        "name": "[주주B 이름]",
+        "share_pct": 33.3,
+        "role": "[이사/감사/대표이사 중 택1]"
+      },
+      {
+        "name": "[주주C 이름]",
+        "share_pct": 33.4,
+        "role": "[이사/감사/대표이사 중 택1]"
+      }
+    ]
+  },
+  "support_program_keywords": [
+    "예비창업패키지",
+    "초기창업패키지",
+    "사회적기업",
+    "EdTech",
+    "교육서비스",
+    "소셜벤처"
+  ]
+}

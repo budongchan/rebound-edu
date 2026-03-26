@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>REBOUND-EDU 운영 대시보드</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Noto Sans KR',sans-serif;background:#f5f5f5;color:#333;padding:20px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.header h1{font-size:22px;font-weight:700}.header h1 span{color:#FF4500}
+.header .date{font-size:13px;color:#666}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px}
+.metric{background:#fff;border-radius:10px;padding:16px;border-left:4px solid #ddd}
+.metric.up{border-left-color:#2E7D32}.metric.down{border-left-color:#C62828}.metric.neutral{border-left-color:#FF4500}
+.metric .label{font-size:12px;color:#666;margin-bottom:4px}
+.metric .value{font-size:28px;font-weight:700}
+.metric .change{font-size:12px;margin-top:4px}
+.metric .change.positive{color:#2E7D32}.metric .change.negative{color:#C62828}
+.section{background:#fff;border-radius:10px;padding:20px;margin-bottom:16px}
+.section h2{font-size:16px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #eee}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px;background:#f8f8f8;font-weight:500;color:#666}
+td{padding:8px;border-bottom:1px solid #f0f0f0}
+.status{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.status.active{background:#2E7D32}.status.planned{background:#FFA000}.status.error{background:#C62828}
+.footer{text-align:center;font-size:11px;color:#999;margin-top:24px}
+</style></head><body>
+
+<div class="header">
+  <h1><span>REBOUND</span>-EDU 운영 대시보드</h1>
+  <div class="date">2026-03-17 09:00 기준 | 매일 자동 갱신</div>
+</div>
+
+<div class="metrics">
+  <div class="metric neutral"><div class="label">총 수강생 (누적)</div><div class="value">[___]</div><div class="change">이번 달 +[__]명</div></div>
+  <div class="metric neutral"><div class="label">이번 달 매출</div><div class="value">[___]만원</div><div class="change positive">전월 대비 +[__%]</div></div>
+  <div class="metric up"><div class="label">완강률</div><div class="value">[__%]</div><div class="change positive">목표 60%</div></div>
+  <div class="metric neutral"><div class="label">NPS</div><div class="value">[__]</div><div class="change">목표 50+</div></div>
+  <div class="metric neutral"><div class="label">이번 달 리드</div><div class="value">[___]명</div><div class="change">목표 500명</div></div>
+  <div class="metric neutral"><div class="label">그룹 시너지 전환</div><div class="value">[__]건</div><div class="change">목표 15%</div></div>
+</div>
+
+<div class="section">
+  <h2>서브에이전트 상태 (11개)</h2>
+  <table>
+    <tr><th>ID</th><th>에이전트</th><th>상태</th><th>마지막 실행</th><th>오늘 처리</th><th>KPI</th></tr>
+    <tr><td>S01</td><td>리드 캡처</td><td><span class="status active"></span>가동중</td><td>[시간]</td><td>[건수]</td><td>월간 리드 수집 수: 500명/월</td></tr>
+    <tr><td>S02</td><td>상담 응대</td><td><span class="status active"></span>가동중</td><td>[시간]</td><td>[건수]</td><td>자동 응답율: 80%</td></tr>
+    <tr><td>S03</td><td>콘텐츠 관리</td><td><span class="status active"></span>가동중</td><td>[시간]</td><td>[건수]</td><td>콘텐츠 업데이트 주기: 월 2회 이상</td></tr>
+    <tr><td>S04</td><td>콘텐츠 리퍼포징</td><td><span class="status planned"></span>준비중</td><td>[시간]</td><td>[건수]</td><td>원본 1건당 파생 콘텐츠 수: 4개 이상</td></tr>
+    <tr><td>S05</td><td>수강생 온보딩</td><td><span class="status active"></span>가동중</td><td>[시간]</td><td>[건수]</td><td>결제 후 24시간 내 온보딩 완료율: 95%</td></tr>
+    <tr><td>S06</td><td>학습 진도 추적</td><td><span class="status active"></span>가동중</td><td>[시간]</td><td>[건수]</td><td>완강률: 60%</td></tr>
+    <tr><td>S07</td><td>수강 후 팔로업</td><td><span class="status planned"></span>준비중</td><td>[시간]</td><td>[건수]</td><td>수료→그룹서비스 전환율: 15%</td></tr>
+    <tr><td>S08</td><td>결제/정산</td><td><span class="status active"></span>가동중</td><td>[시간]</td><td>[건수]</td><td>결제 성공률: 98%</td></tr>
+    <tr><td>S09</td><td>마케팅 자동화</td><td><span class="status planned"></span>준비중</td><td>[시간]</td><td>[건수]</td><td>이메일 오픈율: 25%</td></tr>
+    <tr><td>S10</td><td>오케스트레이터</td><td><span class="status planned"></span>준비중</td><td>[시간]</td><td>[건수]</td><td>서브에이전트 가동률: 99%</td></tr>
+    <tr><td>S11</td><td>데이터 분석</td><td><span class="status planned"></span>준비중</td><td>[시간]</td><td>[건수]</td><td>대시보드 갱신 적시율: 100% (매일 09:00)</td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>코스별 현황</h2>
+  <table>
+    <tr><th>코스</th><th>수강생</th><th>완강률</th><th>이번 달 매출</th><th>NPS</th></tr>
+    <tr><td>스터디카페 창업 과정</td><td>[__]명</td><td>[__%]</td><td>[__]만원</td><td>[__]</td></tr>
+    <tr><td>무료 맛보기 (리드 확보)</td><td>[__]명</td><td>[__%]</td><td>[__]만원</td><td>[__]</td></tr>
+    <tr><td>호스텔 창업 풀사이클</td><td>[__]명</td><td>[__%]</td><td>[__]만원</td><td>[__]</td></tr>
+    <tr><td>부동산 법인 투자 입문</td><td>[__]명</td><td>[__%]</td><td>[__]만원</td><td>[__]</td></tr>
+    <tr><td>바이브코딩 캠프</td><td>[__]명</td><td>[__%]</td><td>[__]만원</td><td>[__]</td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>오늘의 이벤트</h2>
+  <table>
+    <tr><th>시간</th><th>이벤트</th><th>처리 에이전트</th><th>상태</th></tr>
+    <tr><td>[09:00]</td><td>[이벤트명]</td><td>[S0X]</td><td>[완료/진행중]</td></tr>
+  </table>
+</div>
+
+<div class="footer">REBOUND-EDU | O4 Operations Hub | 자동 생성 대시보드 | 2026-03-17</div>
+</body></html>

@@ -1,0 +1,75 @@
+{
+  "_meta": {
+    "source": "F4_MVP구축_에이전트",
+    "generated": "2026-03-17",
+    "target": "O4_교육운영_허브_에이전트"
+  },
+  "platform": {
+    "name": "자체 구축 (Notion + Zoom + 포트원)",
+    "stack": {
+      "landing": "HTML/CSS 랜딩페이지 (리바운드 브랜드) 또는 Notion 공개 페이지",
+      "payment": "포트원(아임포트) → 토스페이먼츠",
+      "video": "YouTube 비공개 링크 (무료) 또는 Vimeo Pro (월 $20)",
+      "live": "Zoom Pro (월 $13.33)",
+      "lms": "Notion DB (수강생 관리, 커리큘럼, 진도 추적)",
+      "community": "카카오톡 오픈채팅 또는 디스코드 (무료)",
+      "email": "스티비(Stibee) 무료 플랜 (구독자 500명까지)",
+      "analytics": "Google Analytics 4 (무료)"
+    },
+    "monthly_cost": 50000
+  },
+  "curriculum": [
+    {
+      "id": "C01",
+      "name": "스터디카페 창업 과정",
+      "tier": "입문",
+      "price": 99000,
+      "ready": true,
+      "priority": 1
+    },
+    {
+      "id": "C05",
+      "name": "무료 맛보기 (리드 확보)",
+      "tier": "무료",
+      "price": 0,
+      "ready": true,
+      "priority": 1
+    },
+    {
+      "id": "C02",
+      "name": "호스텔 창업 풀사이클",
+      "tier": "심화",
+      "price": 499000,
+      "ready": false,
+      "priority": 2
+    },
+    {
+      "id": "C04",
+      "name": "부동산 법인 투자 입문",
+      "tier": "입문",
+      "price": 149000,
+      "ready": true,
+      "priority": 2
+    },
+    {
+      "id": "C03",
+      "name": "바이브코딩 캠프",
+      "tier": "프리미엄",
+      "price": 1500000,
+      "ready": false,
+      "priority": 3
+    }
+  ],
+  "payment": {
+    "pg": "토스페이먼츠",
+    "gateway": "포트원",
+    "card_fee_pct": 3.2
+  },
+  "launch_kpi": {
+    "d7_paid_target": 5,
+    "d30_paid_target": 20,
+    "d30_free_leads_target": 500,
+    "d30_nps_target": 50
+  },
+  "phase2_trigger": "수강생 200명 돌파 또는 월 매출 1,000만원 돌파 시"
+}

@@ -1,0 +1,187 @@
+{
+  "_meta": {
+    "source": "F2_사업계획서_에이전트",
+    "generated": "2026-03-17",
+    "target": "G1_투자유치_에이전트"
+  },
+  "company": "(주)리바운드에듀",
+  "financials_3yr": {
+    "conservative": [
+      {
+        "year": 1,
+        "students": 150,
+        "b2c_revenue": 52500000,
+        "b2b_count": 0,
+        "b2b_revenue": 0,
+        "total_revenue": 52500000,
+        "synergy_students": 23,
+        "synergy_revenue": 18400000,
+        "total_cost": 228000000,
+        "operating_income": -175500000,
+        "margin_pct": -334
+      },
+      {
+        "year": 2,
+        "students": 400,
+        "b2c_revenue": 140000000,
+        "b2b_count": 2,
+        "b2b_revenue": 20000000,
+        "total_revenue": 160000000,
+        "synergy_students": 60,
+        "synergy_revenue": 48000000,
+        "total_cost": 364800000,
+        "operating_income": -204800000,
+        "margin_pct": -128
+      },
+      {
+        "year": 3,
+        "students": 900,
+        "b2c_revenue": 315000000,
+        "b2b_count": 5,
+        "b2b_revenue": 50000000,
+        "total_revenue": 365000000,
+        "synergy_students": 135,
+        "synergy_revenue": 108000000,
+        "total_cost": 501600000.00000006,
+        "operating_income": -136600000.00000006,
+        "margin_pct": -37
+      }
+    ],
+    "base": [
+      {
+        "year": 1,
+        "students": 250,
+        "b2c_revenue": 105000000,
+        "b2b_count": 0,
+        "b2b_revenue": 0,
+        "total_revenue": 105000000,
+        "synergy_students": 38,
+        "synergy_revenue": 30400000,
+        "total_cost": 228000000,
+        "operating_income": -123000000,
+        "margin_pct": -117
+      },
+      {
+        "year": 2,
+        "students": 700,
+        "b2c_revenue": 294000000,
+        "b2b_count": 4,
+        "b2b_revenue": 48000000,
+        "total_revenue": 342000000,
+        "synergy_students": 105,
+        "synergy_revenue": 84000000,
+        "total_cost": 364800000,
+        "operating_income": -22800000,
+        "margin_pct": -7
+      },
+      {
+        "year": 3,
+        "students": 1500,
+        "b2c_revenue": 630000000,
+        "b2b_count": 10,
+        "b2b_revenue": 120000000,
+        "total_revenue": 750000000,
+        "synergy_students": 225,
+        "synergy_revenue": 180000000,
+        "total_cost": 501600000.00000006,
+        "operating_income": 248399999.99999994,
+        "margin_pct": 33
+      }
+    ],
+    "optimistic": [
+      {
+        "year": 1,
+        "students": 400,
+        "b2c_revenue": 200000000,
+        "b2b_count": 0,
+        "b2b_revenue": 0,
+        "total_revenue": 200000000,
+        "synergy_students": 60,
+        "synergy_revenue": 48000000,
+        "total_cost": 228000000,
+        "operating_income": -28000000,
+        "margin_pct": -14
+      },
+      {
+        "year": 2,
+        "students": 1100,
+        "b2c_revenue": 550000000,
+        "b2b_count": 7,
+        "b2b_revenue": 105000000,
+        "total_revenue": 655000000,
+        "synergy_students": 165,
+        "synergy_revenue": 132000000,
+        "total_cost": 364800000,
+        "operating_income": 290200000,
+        "margin_pct": 44
+      },
+      {
+        "year": 3,
+        "students": 2500,
+        "b2c_revenue": 1250000000,
+        "b2b_count": 18,
+        "b2b_revenue": 270000000,
+        "total_revenue": 1520000000,
+        "synergy_students": 375,
+        "synergy_revenue": 300000000,
+        "total_cost": 501600000.00000006,
+        "operating_income": 1018400000,
+        "margin_pct": 67
+      }
+    ]
+  },
+  "market": {
+    "tam": {
+      "value_krw_billion": 14000,
+      "year": 2025,
+      "source": "한국교육학술정보원, 교육부 통계",
+      "note": "한국 전체 교육 시장 (공교육+사교육+기업교육+평생교육)"
+    },
+    "sam": {
+      "value_krw_billion": 2800,
+      "year": 2025,
+      "source": "EdTech Korea Report 2025",
+      "note": "온라인 교육 + 에듀테크 시장"
+    },
+    "som": {
+      "value_krw_billion": 85,
+      "year": 2025,
+      "source": "자체 추정",
+      "note": "부동산·숙박·공간사업 창업 교육 + AI활용 교육 온라인 시장"
+    },
+    "cagr": 12.5
+  },
+  "moat_factors": [
+    "실전 인프라",
+    "풀퍼널 수익 모델",
+    "대표 브랜드 파워",
+    "도메인 전문성 깊이"
+  ],
+  "team": [
+    {
+      "name": "김동찬",
+      "share_pct": 33.3,
+      "role": "대표이사 (CEO)"
+    },
+    {
+      "name": "[주주B 이름]",
+      "share_pct": 33.3,
+      "role": "[이사/감사/대표이사 중 택1]"
+    },
+    {
+      "name": "[주주C 이름]",
+      "share_pct": 33.4,
+      "role": "[이사/감사/대표이사 중 택1]"
+    }
+  ],
+  "group_synergy": {
+    "conversion_rate": 0.15,
+    "avg_pm_revenue": 5000000,
+    "avg_brokerage_revenue": 3000000
+  },
+  "revenue_split": {
+    "reinvest_pct": 70,
+    "dividend_pct": 30,
+    "note": "운영이익의 70%는 사업 재투자, 30%는 주주 배당 (주주간계약서에 명시)"
+  }
+}

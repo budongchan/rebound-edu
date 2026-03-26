@@ -1,0 +1,83 @@
+{
+  "competitors": [
+    {
+      "name": "클래스101",
+      "category": "종합 온라인 교육",
+      "founded": 2018,
+      "funding": "시리즈C (약 800억원 누적)",
+      "strengths": ["크리에이터 생태계", "다양한 카테고리", "글로벌 확장"],
+      "weaknesses": ["부동산/창업 특화 약함", "수익성 이슈", "콘텐츠 품질 편차"],
+      "pricing": "월 구독 19,900원 또는 개별 구매 10~30만원",
+      "real_estate_content": "제한적 (일반 재테크 수준)",
+      "differentiator_vs_rebound": "리바운드는 실제 운영 인프라(11개 센터, 5개 지점) 기반 실전 교육 제공"
+    },
+    {
+      "name": "패스트캠퍼스",
+      "category": "실무 중심 온라인 교육",
+      "founded": 2014,
+      "funding": "데이원컴퍼니 인수 (약 1,500억원 기업가치)",
+      "strengths": ["IT/데이터 분야 강점", "기업교육 B2B", "올인원 패키지"],
+      "weaknesses": ["부동산/공간사업 부재", "고가 정책", "완강률 낮음"],
+      "pricing": "과정별 30~100만원, 올인원 연 40~70만원",
+      "real_estate_content": "없음",
+      "differentiator_vs_rebound": "리바운드는 부동산·숙박·공간사업 도메인 전문성 + 실제 창업 연계"
+    },
+    {
+      "name": "인프런",
+      "category": "IT/개발 교육 플랫폼",
+      "founded": 2016,
+      "funding": "약 200억원 기업가치 추정",
+      "strengths": ["개발자 커뮤니티", "저가 정책", "강사 자율성"],
+      "weaknesses": ["비IT 분야 약함", "품질 관리 어려움"],
+      "pricing": "무료~20만원대",
+      "real_estate_content": "없음",
+      "differentiator_vs_rebound": "리바운드는 비개발자 대상 AI 활용 + 부동산 도메인 결합"
+    },
+    {
+      "name": "직방아카데미",
+      "category": "부동산 특화 교육",
+      "founded": 2020,
+      "funding": "직방 자회사",
+      "strengths": ["부동산 데이터 연동", "브랜드 인지도"],
+      "weaknesses": ["창업 교육 부재", "실전 운영 경험 부족", "매물 중개 연계 없음"],
+      "pricing": "과정별 10~50만원",
+      "real_estate_content": "투자/중개 이론 위주",
+      "differentiator_vs_rebound": "리바운드는 교육→PM→중개→운영 원스톱 풀퍼널 보유"
+    },
+    {
+      "name": "부동산학교/부동산실전아카데미",
+      "category": "부동산 투자 교육",
+      "founded": "다수 소규모 업체",
+      "funding": "자체 자금",
+      "strengths": ["실전 투자 사례", "네트워킹"],
+      "weaknesses": ["영세 운영", "체계적 커리큘럼 부재", "온라인 전환 부족"],
+      "pricing": "1회 특강 5~30만원",
+      "real_estate_content": "투자 실전 중심",
+      "differentiator_vs_rebound": "리바운드는 체계적 커리큘럼 + 온라인 플랫폼 + 후속 서비스(PM/중개) 연계"
+    }
+  ],
+  "competitive_advantage": {
+    "moat_factors": [
+      {
+        "factor": "실전 인프라",
+        "description": "11개 중개센터 + 5개 운영지점(호스텔·코워킹·스터디카페)을 보유한 교육 기업은 리바운드가 유일. 교육 수료 후 실제 창업을 원스톱으로 지원할 수 있는 인프라",
+        "defensibility": "높음 (물리적 자산 + 운영 노하우 축적에 수년 소요)"
+      },
+      {
+        "factor": "풀퍼널 수익 모델",
+        "description": "교육 수강료(입구) → PM 컨설팅비(중간) → 중개 수수료(출구)의 3단계 수익 구조. 수강생 LTV가 일반 EdTech의 3~5배",
+        "defensibility": "높음 (그룹 법인 간 시너지는 모방 난이도 최상)"
+      },
+      {
+        "factor": "대표 브랜드 파워",
+        "description": "김동찬 대표의 부동찬TV 2만 구독자 + 저서 5권 + KAIST MBA + 공인중개사 + 연쇄창업(EXIT 경험). 교육 시장에서 신뢰의 핵심",
+        "defensibility": "중간 (개인 브랜드는 이전 불가하나, 조직 브랜드로 전환 필요)"
+      },
+      {
+        "factor": "도메인 전문성 깊이",
+        "description": "부동산 중개·PM·호스텔·스터디카페·코워킹 등 공간사업 전 분야를 실제 운영 경험 기반으로 교육. 이론 교육자와의 근본적 차이",
+        "defensibility": "높음 (10년+ 현장 경험 축적)"
+      }
+    ]
+  }
+}

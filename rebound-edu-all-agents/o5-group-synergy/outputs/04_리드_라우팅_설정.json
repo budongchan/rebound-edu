@@ -1,0 +1,58 @@
+{
+  "_meta": {
+    "source": "O5_그룹시너지",
+    "generated": "2026-03-17"
+  },
+  "routing_channels": [
+    {
+      "entity": "(주)부동찬",
+      "team": "PM팀",
+      "channel": "kakaotalk",
+      "contact": "[PM팀장 카카오톡]",
+      "backup_channel": "email",
+      "backup_contact": "[PM팀 이메일]",
+      "sla_hours": 24
+    },
+    {
+      "entity": "(주)리바운드중개",
+      "team": "매물팀",
+      "channel": "kakaotalk",
+      "contact": "[매물팀 카카오톡]",
+      "backup_channel": "email",
+      "backup_contact": "[매물팀 이메일]",
+      "sla_hours": 24
+    },
+    {
+      "entity": "(주)미스터홈즈중개",
+      "team": "매물팀",
+      "channel": "kakaotalk",
+      "contact": "[미스터홈즈 카카오톡]",
+      "backup_channel": "email",
+      "backup_contact": "[미스터홈즈 이메일]",
+      "sla_hours": 24
+    },
+    {
+      "entity": "(주)리바운드",
+      "team": "운영팀",
+      "channel": "kakaotalk",
+      "contact": "[운영팀 카카오톡]",
+      "backup_channel": "email",
+      "backup_contact": "[운영팀 이메일]",
+      "sla_hours": 48
+    }
+  ],
+  "lead_template": {
+    "subject": "[리바운드에듀] 수료생 리드 전달 — {수강생명} / {과정명}",
+    "body": "수강생명: {수강생명}\n과정명: {과정명}\n수료일: {수료일}\nNPS: {nps_score}\n관심분야: {interests}\n연락처: {phone} (수강생 동의 완료)\n추천 서비스: {recommended_service}\n\n※ 24시간 내 초기 연락 부탁드립니다."
+  },
+  "tracking": {
+    "follow_up_days": [
+      3,
+      7,
+      14,
+      30
+    ],
+    "conversion_check_day": 30,
+    "report_to": "O1_재무 + G4_KPI"
+  }
+}

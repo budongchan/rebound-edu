@@ -1,0 +1,109 @@
+{
+  "programs": [
+    {
+      "id": "P01",
+      "name": "예비창업패키지",
+      "agency": "중소벤처기업부 / 창업진흥원",
+      "amount_max_krw": 100000000,
+      "duration_months": 10,
+      "target": "예비창업자 (사업자등록 전 또는 3년 이내)",
+      "match_score_factors": {
+        "founder_experience": { "score": 9, "reason": "연쇄창업 경험 + EXIT + KAIST MBA" },
+        "market_potential": { "score": 8, "reason": "EdTech 시장 12.5% CAGR 성장" },
+        "innovation": { "score": 7, "reason": "AI 에이전트 기반 교육 자동화" },
+        "social_impact": { "score": 8, "reason": "창업 교육을 통한 일자리 창출, 사회적기업 경험" }
+      },
+      "match_score_total": 32,
+      "match_pct": 80,
+      "application_period": "매년 2~3월, 7~8월 (연 2회)",
+      "key_requirements": ["사업계획서", "팀 구성 증빙", "시제품/MVP", "기술 차별성 설명"],
+      "rebound_strengths": ["만인의꿈 EXIT 경험으로 실행력 입증", "기존 그룹 인프라 활용한 빠른 사업화", "KAIST MBA 네트워크"],
+      "tips": "EdTech + 사회적기업 + 부동산 도메인의 교차점을 강조. AI 에이전트 시스템은 기술 혁신성 어필에 유리"
+    },
+    {
+      "id": "P02",
+      "name": "초기창업패키지",
+      "agency": "중소벤처기업부 / 창업진흥원",
+      "amount_max_krw": 100000000,
+      "duration_months": 10,
+      "target": "창업 3년 이내 기업",
+      "match_score_factors": {
+        "founder_experience": { "score": 9, "reason": "연쇄창업 + EXIT 경험" },
+        "revenue_traction": { "score": 6, "reason": "신설 법인이라 매출 이력 부재, 단 기존 그룹 매출 참조 가능" },
+        "scalability": { "score": 8, "reason": "온라인 교육 플랫폼은 한계비용 제로 구조" },
+        "team": { "score": 8, "reason": "3인 보완적 창업팀" }
+      },
+      "match_score_total": 31,
+      "match_pct": 78,
+      "application_period": "매년 2~4월",
+      "key_requirements": ["사업자등록증", "사업계획서", "재무추정", "팀 소개"],
+      "rebound_strengths": ["기존 4개 법인 운영 실적으로 사업 실행력 증명", "그룹 시너지 모델의 독창성"],
+      "tips": "초기창업패키지는 '매출 가능성'을 중시. 기존 그룹의 수강생 전환 파이프라인을 구체적으로 제시"
+    },
+    {
+      "id": "P03",
+      "name": "사회적기업 육성사업",
+      "agency": "고용노동부 / 한국사회적기업진흥원",
+      "amount_max_krw": 70000000,
+      "duration_months": 12,
+      "target": "사회적기업(인증/예비) 또는 사회적 목적 추구 기업",
+      "match_score_factors": {
+        "social_mission": { "score": 9, "reason": "만인의꿈(공유주거 소셜벤처) EXIT 경험. 창업 교육을 통한 일자리 창출" },
+        "sustainability": { "score": 7, "reason": "자체 수익 모델(수강료) 확보" },
+        "impact_measurement": { "score": 7, "reason": "수료생 창업률, 고용 창출 수 등 측정 가능" }
+      },
+      "match_score_total": 23,
+      "match_pct": 77,
+      "application_period": "매년 1~3월",
+      "key_requirements": ["사회적 미션 기술", "임팩트 측정 계획", "지속가능성 증빙"],
+      "rebound_strengths": ["만인의꿈 사회적기업 경험이 가장 강력한 어필 포인트", "KAIST 사회적기업가 MBA"],
+      "tips": "'부동산 공실 해결을 통한 도시재생'이라는 사회적 미션과 교육 사업을 연결. 수료생의 창업→고용 창출 임팩트 강조"
+    },
+    {
+      "id": "P04",
+      "name": "서울창업허브 입주 프로그램",
+      "agency": "서울산업진흥원 (SBA)",
+      "amount_max_krw": 50000000,
+      "duration_months": 12,
+      "target": "서울 소재 스타트업",
+      "match_score_factors": {
+        "location": { "score": 10, "reason": "본점 서울 소재" },
+        "industry_fit": { "score": 7, "reason": "EdTech/PropTech 분야" },
+        "growth_potential": { "score": 8, "reason": "그룹 인프라 기반 빠른 성장" }
+      },
+      "match_score_total": 25,
+      "match_pct": 83,
+      "application_period": "수시 모집",
+      "key_requirements": ["서울 소재 확인", "사업계획서", "팀 소개"],
+      "rebound_strengths": ["서울 7개구에 이미 거점 보유", "EdTech+PropTech 교차 분야의 독창성"],
+      "tips": "사무공간 + 멘토링 + 네트워킹이 주 혜택. 자금보다 인프라/네트워크 목적으로 신청"
+    },
+    {
+      "id": "P05",
+      "name": "TIPS (Tech Incubator Program for Startup)",
+      "agency": "중소벤처기업부",
+      "amount_max_krw": 500000000,
+      "duration_months": 36,
+      "target": "기술 기반 스타트업 (TIPS 운영사 추천 필요)",
+      "match_score_factors": {
+        "tech_innovation": { "score": 7, "reason": "AI 에이전트 시스템은 기술성 어필 가능, 단 순수 기술 스타트업 대비 약함" },
+        "team_capability": { "score": 9, "reason": "연쇄창업 + EXIT + MBA" },
+        "market_size": { "score": 8, "reason": "EdTech 2.8조 시장" },
+        "tips_referral": { "score": 5, "reason": "TIPS 운영사 추천 필요 — KAIST 네트워크 활용" }
+      },
+      "match_score_total": 29,
+      "match_pct": 58,
+      "application_period": "TIPS 운영사별 수시",
+      "key_requirements": ["TIPS 운영사 추천", "기술 혁신성 증명", "글로벌 확장 계획"],
+      "rebound_strengths": ["KAIST MBA 네트워크로 운영사 접근", "AI 에이전트 시스템의 기술성"],
+      "tips": "TIPS는 '기술'이 핵심 심사 기준. AI 에이전트 자동화 시스템을 핵심 기술로 포지셔닝. 해외 교육 시장(동남아) 확장 계획 포함"
+    }
+  ],
+  "additional_sources": [
+    { "type": "정책자금", "name": "소상공인 정책자금 (소진공)", "amount": "최대 7천만원", "note": "교육 서비스업 해당, 저금리 대출" },
+    { "type": "정책자금", "name": "중소기업 창업지원자금 (기보/신보)", "amount": "최대 1억원", "note": "신용보증 기반 대출" },
+    { "type": "엔젤투자", "name": "KAIST MBA 동문 엔젤", "amount": "3천~5천만원", "note": "개인 네트워크 기반" },
+    { "type": "엔젤투자", "name": "부동산/교육 업계 엔젤", "amount": "5천만~1억원", "note": "부동찬TV 구독자 중 투자 관심자" },
+    { "type": "자체수익", "name": "부트스트랩 (자체 매출)", "amount": "월 200~500만원", "note": "Zoom 강의 + 유튜브 → 유료 전환으로 초기 매출 확보" }
+  ]
+}

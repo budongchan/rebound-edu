@@ -1,0 +1,131 @@
+{
+  "_meta": {
+    "source": "F3_초기자금_에이전트",
+    "generated": "2026-03-17",
+    "target": "O1_재무회계_에이전트"
+  },
+  "cashflow_model": {
+    "scenario": "base",
+    "govGrant": 50000000,
+    "months": [
+      {
+        "month": 1,
+        "revenue": 3150000,
+        "government_grant": 0,
+        "total_inflow": 3150000,
+        "operating_cost": 19000000,
+        "net_cashflow": -15850000,
+        "closing_balance": 14150000
+      },
+      {
+        "month": 2,
+        "revenue": 3150000,
+        "government_grant": 0,
+        "total_inflow": 3150000,
+        "operating_cost": 19000000,
+        "net_cashflow": -15850000,
+        "closing_balance": -1700000
+      },
+      {
+        "month": 3,
+        "revenue": 3150000,
+        "government_grant": 0,
+        "total_inflow": 3150000,
+        "operating_cost": 19000000,
+        "net_cashflow": -15850000,
+        "closing_balance": -17550000
+      },
+      {
+        "month": 4,
+        "revenue": 7350000,
+        "government_grant": 50000000,
+        "total_inflow": 57350000,
+        "operating_cost": 19000000,
+        "net_cashflow": 38350000,
+        "closing_balance": 20800000
+      },
+      {
+        "month": 5,
+        "revenue": 7350000,
+        "government_grant": 0,
+        "total_inflow": 7350000,
+        "operating_cost": 19000000,
+        "net_cashflow": -11650000,
+        "closing_balance": 9150000
+      },
+      {
+        "month": 6,
+        "revenue": 7350000,
+        "government_grant": 0,
+        "total_inflow": 7350000,
+        "operating_cost": 19000000,
+        "net_cashflow": -11650000,
+        "closing_balance": -2500000
+      },
+      {
+        "month": 7,
+        "revenue": 10500000,
+        "government_grant": 0,
+        "total_inflow": 10500000,
+        "operating_cost": 21280000,
+        "net_cashflow": -10780000,
+        "closing_balance": -13280000
+      },
+      {
+        "month": 8,
+        "revenue": 10500000,
+        "government_grant": 0,
+        "total_inflow": 10500000,
+        "operating_cost": 21280000,
+        "net_cashflow": -10780000,
+        "closing_balance": -24060000
+      },
+      {
+        "month": 9,
+        "revenue": 10500000,
+        "government_grant": 0,
+        "total_inflow": 10500000,
+        "operating_cost": 21280000,
+        "net_cashflow": -10780000,
+        "closing_balance": -34840000
+      },
+      {
+        "month": 10,
+        "revenue": 13650000,
+        "government_grant": 0,
+        "total_inflow": 13650000,
+        "operating_cost": 21280000,
+        "net_cashflow": -7630000,
+        "closing_balance": -42470000
+      },
+      {
+        "month": 11,
+        "revenue": 13650000,
+        "government_grant": 0,
+        "total_inflow": 13650000,
+        "operating_cost": 21280000,
+        "net_cashflow": -7630000,
+        "closing_balance": -50100000
+      },
+      {
+        "month": 12,
+        "revenue": 13650000,
+        "government_grant": 0,
+        "total_inflow": 13650000,
+        "operating_cost": 21280000,
+        "net_cashflow": -7630000,
+        "closing_balance": -57730000
+      }
+    ]
+  },
+  "budget_baseline": {
+    "monthly_cost_target": 19000000,
+    "bootstrap_monthly_cost": 8550000,
+    "government_grant_expected": 50000000,
+    "grant_receipt_month": 4
+  },
+  "revenue_split": {
+    "reinvest_pct": 70,
+    "dividend_pct": 30
+  }
+}
