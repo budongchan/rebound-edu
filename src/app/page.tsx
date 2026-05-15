@@ -122,7 +122,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "결제 방법은 무엇이 있나요?",
-    a: "신용카드, 계좌이체, 카카오페이, 네이버페이, 토스 등 다양한 결제 수단을 지원합니다. 결제는 안전하게 처리됩니다.",
+    a: "유료 강의 결제는 Cafe24 안전결제 페이지에서 진행합니다. 카드, 계좌이체, 간편결제 등 Cafe24에서 제공하는 결제 수단을 사용할 수 있습니다.",
   },
   {
     q: "환불 정책은 어떻게 되나요?",
@@ -336,7 +336,7 @@ export default function HomePage() {
             <p className="text-sm text-gray-400 mb-8 leading-relaxed">
               100개+ 센터 오픈을 총괄한 현직 CEO가
               <br />
-              8년간의 현장 노하우를 강의로 공개합니다.
+              8년간의 현장 노하우를 강의로 공개합니다. 유료 강의 결제는 Cafe24 안전결제로 진행합니다.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
@@ -344,7 +344,7 @@ export default function HomePage() {
                 onClick={() => scrollToCourses("all")}
                 className="inline-flex items-center justify-center gap-2 bg-brand text-white px-8 py-3.5 rounded-lg text-[15px] font-semibold hover:bg-brand-dark transition"
               >
-                강의 둘러보기
+                강의 둘러보고 결제하기
                 <ArrowRight size={16} />
               </button>
               <Link

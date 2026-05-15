@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { CATEGORY_LABELS } from "@/types";
 import { formatPrice } from "@/lib/utils";
+import { getCafe24CourseUrl } from "@/lib/cafe24";
 
 export const dynamic = "force-dynamic";
 
@@ -90,7 +91,7 @@ export default async function PublicCoursesPage() {
             실전에서 바로 쓰는 강의만 모았습니다
           </h1>
           <p className="text-gray-500 max-w-2xl leading-relaxed">
-            부동산 중개, 숙박업, 투자개발, AI 자동화까지. 원하는 강의를 선택하고 로그인 후 수강 신청을 남기면 운영팀이 결제·수강 절차를 안내합니다.
+            부동산 중개, 숙박업, 투자개발, AI 자동화까지. 원하는 강의를 선택하면 상세 페이지에서 Cafe24 안전결제로 이동합니다.
           </p>
         </section>
 
@@ -112,6 +113,7 @@ export default async function PublicCoursesPage() {
                 ? Math.round((1 - course.discount_price / course.price) * 100)
                 : 0;
               const href = `/courses/${course.slug || course.id}`;
+              const cafe24Url = getCafe24CourseUrl(course);
 
               return (
                 <Link
@@ -169,7 +171,7 @@ export default async function PublicCoursesPage() {
                         </p>
                       </div>
                       <span className="shrink-0 text-xs font-bold text-white bg-brand rounded-lg px-3 py-2 group-hover:bg-brand-dark transition">
-                        신청하기
+                        {displayPrice === 0 ? "무료 신청" : cafe24Url ? "결제하기" : "상세보기"}
                       </span>
                     </div>
                   </div>

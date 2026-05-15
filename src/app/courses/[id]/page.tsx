@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORY_LABELS } from "@/types";
 import { formatPrice, formatDuration } from "@/lib/utils";
+import { getCafe24CourseUrl } from "@/lib/cafe24";
 import { getCourseContent, type CourseContent, type ScheduleInfo, type BookCover } from "@/data/course-details";
 import Badge from "@/components/ui/Badge";
 import {
@@ -40,6 +41,7 @@ import {
 interface CourseDetail {
   id: string;
   title: string;
+  slug: string | null;
   subtitle: string | null;
   description: string | null;
   price: number;
@@ -123,23 +125,6 @@ const TAB_ITEMS = [
 
 type TabKey = (typeof TAB_ITEMS)[number]["key"];
 
-const EXTERNAL_PAYMENT_URL = process.env.NEXT_PUBLIC_EXTERNAL_PAYMENT_URL || "";
-
-function buildExternalPaymentUrl(params: {
-  courseId: string;
-  title: string;
-  amount: number;
-  orderId?: string;
-}) {
-  if (!EXTERNAL_PAYMENT_URL) return "";
-  const url = new URL(EXTERNAL_PAYMENT_URL);
-  url.searchParams.set("courseId", params.courseId);
-  url.searchParams.set("courseTitle", params.title);
-  url.searchParams.set("amount", String(params.amount));
-  if (params.orderId) url.searchParams.set("orderId", params.orderId);
-  url.searchParams.set("returnUrl", `${window.location.origin}/courses/${params.courseId}`);
-  return url.toString();
-}
 
 // ─── 3D Book Mockup ─────────────────────────────────
 function BookMockup3D() {
@@ -295,7 +280,7 @@ function EnrollButton({
           ? "Google로 로그인하고 수강신청"
           : displayPrice === 0
             ? "무료 수강 신청"
-            : `수강 신청 접수 · ₩${formatPrice(displayPrice)}`}
+            : `카페24에서 결제 · ₩${formatPrice(displayPrice)}`}
     </button>
   );
 }
@@ -636,6 +621,22 @@ export default function PublicCourseDetailPage() {
   };
 
   const handleEnroll = async () => {
+    if (displayPrice > 0) {
+      const cafe24Url = getCafe24CourseUrl({
+        id: course?.id || String(id),
+        slug: course?.slug || null,
+        title: course?.title || "리바운드에듀 강의",
+      });
+
+      if (cafe24Url) {
+        window.location.href = cafe24Url;
+        return;
+      }
+
+      alert("카페24 결제 상품 연결이 아직 준비되지 않았습니다. 운영팀에 문의해 주세요.");
+      return;
+    }
+
     if (!isLoggedIn) {
       handleGoogleLogin();
       return;
@@ -649,30 +650,18 @@ export default function PublicCourseDetailPage() {
       });
       const prepareData = await prepareRes.json();
       if (!prepareRes.ok) {
-        alert(prepareData.error || "수강 신청 접수에 실패했습니다.");
+        alert(prepareData.error || "무료 수강 신청 접수에 실패했습니다.");
         setEnrolling(false);
         return;
       }
       if (prepareData.free) {
         setEnrolled(true);
         setEnrolling(false);
-        alert("수강 신청이 완료되었습니다!");
+        alert("무료 수강 신청이 완료되었습니다!");
         return;
       }
 
-      const externalPaymentUrl = buildExternalPaymentUrl({
-        courseId: course?.id || String(id),
-        title: course?.title || prepareData.orderName || "리바운드에듀 강의",
-        amount: prepareData.totalAmount || displayPrice,
-        orderId: prepareData.orderId,
-      });
-
-      if (externalPaymentUrl) {
-        window.location.href = externalPaymentUrl;
-        return;
-      }
-
-      alert("수강 신청이 접수되었습니다. 운영팀이 결제 및 수강 안내를 드리겠습니다.");
+      alert("무료 수강 신청이 접수되었습니다.");
       setEnrolling(false);
       return;
     } catch (err) {
@@ -1849,11 +1838,11 @@ export default function PublicCourseDetailPage() {
             >
               {enrolling
                 ? "처리 중..."
-                : !isLoggedIn
-                  ? "Google 로그인 후 수강신청"
-                  : displayPrice === 0
-                    ? "무료 수강 신청"
-                    : "수강 신청 접수"}
+                : displayPrice > 0
+                  ? "카페24에서 결제"
+                  : !isLoggedIn
+                    ? "Google 로그인 후 무료 수강신청"
+                    : "무료 수강 신청"}
             </button>
           )}
         </div>
