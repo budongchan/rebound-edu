@@ -103,10 +103,18 @@ export default function TermsPage() {
           </section>
 
           <section className="pt-4 border-t border-gray-100">
-            <p className="text-xs text-gray-400">
-              시행일: 2026년 3월 1일<br />
-              상호: 주식회사 리바운드 | 대표: 김동찬 | 사업자등록번호: 234-86-03564
-            </p>
+            <h2 className="text-base font-bold text-gray-900 mb-3">회사 정보</h2>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-xs text-gray-700 space-y-1">
+              <p>상호: 주식회사 리바운드</p>
+              <p>대표자: 김동찬</p>
+              <p>사업자등록번호: 234-86-03564</p>
+              <p>통신판매업 신고번호: 제2025-서울중구-1637호</p>
+              <p>법인등록번호: 110111-9085310</p>
+              <p>주소: 서울특별시 중구 청파로103길 7</p>
+              <p>대표전화: <a href="tel:02-2268-3382" className="text-brand hover:underline">02-2268-3382</a></p>
+              <p>이메일: info@rebound.io.kr</p>
+            </div>
+            <p className="text-xs text-gray-400 mt-3">시행일: 2026년 4월 12일</p>
           </section>
         </div>
       </main>

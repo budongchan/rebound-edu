@@ -119,18 +119,19 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-base font-bold text-gray-900 mb-3">8. 개인정보 보호책임자</h2>
-            <ul className="list-none space-y-1">
-              <li>성명: 김동찬</li>
-              <li>직위: 대표이사</li>
-              <li>이메일: admin@rebound.io.kr</li>
-            </ul>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm space-y-1">
+              <p><strong>성명:</strong> 김동찬</p>
+              <p><strong>직위:</strong> 대표이사</p>
+              <p><strong>상호:</strong> 주식회사 리바운드</p>
+              <p><strong>사업자등록번호:</strong> 234-86-03564</p>
+              <p><strong>주소:</strong> 서울특별시 중구 청파로103길 7</p>
+              <p><strong>대표전화:</strong> <a href="tel:02-2268-3382" className="text-brand hover:underline">02-2268-3382</a></p>
+              <p><strong>이메일:</strong> info@rebound.io.kr</p>
+            </div>
           </section>
 
           <section className="pt-4 border-t border-gray-100">
-            <p className="text-xs text-gray-400">
-              시행일: 2026년 3월 1일<br />
-              상호: 주식회사 리바운드 | 대표: 김동찬 | 사업자등록번호: 234-86-03564
-            </p>
+            <p className="text-xs text-gray-400">시행일: 2026년 4월 12일</p>
           </section>
         </div>
       </main>

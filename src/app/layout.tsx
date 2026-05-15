@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 import KakaoInAppGuide from "@/components/ui/KakaoInAppGuide";
@@ -60,6 +61,19 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "EducationalOrganization",
+              name: "리바운드에듀",
+              url: "https://edu.rebound.io.kr",
+              description: "부동산·공간사업 전문가의 교육 플랫폼",
+              provider: { "@type": "Organization", name: "주식회사 리바운드", telephone: "1644-2909" },
+            }),
+          }}
+        />
         <KakaoInAppGuide />
         {children}
         <PWAInstallBanner />
@@ -74,6 +88,10 @@ export default function RootLayout({
             `,
           }}
         />
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-8VH6L8MPPY" strategy="afterInteractive" />
+        <Script id="ga-init" strategy="afterInteractive">
+          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8VH6L8MPPY');`}
+        </Script>
       </body>
     </html>
   );

@@ -956,8 +956,11 @@ export default function HomePage() {
               <div>
                 <p className="text-xs font-bold text-gray-700 mb-3">서비스</p>
                 <div className="space-y-2">
-                  <Link href="/auth/login" className="block text-xs text-gray-400 hover:text-gray-600">
-                    시작하기
+                  <Link href="/pricing" className="block text-xs text-gray-400 hover:text-gray-600">
+                    요금 안내
+                  </Link>
+                  <Link href="/courses" className="block text-xs text-gray-400 hover:text-gray-600">
+                    강의 목록
                   </Link>
                   <Link href="/auth/login" className="block text-xs text-gray-400 hover:text-gray-600">
                     로그인
@@ -967,7 +970,12 @@ export default function HomePage() {
               <div>
                 <p className="text-xs font-bold text-gray-700 mb-3">고객지원</p>
                 <div className="space-y-2">
-                  <span className="block text-xs text-gray-400">이메일: support@rebound.co.kr</span>
+                  <a href="tel:02-2268-3382" className="block text-xs text-gray-400 hover:text-gray-600">
+                    대표전화 02-2268-3382
+                  </a>
+                  <a href="mailto:info@rebound.io.kr" className="block text-xs text-gray-400 hover:text-gray-600">
+                    info@rebound.io.kr
+                  </a>
                   <span className="block text-xs text-gray-400">운영: 평일 10:00~18:00</span>
                 </div>
               </div>
@@ -981,17 +989,19 @@ export default function HomePage() {
               <p>
                 상호: 주식회사 리바운드 | 대표: 김동찬 | 사업자등록번호: 234-86-03564 | 통신판매업신고번호: 제2025-서울중구-1637호
               </p>
-              <p>주소: 서울특별시 중구 청파로103길 7 | 이메일: support@rebound.co.kr</p>
+              <p>주소: 서울특별시 중구 청파로103길 7 | 대표전화: <a href="tel:02-2268-3382" className="hover:text-gray-600">02-2268-3382</a> | 이메일: info@rebound.io.kr</p>
               <div className="flex flex-wrap gap-3 mt-3 items-center">
+                <Link href="/pricing" className="hover:text-gray-600">요금 안내</Link>
+                <span className="text-gray-300">|</span>
                 <Link href="/terms" className="hover:text-gray-600">이용약관</Link>
                 <span className="text-gray-300">|</span>
-                <Link href="/privacy" className="font-semibold hover:text-gray-600">개인정보처리방침</Link>
+                <Link href="/privacy" className="hover:text-gray-600">개인정보처리방침</Link>
+                <span className="text-gray-300">|</span>
+                <Link href="/refund" className="hover:text-gray-600">환불 정책</Link>
                 <span className="text-gray-300">|</span>
                 <a href="https://www.ftc.go.kr/bizCommPop.do" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600">
                   사업자정보확인
                 </a>
-                <span className="text-gray-300">|</span>
-                <a href="mailto:admin@rebound.io.kr" className="hover:text-gray-600">고객센터</a>
               </div>
             </div>
             <p className="text-[11px] text-gray-300 mt-4">
