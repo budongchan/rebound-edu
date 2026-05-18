@@ -1,5 +1,7 @@
 export type UserRole = "student" | "teacher" | "staff" | "admin";
 
+export type AffiliationType = "rebound_agent" | "external_agent" | "investor" | "general";
+
 export interface User {
   id: string;
   auth_id: string;
@@ -10,8 +12,27 @@ export interface User {
   avatar_url?: string;
   is_approved: boolean;
   is_active: boolean;
+  affiliation_type?: AffiliationType | null;
+  affiliation_name?: string | null;
+  branch?: string | null;
+  marketing_agreed?: boolean;
+  profile_completed_at?: string | null;
   created_at: string;
 }
+
+export const AFFILIATION_OPTIONS: { value: AffiliationType; label: string; desc: string }[] = [
+  { value: "rebound_agent", label: "리바운드 소속 중개사", desc: "리바운드 그룹 소속" },
+  { value: "external_agent", label: "외부 중개사", desc: "타 사무소 공인중개사" },
+  { value: "investor", label: "투자자·건물주", desc: "부동산 투자/자산 관리" },
+  { value: "general", label: "일반", desc: "위 항목에 해당하지 않음" },
+];
+
+export const AFFILIATION_LABELS: Record<AffiliationType, string> = {
+  rebound_agent: "리바운드 소속 중개사",
+  external_agent: "외부 중개사",
+  investor: "투자자·건물주",
+  general: "일반",
+};
 
 export interface Course {
   id: string;

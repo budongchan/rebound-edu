@@ -49,11 +49,45 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // 로그인 상태에서 auth 페이지 접근 → 역할 선택으로
-  if (user && (path === "/auth/login" || path === "/auth/signup")) {
+  // 로그인 상태에서 auth 페이지 접근 → 역할 선택으로 (단, complete-profile/pending은 통과)
+  if (
+    user &&
+    (path === "/auth/login" || path === "/auth/signup")
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/select-role";
     return NextResponse.redirect(url);
+  }
+
+  // ★ 로그인 상태인데 필수정보 미완성 → /auth/complete-profile 강제
+  //   대상 경로: 보호경로(/student·teacher·staff·admin) + /auth/select-role
+  //   허용 경로: /auth/complete-profile, /auth/pending, /auth/callback, 공개 페이지
+  if (user) {
+    const needsProfileCheck =
+      isProtected || path === "/auth/select-role";
+
+    if (needsProfileCheck) {
+      const { data: profile } = await supabase
+        .from("users")
+        .select("phone, affiliation_type, affiliation_name")
+        .eq("auth_id", user.id)
+        .single();
+
+      const isProfileComplete =
+        !!profile &&
+        !!profile.phone &&
+        !!profile.affiliation_type &&
+        !!profile.affiliation_name;
+
+      if (!isProfileComplete) {
+        const url = request.nextUrl.clone();
+        url.pathname = "/auth/complete-profile";
+        if (isProtected) {
+          url.searchParams.set("redirect", path);
+        }
+        return NextResponse.redirect(url);
+      }
+    }
   }
 
   return supabaseResponse;

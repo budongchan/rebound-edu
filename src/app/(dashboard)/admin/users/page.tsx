@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { ROLE_LABELS, type UserRole } from "@/types";
+import { ROLE_LABELS, type UserRole, AFFILIATION_LABELS, type AffiliationType } from "@/types";
 import Badge from "@/components/ui/Badge";
 import { formatDate } from "@/lib/utils";
 import { Search, Users, Shield } from "lucide-react";
@@ -11,11 +11,24 @@ interface UserRow {
   id: string;
   email: string;
   name: string;
+  phone: string | null;
   role: UserRole;
   is_active: boolean;
   is_approved: boolean;
+  affiliation_type: AffiliationType | null;
+  affiliation_name: string | null;
+  branch: string | null;
   created_at: string;
 }
+
+const AFFILIATION_FILTERS = [
+  { value: "all", label: "전체 소속" },
+  { value: "rebound_agent", label: "리바운드 중개사" },
+  { value: "external_agent", label: "외부 중개사" },
+  { value: "investor", label: "투자자·건물주" },
+  { value: "general", label: "일반" },
+  { value: "none", label: "미입력" },
+];
 
 const ROLE_COLORS: Record<string, "blue" | "green" | "amber" | "red"> = {
   student: "blue",
@@ -36,6 +49,7 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [roleFilter, setRoleFilter] = useState("all");
+  const [affiliationFilter, setAffiliationFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [showPendingOnly, setShowPendingOnly] = useState(false);
 
@@ -47,7 +61,7 @@ export default function AdminUsersPage() {
     const supabase = createClient();
     const { data } = await supabase
       .from("users")
-      .select("id, email, name, role, is_active, is_approved, created_at")
+      .select("id, email, name, phone, role, is_active, is_approved, affiliation_type, affiliation_name, branch, created_at")
       .order("created_at", { ascending: false });
 
     setUsers((data as UserRow[]) || []);
@@ -74,10 +88,22 @@ export default function AdminUsersPage() {
 
   let filtered = users;
   if (roleFilter !== "all") filtered = filtered.filter((u) => u.role === roleFilter);
+  if (affiliationFilter !== "all") {
+    if (affiliationFilter === "none") {
+      filtered = filtered.filter((u) => !u.affiliation_type);
+    } else {
+      filtered = filtered.filter((u) => u.affiliation_type === affiliationFilter);
+    }
+  }
   if (showPendingOnly) filtered = filtered.filter((u) => !u.is_approved && u.role !== "student");
   if (search.trim()) {
     const q = search.trim().toLowerCase();
-    filtered = filtered.filter((u) => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
+    filtered = filtered.filter((u) =>
+      u.name.toLowerCase().includes(q) ||
+      u.email.toLowerCase().includes(q) ||
+      (u.affiliation_name && u.affiliation_name.toLowerCase().includes(q)) ||
+      (u.phone && u.phone.includes(q))
+    );
   }
 
   if (loading) {
@@ -98,7 +124,7 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-3 mb-4 flex-wrap">
+      <div className="flex items-center gap-3 mb-3 flex-wrap">
         <div className="flex gap-2">
           {ROLE_FILTERS.map((f) => (
             <button
@@ -108,6 +134,23 @@ export default function AdminUsersPage() {
                 roleFilter === f.value
                   ? "bg-brand text-white"
                   : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="flex items-center gap-3 mb-4 flex-wrap">
+        <div className="flex gap-2 flex-wrap">
+          {AFFILIATION_FILTERS.map((f) => (
+            <button
+              key={f.value}
+              onClick={() => setAffiliationFilter(f.value)}
+              className={`px-2.5 py-1 rounded-full text-xs font-medium transition ${
+                affiliationFilter === f.value
+                  ? "bg-gray-900 text-white"
+                  : "bg-white text-gray-500 border border-gray-200 hover:border-gray-300"
               }`}
             >
               {f.label}
@@ -150,6 +193,7 @@ export default function AdminUsersPage() {
             <thead>
               <tr className="border-b border-gray-100">
                 <th className="text-left text-xs text-gray-500 font-medium px-4 py-3">사용자</th>
+                <th className="text-left text-xs text-gray-500 font-medium px-4 py-3">소속</th>
                 <th className="text-left text-xs text-gray-500 font-medium px-4 py-3">역할</th>
                 <th className="text-left text-xs text-gray-500 font-medium px-4 py-3">상태</th>
                 <th className="text-left text-xs text-gray-500 font-medium px-4 py-3">가입일</th>
@@ -162,6 +206,23 @@ export default function AdminUsersPage() {
                   <td className="px-4 py-3">
                     <p className="text-sm font-medium text-gray-900">{u.name}</p>
                     <p className="text-xs text-gray-400">{u.email}</p>
+                    {u.phone && (
+                      <p className="text-[11px] text-gray-400 mt-0.5">{u.phone}</p>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    {u.affiliation_type ? (
+                      <>
+                        <p className="text-xs font-medium text-gray-700">
+                          {AFFILIATION_LABELS[u.affiliation_type]}
+                        </p>
+                        {u.affiliation_name && (
+                          <p className="text-[11px] text-gray-400">{u.affiliation_name}{u.branch ? ` · ${u.branch}` : ""}</p>
+                        )}
+                      </>
+                    ) : (
+                      <span className="text-[11px] text-gray-300">미입력</span>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <select

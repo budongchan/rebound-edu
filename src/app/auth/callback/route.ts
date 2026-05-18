@@ -12,14 +12,14 @@ export async function GET(request: Request) {
     if (!error && user) {
       const { data: existing } = await supabase
         .from("users")
-        .select("id, phone")
+        .select("id, phone, affiliation_type, affiliation_name")
         .eq("auth_id", user.id)
         .single();
 
       const redirect = searchParams.get("redirect");
 
       if (!existing) {
-        // 첫 소셜 로그인: users 기본 레코드 생성 (phone 비어있음)
+        // 첫 소셜 로그인: users 기본 레코드 생성 (phone·affiliation 비어있음)
         await supabase.from("users").insert({
           auth_id: user.id,
           email: user.email || "",
@@ -34,8 +34,11 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${origin}/auth/complete-profile${rp}`);
       }
 
-      // 기존 유저: phone 없으면 추가 정보 입력
-      if (!existing.phone) {
+      // 기존 유저: 필수정보(phone + affiliation_type + affiliation_name) 미완성 시 추가 입력
+      const isProfileComplete =
+        !!existing.phone && !!existing.affiliation_type && !!existing.affiliation_name;
+
+      if (!isProfileComplete) {
         const rp = redirect ? `?redirect=${encodeURIComponent(redirect)}` : "";
         return NextResponse.redirect(`${origin}/auth/complete-profile${rp}`);
       }

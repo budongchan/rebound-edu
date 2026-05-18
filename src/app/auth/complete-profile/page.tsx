@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import type { UserRole } from "@/types";
+import type { UserRole, AffiliationType } from "@/types";
+import { AFFILIATION_OPTIONS } from "@/types";
 
 const ROLE_OPTIONS: { value: UserRole; label: string; desc: string }[] = [
   { value: "student", label: "고객(수강생)", desc: "바로 이용 가능" },
@@ -15,8 +16,8 @@ const ROLE_OPTIONS: { value: UserRole; label: string; desc: string }[] = [
 const PRIVACY_POLICY = `주식회사 리바운드(이하 '회사')는 리바운드에듀 서비스 제공을 위해 아래와 같이 개인정보를 수집·이용합니다.
 
 1. 수집하는 개인정보 항목
-  - 필수: 이름, 이메일 주소, 연락처(휴대전화번호)
-  - 선택: 관심 분야, 프로필 사진
+  - 필수: 이름, 이메일 주소, 연락처(휴대전화번호), 소속구분, 소속명
+  - 선택: 지점, 관심 분야, 프로필 사진
 
 2. 개인정보의 수집·이용 목적
   - 회원 가입 및 본인 확인
@@ -44,6 +45,9 @@ function CompleteProfileForm() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState<UserRole>("student");
+  const [affiliationType, setAffiliationType] = useState<AffiliationType | "">("");
+  const [affiliationName, setAffiliationName] = useState("");
+  const [branch, setBranch] = useState("");
   const [agreePrivacy, setAgreePrivacy] = useState(false);
   const [agreeMarketing, setAgreeMarketing] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
@@ -65,14 +69,19 @@ function CompleteProfileForm() {
       // 기존 프로필 정보 불러오기
       const { data: profile } = await supabase
         .from("users")
-        .select("name, phone, email")
+        .select("name, phone, email, affiliation_type, affiliation_name, branch")
         .eq("auth_id", user.id)
         .single();
 
       if (profile) {
         if (profile.name) setName(profile.name);
-        if (profile.phone) {
-          // 이미 phone 있으면 이 페이지에 올 이유 없음
+        if (profile.phone) setPhone(formatPhone(profile.phone));
+        if (profile.affiliation_type) setAffiliationType(profile.affiliation_type);
+        if (profile.affiliation_name) setAffiliationName(profile.affiliation_name);
+        if (profile.branch) setBranch(profile.branch);
+
+        // 모든 필수 정보가 채워져 있으면 select-role로 보냄
+        if (profile.phone && profile.affiliation_type && profile.affiliation_name) {
           router.push("/auth/select-role");
           return;
         }
@@ -102,6 +111,8 @@ function CompleteProfileForm() {
     if (!phone.trim()) return setError("연락처를 입력해주세요.");
     if (phone.replace(/[^0-9]/g, "").length < 10)
       return setError("올바른 연락처를 입력해주세요.");
+    if (!affiliationType) return setError("소속 구분을 선택해주세요.");
+    if (!affiliationName.trim()) return setError("소속명을 입력해주세요.");
     if (!agreePrivacy)
       return setError("개인정보 수집 및 이용에 동의해주세요.");
 
@@ -121,6 +132,11 @@ function CompleteProfileForm() {
         name: name.trim(),
         phone: phone.replace(/[^0-9]/g, ""),
         role,
+        affiliation_type: affiliationType,
+        affiliation_name: affiliationName.trim(),
+        branch: branch.trim() || null,
+        marketing_agreed: agreeMarketing,
+        profile_completed_at: new Date().toISOString(),
         is_approved: role === "student",
       })
       .eq("auth_id", user.id);
@@ -152,7 +168,7 @@ function CompleteProfileForm() {
     <div className="w-full max-w-[440px]">
       <div className="text-center mb-8">
         <Link href="/" className="inline-flex items-center gap-0.5">
-          
+
             <div className="w-10 h-10 rounded-xl bg-brand flex items-center justify-center shadow-md mr-2">
               <span className="text-white font-black text-xl">R</span>
             </div>
@@ -209,6 +225,71 @@ function CompleteProfileForm() {
                 value={phone}
                 onChange={(e) => setPhone(formatPhone(e.target.value))}
                 maxLength={13}
+                className="w-full h-11 px-3.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-brand transition"
+              />
+            </div>
+          </div>
+
+          {/* 소속 구분 */}
+          <div className="mb-5">
+            <label className="block text-[13px] font-semibold text-gray-600 mb-2.5">
+              소속 구분 <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {AFFILIATION_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setAffiliationType(opt.value)}
+                  className={`p-3 rounded-lg text-left transition ${
+                    affiliationType === opt.value
+                      ? "border-2 border-brand bg-brand-light"
+                      : "border border-gray-200 bg-white hover:border-gray-300"
+                  }`}
+                >
+                  <p className={`text-sm font-semibold ${affiliationType === opt.value ? "text-brand" : "text-gray-900"}`}>
+                    {opt.label}
+                  </p>
+                  <p className={`text-[11px] mt-0.5 ${affiliationType === opt.value ? "text-orange-700" : "text-gray-400"}`}>
+                    {opt.desc}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 소속명 + 지점 */}
+          <div className="space-y-3 mb-5">
+            <div>
+              <label className="block text-[13px] font-semibold text-gray-600 mb-1.5">
+                소속명 <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                placeholder={
+                  affiliationType === "rebound_agent"
+                    ? "예) 리바운드부동산"
+                    : affiliationType === "external_agent"
+                    ? "예) ○○공인중개사사무소"
+                    : affiliationType === "investor"
+                    ? "예) ○○자산운용 / 개인"
+                    : "예) ○○회사 / 프리랜서 / 학생"
+                }
+                required
+                value={affiliationName}
+                onChange={(e) => setAffiliationName(e.target.value)}
+                className="w-full h-11 px-3.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-brand transition"
+              />
+            </div>
+            <div>
+              <label className="block text-[13px] font-semibold text-gray-600 mb-1.5">
+                지점/지역 <span className="text-gray-400 text-[11px]">(선택)</span>
+              </label>
+              <input
+                type="text"
+                placeholder="예) 강남점 / 서울 강남구"
+                value={branch}
+                onChange={(e) => setBranch(e.target.value)}
                 className="w-full h-11 px-3.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-brand transition"
               />
             </div>
