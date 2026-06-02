@@ -23,7 +23,7 @@ export default function CoursesPage() {
           </h1>
           <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-ink-soft">
             실전에서 바로 쓰는 강의만 모았습니다. 부동산 중개, 숙박업, 투자개발, AI 자동화까지.
-            원하는 강의를 선택하면 상세 페이지에서 Cafe24 안전결제로 이동합니다.
+            원하는 강의를 선택하면 상세 페이지에서 신청·결제(계좌이체)로 이동합니다.
           </p>
         </section>
 

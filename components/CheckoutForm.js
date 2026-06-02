@@ -5,10 +5,12 @@ import Link from "next/link";
 import { formatPrice } from "@/lib/courses";
 
 export default function CheckoutForm({ course }) {
-  const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", depositName: "" });
   const [agree, setAgree] = useState(false);
-  const [status, setStatus] = useState("idle"); // idle | loading | pending | done | error
+  const [status, setStatus] = useState("idle"); // idle | loading | bank | done | error
   const [message, setMessage] = useState("");
+  const [order, setOrder] = useState(null); // 무통장입금 안내 데이터
+  const [copied, setCopied] = useState(false);
 
   const isFree = course.free || course.price === 0;
   const valid =
@@ -32,27 +34,36 @@ export default function CheckoutForm({ course }) {
         body: JSON.stringify({ courseId: course.id, buyer: form }),
       });
       const data = await res.json();
-      if (data.redirectUrl) {
-        window.location.href = data.redirectUrl;
-        return;
-      }
       if (data.status === "free_enrolled") {
         setStatus("done");
         setMessage(data.message || "신청이 완료되었습니다.");
         return;
       }
-      // Cafe24 실연동 키 미주입 상태 — 플로우 확인용 안내
-      setStatus("pending");
-      setMessage(data.message || "결제 연동 준비 중입니다.");
+      if (data.status === "bank_transfer") {
+        setOrder(data);
+        setStatus("bank");
+        return;
+      }
+      setStatus("error");
+      setMessage(data.message || "요청을 처리할 수 없습니다.");
     } catch {
       setStatus("error");
       setMessage("요청 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
     }
   }
 
+  function copyAccount() {
+    if (!order) return;
+    navigator.clipboard?.writeText(order.bank.account.replace(/\s/g, "")).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    });
+  }
+
+  // 무료 신청 완료
   if (status === "done") {
     return (
-      <div className="rounded-2xl border border-line bg-paper p-8 text-center">
+      <div className="mx-auto max-w-lg rounded-2xl border border-line bg-paper p-8 text-center">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand text-2xl text-white">✓</div>
         <h2 className="mt-5 text-[20px] font-extrabold text-ink">신청이 완료되었습니다</h2>
         <p className="mt-2 text-[14px] text-ink-soft">{message}</p>
@@ -63,9 +74,59 @@ export default function CheckoutForm({ course }) {
     );
   }
 
+  // 유료 — 무통장입금 안내
+  if (status === "bank" && order) {
+    return (
+      <div className="mx-auto max-w-lg">
+        <div className="rounded-2xl border border-line bg-paper p-8">
+          <div className="text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-ink text-2xl text-white">₩</div>
+            <h2 className="mt-5 text-[20px] font-extrabold text-ink">입금 안내</h2>
+            <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
+              주문이 접수되었습니다. 아래 계좌로 입금해 주시면<br />
+              입금 확인 후 수강 안내를 보내드립니다.
+            </p>
+          </div>
+
+          <div className="mt-6 rounded-xl bg-cream p-5">
+            <Row label="주문번호" value={order.order} mono />
+            <Row label="강의" value={order.courseTitle} />
+            <Row label="입금 금액" value={order.amountText} strong />
+            <div className="my-3 border-t border-line" />
+            <Row label="은행" value={order.bank.name} />
+            <div className="flex items-center justify-between py-1.5">
+              <span className="text-[13px] text-ink-soft">계좌번호</span>
+              <button
+                onClick={copyAccount}
+                className="flex items-center gap-2 text-[14px] font-bold text-ink hover:text-brand"
+              >
+                <span className="font-mono">{order.bank.account}</span>
+                <span className="rounded-md bg-ink px-2 py-0.5 text-[11px] font-semibold text-white">
+                  {copied ? "복사됨" : "복사"}
+                </span>
+              </button>
+            </div>
+            <Row label="예금주" value={order.bank.holder} />
+            <Row label="입금자명" value={order.depositName} strong />
+          </div>
+
+          <p className="mt-4 rounded-lg border border-brand/20 bg-brand/5 p-3 text-[12px] leading-relaxed text-brand-dark">
+            · 입금자명을 <b>{order.depositName}</b>(으)로 해주시면 확인이 빠릅니다.<br />
+            · {order.bank.deadlineHours}시간 내 미입금 시 주문이 자동 취소될 수 있습니다.<br />
+            · 입금 확인 안내는 입력하신 연락처/이메일로 보내드립니다.
+          </p>
+
+          <Link href="/courses" className="mt-6 block rounded-xl bg-ink px-6 py-3 text-center text-[14px] font-bold text-white">
+            다른 강의 보기
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // 주문 폼
   return (
     <form onSubmit={handleSubmit} className="grid gap-8 lg:grid-cols-[1fr_360px]">
-      {/* 주문자 정보 */}
       <div className="min-w-0 space-y-6">
         <div className="rounded-2xl border border-line bg-paper p-7">
           <h2 className="text-[18px] font-extrabold text-ink">주문자 정보</h2>
@@ -73,9 +134,17 @@ export default function CheckoutForm({ course }) {
             <Field label="이름" value={form.name} onChange={(v) => update("name", v)} placeholder="홍길동" />
             <Field label="이메일" type="email" value={form.email} onChange={(v) => update("email", v)} placeholder="example@email.com" />
             <Field label="연락처" value={form.phone} onChange={(v) => update("phone", v)} placeholder="010-0000-0000" />
+            {!isFree && (
+              <Field
+                label="입금자명 (선택)"
+                value={form.depositName}
+                onChange={(v) => update("depositName", v)}
+                placeholder="이름과 다를 경우 입력"
+              />
+            )}
           </div>
           <p className="mt-3 text-[12px] text-ink-soft/80">
-            강의 수강 안내와 영수증 발송에 사용됩니다.
+            강의 수강 안내와 입금 확인에 사용됩니다.
           </p>
         </div>
 
@@ -95,14 +164,13 @@ export default function CheckoutForm({ course }) {
           </label>
         </div>
 
-        {(status === "pending" || status === "error") && (
-          <div className={`rounded-xl border p-4 text-[13px] ${status === "error" ? "border-brand/40 bg-brand/5 text-brand-dark" : "border-line bg-cream text-ink-soft"}`}>
+        {status === "error" && (
+          <div className="rounded-xl border border-brand/40 bg-brand/5 p-4 text-[13px] text-brand-dark">
             {message}
           </div>
         )}
       </div>
 
-      {/* 주문 요약 */}
       <aside className="lg:sticky lg:top-24 lg:self-start">
         <div className="rounded-2xl border border-line bg-paper p-6">
           <h2 className="text-[16px] font-extrabold text-ink">주문 요약</h2>
@@ -118,7 +186,7 @@ export default function CheckoutForm({ course }) {
               </>
             ) : null}
             <div className="flex items-baseline justify-between border-t border-line pt-3">
-              <dt className="text-[14px] font-bold text-ink">결제 금액</dt>
+              <dt className="text-[14px] font-bold text-ink">{isFree ? "수강료" : "입금 금액"}</dt>
               <dd className="text-[22px] font-black text-ink">{formatPrice(course.price)}</dd>
             </div>
           </dl>
@@ -128,14 +196,27 @@ export default function CheckoutForm({ course }) {
             disabled={!valid || status === "loading"}
             className="mt-5 w-full rounded-xl bg-brand px-5 py-3.5 text-[15px] font-bold text-white transition-all enabled:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {status === "loading" ? "처리 중…" : isFree ? "무료 신청하기" : "Cafe24 안전결제로 결제"}
+            {status === "loading" ? "처리 중…" : isFree ? "무료 신청하기" : "계좌이체로 신청하기"}
           </button>
           <p className="mt-3 text-center text-[12px] text-ink-soft/80">
-            {isFree ? "로그인 후 바로 신청됩니다." : "결제 버튼을 누르면 Cafe24 안전결제 창으로 이동합니다."}
+            {isFree
+              ? "로그인 없이 바로 신청됩니다."
+              : "신청 후 입금 계좌가 안내됩니다. (무통장입금)"}
           </p>
         </div>
       </aside>
     </form>
+  );
+}
+
+function Row({ label, value, strong, mono }) {
+  return (
+    <div className="flex items-center justify-between py-1.5">
+      <span className="text-[13px] text-ink-soft">{label}</span>
+      <span className={`${strong ? "text-[15px] font-black text-ink" : "text-[14px] font-semibold text-ink"} ${mono ? "font-mono" : ""}`}>
+        {value}
+      </span>
+    </div>
   );
 }
 

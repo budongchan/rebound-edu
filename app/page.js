@@ -27,7 +27,7 @@ const STEPS = [
 ];
 
 const FAQ = [
-  { q: "강의는 어떻게 결제하나요?", a: "강의 상세 페이지에서 결제하기를 누르면 Cafe24 안전결제로 이동합니다. 카드·간편결제 등을 지원합니다." },
+  { q: "강의는 어떻게 결제하나요?", a: "강의 상세 페이지에서 신청하기를 누르고 주문자 정보를 입력하면, 입금 계좌가 안내됩니다. 안내된 계좌로 입금(계좌이체)하시면 확인 후 수강 안내를 보내드립니다." },
   { q: "환불이 가능한가요?", a: "수강 시작 전 또는 콘텐츠 미열람 시 환불정책에 따라 환불됩니다. 자세한 기준은 환불정책 페이지를 확인해 주세요." },
   { q: "강사로 참여하고 싶어요.", a: "현장 전문가라면 누구나 강의를 등록할 수 있습니다. 기획·촬영·편집·마케팅을 플랫폼이 지원합니다. 문의 주시면 안내드립니다." },
   { q: "강의를 들은 뒤 컨설팅을 의뢰할 수 있나요?", a: "네. 수업 후 전문가에게 직접 컨설팅·서비스를 의뢰할 수 있습니다. 교육이 곧 비즈니스로 이어집니다." },
@@ -68,7 +68,7 @@ export default function Home() {
                 </Link>
               </div>
               <p className="mt-3 text-[12px] text-white/45">
-                유료 강의 결제는 Cafe24 안전결제로 진행합니다.
+                유료 강의 결제는 계좌이체(무통장입금)로 진행합니다.
               </p>
             </div>
 
@@ -176,7 +176,7 @@ export default function Home() {
         <section className="bg-ink py-16 text-center text-white">
           <div className="container-edu">
             <h2 className="text-[26px] font-black sm:text-[32px]">지금, 현장의 노하우를 배우세요</h2>
-            <p className="mt-3 text-[15px] text-white/70">강의를 둘러보고 Cafe24 안전결제로 바로 시작할 수 있습니다.</p>
+            <p className="mt-3 text-[15px] text-white/70">강의를 둘러보고 계좌이체로 바로 신청할 수 있습니다.</p>
             <Link href="/courses" className="mt-7 inline-block rounded-xl bg-brand px-7 py-3.5 text-[15px] font-bold transition-transform hover:-translate-y-0.5">
               강의 둘러보기
             </Link>

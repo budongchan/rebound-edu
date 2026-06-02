@@ -147,7 +147,7 @@ export default async function CourseDetail({ params }) {
                 {course.free ? "무료 신청하기" : "결제하기"}
               </Link>
               <p className="mt-3 text-center text-[12px] text-ink-soft/80">
-                {course.free ? "로그인 후 바로 신청됩니다." : "Cafe24 안전결제로 진행됩니다."}
+                {course.free ? "로그인 후 바로 신청됩니다." : "신청 후 입금 계좌가 안내됩니다. (무통장입금)"}
               </p>
 
               <dl className="mt-6 space-y-2.5 border-t border-line pt-5 text-[13px]">

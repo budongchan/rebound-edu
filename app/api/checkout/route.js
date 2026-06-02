@@ -1,13 +1,20 @@
 import { NextResponse } from "next/server";
 import { getCourse, formatPrice } from "@/lib/courses";
+import { BANK } from "@/lib/company";
 
-// 결제 시작 엔드포인트.
-// P1: 주문 검증 + 무료강의 즉시 신청 처리 + Cafe24 안전결제 연동 자리(置).
-//
-// Cafe24 실연동을 켜려면 아래 env를 Vercel Production에 주입:
-//   CAFE24_MALL_ID, CAFE24_CLIENT_ID, CAFE24_CLIENT_SECRET,
-//   CAFE24_PAYMENT_RETURN_URL (예: https://edu.rebound.io.kr/billing/cafe24-success)
-// env가 있으면 Cafe24 결제창 URL을 생성해 redirectUrl로 반환하도록 확장한다.
+// 결제 시작 엔드포인트 — 무통장입금(계좌이체) 방식.
+// P1: 주문 검증 + 무료강의 즉시 신청 + 유료강의 입금 안내(주문번호·계좌·금액) 반환.
+// 입금 확인은 운영자 수동 확인 또는 추후 입금 SMS 파싱으로 자동화 (P2: Supabase orders 적재).
+
+function orderNo() {
+  // RB + YYMMDD + 4자리 시퀀스(시간 기반) — 입금자 식별용 주문번호
+  const d = new Date();
+  const yy = String(d.getFullYear()).slice(2);
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const seq = String(d.getTime()).slice(-4);
+  return `RB${yy}${mm}${dd}${seq}`;
+}
 
 export async function POST(req) {
   let body;
@@ -35,22 +42,23 @@ export async function POST(req) {
     });
   }
 
-  const cafe24Ready =
-    process.env.CAFE24_MALL_ID &&
-    process.env.CAFE24_CLIENT_ID &&
-    process.env.CAFE24_CLIENT_SECRET;
-
-  if (cafe24Ready) {
-    // TODO: Cafe24 주문 생성 API 호출 → 결제창 URL 수신.
-    // const redirectUrl = await createCafe24Order({ course, buyer });
-    // return NextResponse.json({ status: "redirect", redirectUrl });
-  }
-
-  // 연동 키 미주입 — 플로우 검증용 안내 (운영 전환 전 단계)
+  // 유료 강의 — 무통장입금 안내
+  const order = orderNo();
   return NextResponse.json({
-    status: "pending_integration",
+    status: "bank_transfer",
+    order,
+    amount: course.price,
+    amountText: formatPrice(course.price),
+    bank: {
+      name: BANK.name,
+      account: BANK.account,
+      holder: BANK.holder,
+      deadlineHours: BANK.deadlineHours,
+    },
+    depositName: buyer.depositName?.trim() || buyer.name.trim(),
+    courseTitle: course.title,
     message:
-      `[연동 준비] '${course.title}' ${formatPrice(course.price)} 주문이 정상 접수되었습니다. ` +
-      "Cafe24 가맹 키(CAFE24_*)를 주입하면 이 단계에서 실제 결제창으로 이동합니다.",
+      `주문이 접수되었습니다. 아래 계좌로 ${formatPrice(course.price)}을(를) 입금해 주세요. ` +
+      `입금 확인 후 수강 안내를 보내드립니다.`,
   });
 }
