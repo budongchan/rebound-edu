@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MENU_CATEGORIES } from "@/lib/courses";
 
 export default function Header() {
   return (
@@ -13,9 +14,21 @@ export default function Header() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-7 text-[15px] font-semibold text-ink-soft md:flex">
-          <Link href="/courses" className="transition-colors hover:text-ink">강의</Link>
-          <Link href="/#faq" className="transition-colors hover:text-ink">FAQ</Link>
+        {/* 수업 분류 메뉴 */}
+        <nav className="hidden items-center gap-1 md:flex">
+          {MENU_CATEGORIES.map((cat) => (
+            <Link
+              key={cat.key}
+              href={`/subjects/${cat.key}`}
+              className="rounded-lg px-3 py-2 text-[15px] font-semibold text-ink-soft transition-colors hover:bg-cream hover:text-ink"
+            >
+              {cat.label}
+            </Link>
+          ))}
+          <span className="mx-1 h-4 w-px bg-line" />
+          <Link href="/#faq" className="rounded-lg px-3 py-2 text-[15px] font-semibold text-ink-soft transition-colors hover:text-ink">
+            FAQ
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -29,9 +42,24 @@ export default function Header() {
             href="/courses"
             className="rounded-lg bg-ink px-4 py-2 text-[14px] font-bold text-white transition-transform hover:-translate-y-0.5"
           >
-            시작하기
+            전체 강의
           </Link>
         </div>
+      </div>
+
+      {/* 모바일 분류 바 */}
+      <div className="border-t border-line md:hidden">
+        <nav className="container-edu flex gap-1 overflow-x-auto py-2">
+          {MENU_CATEGORIES.map((cat) => (
+            <Link
+              key={cat.key}
+              href={`/subjects/${cat.key}`}
+              className="whitespace-nowrap rounded-lg px-3 py-1.5 text-[14px] font-semibold text-ink-soft hover:text-ink"
+            >
+              {cat.label}
+            </Link>
+          ))}
+        </nav>
       </div>
     </header>
   );
