@@ -4,13 +4,36 @@ import { useState } from "react";
 import Link from "next/link";
 import { formatPrice } from "@/lib/courses";
 
+function formatValidUntil(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mi = String(d.getMinutes()).padStart(2, "0");
+  return `${mm}/${dd} ${hh}:${mi}까지`;
+}
+
 export default function CheckoutForm({ course }) {
   const [form, setForm] = useState({ name: "", email: "", phone: "", depositName: "" });
   const [agree, setAgree] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | loading | bank | done | error
   const [message, setMessage] = useState("");
-  const [order, setOrder] = useState(null); // 무통장입금 안내 데이터
+  const [order, setOrder] = useState(null);
   const [copied, setCopied] = useState(false);
+
+  // 입금확인
+  const [confirming, setConfirming] = useState(false);
+  const [depositConfirmed, setDepositConfirmed] = useState(false);
+  const [depositFailed, setDepositFailed] = useState(false);
+  const [confirmedAt, setConfirmedAt] = useState(null);
+
+  // 계산서 발행
+  const [showTaxForm, setShowTaxForm] = useState(false);
+  const [taxForm, setTaxForm] = useState({ businessNumber: "", email: "" });
+  const [taxAgree, setTaxAgree] = useState(false);
+  const [taxStatus, setTaxStatus] = useState("idle"); // idle | loading | done | error
+  const [taxMessage, setTaxMessage] = useState("");
 
   const isFree = course.free || course.price === 0;
   const valid =
@@ -19,9 +42,8 @@ export default function CheckoutForm({ course }) {
     form.phone.trim() &&
     agree;
 
-  function update(k, v) {
-    setForm((f) => ({ ...f, [k]: v }));
-  }
+  function update(k, v) { setForm((f) => ({ ...f, [k]: v })); }
+  function updateTax(k, v) { setTaxForm((f) => ({ ...f, [k]: v })); }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -52,6 +74,65 @@ export default function CheckoutForm({ course }) {
     }
   }
 
+  async function handleCheckDeposit() {
+    if (!order || confirming) return;
+    setConfirming(true);
+    setDepositFailed(false);
+    for (let i = 0; i < 3; i++) {
+      try {
+        const res = await fetch("/api/check-deposit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            service: order.service,
+            orderId: order.order,
+            expectedAmount: order.amount,
+            depositorName: order.depositName,
+          }),
+        });
+        const data = await res.json();
+        if (data.status === "confirmed") {
+          setDepositConfirmed(true);
+          setConfirmedAt(data.confirmedAt);
+          setConfirming(false);
+          return;
+        }
+        if (data.status === "expired") {
+          setConfirming(false);
+          setDepositFailed(true);
+          setMessage("입금 유효기한이 지났습니다. 새로 주문해 주세요.");
+          return;
+        }
+      } catch { /* 무시 */ }
+      if (i < 2) await new Promise((r) => setTimeout(r, 2000));
+    }
+    setConfirming(false);
+    setDepositFailed(true);
+  }
+
+  async function handleTaxInvoice(e) {
+    e.preventDefault();
+    if (!taxAgree || !taxForm.businessNumber || !taxForm.email) return;
+    setTaxStatus("loading");
+    try {
+      const res = await fetch("/api/request-tax-invoice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: order?.order,
+          businessNumber: taxForm.businessNumber,
+          email: taxForm.email,
+        }),
+      });
+      const data = await res.json();
+      setTaxStatus("done");
+      setTaxMessage(data.message || "신청이 완료되었습니다.");
+    } catch {
+      setTaxStatus("error");
+      setTaxMessage("신청 중 오류가 발생했습니다. 다시 시도해 주세요.");
+    }
+  }
+
   function copyAccount() {
     if (!order) return;
     navigator.clipboard?.writeText(order.bank.account.replace(/\s/g, "")).then(() => {
@@ -74,6 +155,96 @@ export default function CheckoutForm({ course }) {
     );
   }
 
+  // 입금 확인 완료 화면
+  if (depositConfirmed && order) {
+    return (
+      <div className="mx-auto max-w-lg space-y-5">
+        <div className="rounded-2xl border border-line bg-paper p-8 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#16a34a] text-2xl text-white">✓</div>
+          <h2 className="mt-5 text-[20px] font-extrabold text-ink">입금이 확인되었습니다</h2>
+          <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
+            수강 안내를 입력하신 이메일과 연락처로 보내드립니다.<br />
+            주문번호 <span className="font-mono font-semibold text-ink">{order.order}</span>을 저장해 두세요.
+          </p>
+          <Link href="/courses" className="mt-6 inline-block rounded-xl bg-ink px-6 py-3 text-[14px] font-bold text-white">
+            다른 강의 보기
+          </Link>
+        </div>
+
+        {/* 계산서 발행 신청 */}
+        <div className="rounded-2xl border border-line bg-paper p-7">
+          {!showTaxForm && taxStatus !== "done" ? (
+            <>
+              <h3 className="text-[16px] font-extrabold text-ink">계산서 발행</h3>
+              <p className="mt-1.5 text-[13px] text-ink-soft">사업자의 경우 세금계산서 발행을 신청하실 수 있습니다.</p>
+              <button
+                onClick={() => setShowTaxForm(true)}
+                className="mt-4 rounded-xl border border-line bg-cream px-5 py-2.5 text-[14px] font-semibold text-ink hover:border-ink/30"
+              >
+                계산서 발행 신청
+              </button>
+            </>
+          ) : taxStatus === "done" ? (
+            <div className="text-center">
+              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-brand text-lg text-white">✓</div>
+              <p className="mt-3 text-[14px] font-semibold text-ink">{taxMessage}</p>
+              <p className="mt-1 text-[13px] text-ink-soft">발행 완료 후 입력하신 이메일로 발송됩니다.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleTaxInvoice}>
+              <h3 className="text-[16px] font-extrabold text-ink">계산서 발행 신청</h3>
+              <div className="mt-4 space-y-3">
+                <Field
+                  label="사업자등록번호"
+                  value={taxForm.businessNumber}
+                  onChange={(v) => updateTax("businessNumber", v)}
+                  placeholder="000-00-00000"
+                />
+                <Field
+                  label="이메일"
+                  type="email"
+                  value={taxForm.email}
+                  onChange={(v) => updateTax("email", v)}
+                  placeholder="tax@example.com"
+                />
+              </div>
+              <label className="mt-4 flex cursor-pointer items-start gap-2.5">
+                <input
+                  type="checkbox"
+                  checked={taxAgree}
+                  onChange={(e) => setTaxAgree(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 accent-[var(--color-brand)]"
+                />
+                <span className="text-[13px] leading-relaxed text-ink-soft">
+                  계산서 발행 신청 정보를 확인했습니다.
+                </span>
+              </label>
+              {taxStatus === "error" && (
+                <p className="mt-3 rounded-lg bg-brand/5 px-3 py-2 text-[13px] text-brand-dark">{taxMessage}</p>
+              )}
+              <div className="mt-4 flex gap-3">
+                <button
+                  type="submit"
+                  disabled={!taxAgree || !taxForm.businessNumber || !taxForm.email || taxStatus === "loading"}
+                  className="flex-1 rounded-xl bg-brand px-4 py-2.5 text-[14px] font-bold text-white disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {taxStatus === "loading" ? "신청 중…" : "신청하기"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowTaxForm(false)}
+                  className="rounded-xl border border-line px-4 py-2.5 text-[14px] text-ink-soft hover:text-ink"
+                >
+                  닫기
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   // 유료 — 무통장입금 안내
   if (status === "bank" && order) {
     return (
@@ -83,15 +254,15 @@ export default function CheckoutForm({ course }) {
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-ink text-2xl text-white">₩</div>
             <h2 className="mt-5 text-[20px] font-extrabold text-ink">입금 안내</h2>
             <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
-              주문이 접수되었습니다. 아래 계좌로 입금해 주시면<br />
-              입금 확인 후 수강 안내를 보내드립니다.
+              주문이 접수되었습니다. 아래 계좌로 입금 후<br />
+              [입금 확인하기] 버튼을 눌러주세요.
             </p>
           </div>
 
           <div className="mt-6 rounded-xl bg-cream p-5">
             <Row label="주문번호" value={order.order} mono />
             <Row label="강의" value={order.courseTitle} />
-            <Row label="입금 금액" value={order.amountText} strong />
+            <Row label="입금 금액" value={formatPrice(order.amount)} strong />
             <div className="my-3 border-t border-line" />
             <Row label="은행" value={order.bank.name} />
             <div className="flex items-center justify-between py-1.5">
@@ -108,15 +279,34 @@ export default function CheckoutForm({ course }) {
             </div>
             <Row label="예금주" value={order.bank.holder} />
             <Row label="입금자명" value={order.depositName} strong />
+            {order.validUntil && (
+              <Row label="입금 유효기한" value={formatValidUntil(order.validUntil)} />
+            )}
           </div>
 
           <p className="mt-4 rounded-lg border border-brand/20 bg-brand/5 p-3 text-[12px] leading-relaxed text-brand-dark">
-            · 입금자명을 <b>{order.depositName}</b>(으)로 해주시면 확인이 빠릅니다.<br />
-            · {order.bank.deadlineHours}시간 내 미입금 시 주문이 자동 취소될 수 있습니다.<br />
-            · 입금 확인 안내는 입력하신 연락처/이메일로 보내드립니다.
+            · 입금자명을 <b>{order.depositName}</b>(으)로 입력해 주세요.<br />
+            · {order.validUntil ? formatValidUntil(order.validUntil) : "12시간"} 내 미입금 시 주문이 취소될 수 있습니다.<br />
+            · 입금 후 아래 버튼으로 즉시 확인 가능합니다.
           </p>
 
-          <Link href="/courses" className="mt-6 block rounded-xl bg-ink px-6 py-3 text-center text-[14px] font-bold text-white">
+          <button
+            onClick={handleCheckDeposit}
+            disabled={confirming}
+            className="mt-6 w-full rounded-xl bg-brand px-5 py-3.5 text-center text-[15px] font-bold text-white transition-transform enabled:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {confirming ? "확인 중…" : "입금 확인하기"}
+          </button>
+          {depositFailed && message && (
+            <p className="mt-3 text-center text-[13px] text-brand-dark">{message}</p>
+          )}
+          {depositFailed && !message && (
+            <p className="mt-3 text-center text-[13px] text-ink-soft">
+              아직 입금이 확인되지 않았습니다. 입금 후 1~2분 뒤 다시 시도해 주세요.
+            </p>
+          )}
+
+          <Link href="/courses" className="mt-4 block rounded-xl border border-line bg-paper px-6 py-3 text-center text-[14px] font-semibold text-ink-soft hover:text-ink">
             다른 강의 보기
           </Link>
         </div>
@@ -190,7 +380,6 @@ export default function CheckoutForm({ course }) {
               <dd className="text-[22px] font-black text-ink">{formatPrice(course.price)}</dd>
             </div>
           </dl>
-
           <button
             type="submit"
             disabled={!valid || status === "loading"}
@@ -199,9 +388,7 @@ export default function CheckoutForm({ course }) {
             {status === "loading" ? "처리 중…" : isFree ? "무료 신청하기" : "계좌이체로 신청하기"}
           </button>
           <p className="mt-3 text-center text-[12px] text-ink-soft/80">
-            {isFree
-              ? "로그인 없이 바로 신청됩니다."
-              : "신청 후 입금 계좌가 안내됩니다. (무통장입금)"}
+            {isFree ? "로그인 없이 바로 신청됩니다." : "신청 후 입금 계좌가 안내됩니다."}
           </p>
         </div>
       </aside>
