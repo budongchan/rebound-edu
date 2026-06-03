@@ -11,6 +11,9 @@ export default function CheckoutForm({ course }) {
   const [message, setMessage] = useState("");
   const [order, setOrder] = useState(null); // 무통장입금 안내 데이터
   const [copied, setCopied] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [depositConfirmed, setDepositConfirmed] = useState(false);
+  const [depositFailed, setDepositFailed] = useState(false);
 
   const isFree = course.free || course.price === 0;
   const valid =
@@ -52,6 +55,34 @@ export default function CheckoutForm({ course }) {
     }
   }
 
+  async function handleCheckDeposit() {
+    if (!order || confirming) return;
+    setConfirming(true);
+    setDepositFailed(false);
+    for (let i = 0; i < 3; i++) {
+      try {
+        const res = await fetch("/api/check-deposit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: order.order,
+            expectedAmount: order.amount,
+            depositorName: order.depositName,
+          }),
+        });
+        const data = await res.json();
+        if (data.status === "confirmed") {
+          setDepositConfirmed(true);
+          setConfirming(false);
+          return;
+        }
+      } catch { /* 무시 */ }
+      if (i < 2) await new Promise((r) => setTimeout(r, 2000));
+    }
+    setConfirming(false);
+    setDepositFailed(true);
+  }
+
   function copyAccount() {
     if (!order) return;
     navigator.clipboard?.writeText(order.bank.account.replace(/\s/g, "")).then(() => {
@@ -67,6 +98,23 @@ export default function CheckoutForm({ course }) {
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand text-2xl text-white">✓</div>
         <h2 className="mt-5 text-[20px] font-extrabold text-ink">신청이 완료되었습니다</h2>
         <p className="mt-2 text-[14px] text-ink-soft">{message}</p>
+        <Link href="/courses" className="mt-6 inline-block rounded-xl bg-ink px-6 py-3 text-[14px] font-bold text-white">
+          다른 강의 보기
+        </Link>
+      </div>
+    );
+  }
+
+  // 유료 — 입금확인 완료
+  if (depositConfirmed) {
+    return (
+      <div className="mx-auto max-w-lg rounded-2xl border border-line bg-paper p-8 text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#16a34a] text-2xl text-white">✓</div>
+        <h2 className="mt-5 text-[20px] font-extrabold text-ink">입금이 확인되었습니다</h2>
+        <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
+          수강 안내를 입력하신 이메일과 연락처로 보내드립니다.<br />
+          주문번호 <span className="font-mono font-semibold text-ink">{order?.order}</span>을 저장해 두세요.
+        </p>
         <Link href="/courses" className="mt-6 inline-block rounded-xl bg-ink px-6 py-3 text-[14px] font-bold text-white">
           다른 강의 보기
         </Link>
@@ -116,7 +164,20 @@ export default function CheckoutForm({ course }) {
             · 입금 확인 안내는 입력하신 연락처/이메일로 보내드립니다.
           </p>
 
-          <Link href="/courses" className="mt-6 block rounded-xl bg-ink px-6 py-3 text-center text-[14px] font-bold text-white">
+          <button
+            onClick={handleCheckDeposit}
+            disabled={confirming}
+            className="mt-6 w-full rounded-xl bg-brand px-5 py-3.5 text-center text-[15px] font-bold text-white transition-transform enabled:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {confirming ? "입금 확인 중…" : "입금 확인하기"}
+          </button>
+          {depositFailed && (
+            <p className="mt-3 text-center text-[13px] text-ink-soft">
+              아직 입금이 확인되지 않았습니다. 입금 후 1~2분 뒤 다시 시도해 주세요.
+            </p>
+          )}
+
+          <Link href="/courses" className="mt-4 block rounded-xl border border-line bg-paper px-6 py-3 text-center text-[14px] font-semibold text-ink-soft hover:text-ink">
             다른 강의 보기
           </Link>
         </div>

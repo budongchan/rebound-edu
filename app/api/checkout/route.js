@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCourse, formatPrice } from "@/lib/courses";
 import { BANK } from "@/lib/company";
-
-// 결제 시작 엔드포인트 — 무통장입금(계좌이체) 방식.
-// P1: 주문 검증 + 무료강의 즉시 신청 + 유료강의 입금 안내(주문번호·계좌·금액) 반환.
-// 입금 확인은 운영자 수동 확인 또는 추후 입금 SMS 파싱으로 자동화 (P2: Supabase orders 적재).
+import { getServiceClient } from "@/lib/supabase";
 
 function orderNo() {
   // RB + YYMMDD + 4자리 시퀀스(시간 기반) — 입금자 식별용 주문번호
@@ -34,7 +31,26 @@ export async function POST(req) {
     return NextResponse.json({ status: "error", message: "주문자 정보를 모두 입력해 주세요." }, { status: 400 });
   }
 
-  // 무료 강의 — 즉시 신청 처리 (추후 Supabase enrollments 적재)
+  const order = orderNo();
+  const depositorName = buyer.depositName?.trim() || buyer.name.trim();
+
+  // Supabase에 주문 저장 (실패해도 진행)
+  const supabase = getServiceClient();
+  if (supabase) {
+    await supabase.from("edu_orders").insert([{
+      order_id: order,
+      course_id: course.id,
+      course_title: course.title,
+      amount: course.price,
+      buyer_name: buyer.name.trim(),
+      buyer_email: buyer.email.trim(),
+      buyer_phone: buyer.phone.trim(),
+      depositor_name: depositorName,
+      status: course.free || course.price === 0 ? "무료신청완료" : "입금대기",
+    }]).catch(() => {});
+  }
+
+  // 무료 강의 — 즉시 신청
   if (course.free || course.price === 0) {
     return NextResponse.json({
       status: "free_enrolled",
@@ -43,7 +59,6 @@ export async function POST(req) {
   }
 
   // 유료 강의 — 무통장입금 안내
-  const order = orderNo();
   return NextResponse.json({
     status: "bank_transfer",
     order,
@@ -55,7 +70,7 @@ export async function POST(req) {
       holder: BANK.holder,
       deadlineHours: BANK.deadlineHours,
     },
-    depositName: buyer.depositName?.trim() || buyer.name.trim(),
+    depositName: depositorName,
     courseTitle: course.title,
     message:
       `주문이 접수되었습니다. 아래 계좌로 ${formatPrice(course.price)}을(를) 입금해 주세요. ` +
