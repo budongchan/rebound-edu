@@ -20,9 +20,86 @@ export async function generateMetadata({ params }) {
   const course = getCourse(id);
   if (!course) return { title: "강의를 찾을 수 없습니다" };
   return {
-    title: course.title,
-    description: course.summary,
+    title: `${course.title} | 리바운드 에듀`,
+    description: course.summary?.slice(0, 150),
   };
+}
+
+// ── 수업별 FAQ 생성 ──────────────────────────────────────
+function buildFaq(course) {
+  const faqs = [];
+
+  if (course.live && course.delivery === "오프라인") {
+    faqs.push({
+      q: "수업 장소는 어디인가요?",
+      a: "서울 강남구 리바운드 강의실에서 진행됩니다. 신청 완료 후 정확한 주소와 교통편을 안내드립니다.",
+    });
+  }
+  if (course.live && course.delivery === "온라인") {
+    faqs.push({
+      q: "온라인 수업 링크는 어떻게 받나요?",
+      a: "입금 확인 후 수업 전날 또는 당일 오전 중 카카오톡 또는 이메일로 Zoom 링크를 발송드립니다.",
+    });
+  }
+  if (course.guarantee) {
+    faqs.push({
+      q: `'${course.guarantee}'이 정확히 어떤 의미인가요?`,
+      a: "수업 시간 내에 설정·구현이 완료되지 않으면, 수업 후 강사가 직접 원격으로 완성해드립니다. 도구·계정 문제나 인터넷 환경 문제는 제외됩니다.",
+    });
+  }
+  if (course.bonus && course.bonus.some((b) => b.includes("매물"))) {
+    faqs.push({
+      q: "수업 후 제공되는 매물 정보는 어떻게 받나요?",
+      a: "수업 당일 카카오톡 오픈채팅방 또는 단체 채팅에 초대해드립니다. 매입·임차 대상 매물이 확인될 때마다 공유됩니다.",
+    });
+  }
+  if (course.priceMonthly) {
+    faqs.push({
+      q: "낱개 수강과 월 묶음 수강의 차이는 무엇인가요?",
+      a: `1회 ${formatPrice(course.price)}로 원하는 주만 선택 수강하거나, 한 달 4회를 ${formatPrice(course.priceMonthly)}에 묶음으로 결제할 수 있습니다. 묶음 결제는 해당 월에만 유효합니다.`,
+    });
+  }
+  if (course.bonus && course.bonus.some((b) => b.includes("채용"))) {
+    faqs.push({
+      q: "채용 기회는 어떤 기준으로 제공되나요?",
+      a: "수강 기간 중 성실도, 과제 제출, 참여도를 종합적으로 평가합니다. 우수 수강생에게는 리바운드 그룹 소속 중개법인 입사 제안을 드립니다.",
+    });
+  }
+
+  // 공통 FAQ
+  faqs.push({
+    q: "결제는 어떻게 하나요?",
+    a: "신청서 제출 후 안내되는 계좌로 무통장입금(계좌이체) 하시면 됩니다. 입금 확인 후 수강 안내 연락드립니다.",
+  });
+  faqs.push({
+    q: "환불 정책이 어떻게 되나요?",
+    a: "수업 시작 전 또는 콘텐츠 미이용 시 전액 환불됩니다. 수업 당일 취소는 50%, 수업 시작 후에는 환불이 어렵습니다. 자세한 내용은 환불정책 페이지를 확인해 주세요.",
+  });
+
+  return faqs;
+}
+
+// ── 신청 방법 단계 ──────────────────────────────────────
+function getRegisterSteps(course) {
+  if (course.delivery === "온라인") {
+    return [
+      { n: "01", t: "신청하기", d: "상세 페이지에서 수강 신청하고 이름·연락처를 입력합니다." },
+      { n: "02", t: "입금", d: `안내된 계좌로 ${course.priceLabel || formatPrice(course.price)} 입금합니다.` },
+      { n: "03", t: "링크 수령 → 수강", d: "수업 전날 또는 당일 오전 Zoom 링크를 발송드립니다." },
+    ];
+  }
+  if (course.format === "1:1 과정") {
+    return [
+      { n: "01", t: "신청하기", d: "상세 페이지에서 신청하고 연락처를 남겨주세요." },
+      { n: "02", t: "일정 조율", d: "강사와 1:1로 일정 및 진행 방식을 협의합니다." },
+      { n: "03", t: "입금 → 과정 시작", d: `안내된 계좌로 ${formatPrice(course.price)} 입금 후 시작합니다.` },
+    ];
+  }
+  return [
+    { n: "01", t: "신청하기", d: "상세 페이지에서 수강 신청하고 이름·연락처를 입력합니다." },
+    { n: "02", t: "입금", d: `안내된 계좌로 ${course.priceLabel || formatPrice(course.price)} 입금합니다.` },
+    { n: "03", t: "장소 안내 → 수업 참석", d: "입금 확인 후 수업 장소와 준비물을 안내드립니다." },
+  ];
 }
 
 export default async function CourseDetail({ params }) {
@@ -33,21 +110,40 @@ export default async function CourseDetail({ params }) {
   const color = CATEGORY_COLOR[course.category] || "#14110f";
   const totalLessons = course.curriculum.reduce((n, s) => n + s.items.length, 0);
   const instructor = getInstructor(course.instructor);
+  const faqs = buildFaq(course);
+  const steps = course.live ? getRegisterSteps(course) : null;
 
-  const WEEKDAY_KO = { 월: "월요일", 화: "화요일", 수: "수요일", 목: "목요일", 금: "금요일", 토: "토요일" };
   const DELIVERY_ICON = { 오프라인: "📍", 온라인: "💻" };
+  const FORMAT_ICON = { "일일 특강": "⚡", "주간 정기": "📅", "1:1 과정": "🤝", 상시: "🔄" };
 
   return (
     <>
       <Header />
-      <main className="bg-cream/40">
-        {/* HERO */}
-        <section className="text-white" style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}>
-          <div className="container-edu py-14">
-            <Link href="/courses" className="text-[13px] font-semibold text-white/70 hover:text-white">
+      <main className="bg-cream/40 pb-24 lg:pb-0">
+
+        {/* ── HERO ──────────────────────────────────────── */}
+        <section
+          className="relative overflow-hidden text-white"
+          style={{ background: `linear-gradient(135deg, ${color} 0%, ${color}bb 60%, ${color}77 100%)` }}
+        >
+          {/* 배경 패턴 */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage: "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)",
+              backgroundSize: "40px 40px",
+            }}
+          />
+          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-20 blur-3xl"
+            style={{ background: `radial-gradient(circle,#fff,transparent 70%)` }} />
+
+          <div className="container-edu relative py-14">
+            <Link href="/courses" className="inline-flex items-center gap-1 text-[13px] font-semibold text-white/70 hover:text-white">
               ← 강의 목록
             </Link>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
+
+            {/* 배지 행 */}
+            <div className="mt-5 flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-white/20 px-3 py-1 text-[12px] font-bold">
                 {CATEGORY_LABEL[course.category]}
               </span>
@@ -56,47 +152,46 @@ export default async function CourseDetail({ params }) {
               </span>
               {course.live && (
                 <span className="rounded-full bg-white px-3 py-1 text-[12px] font-black" style={{ color }}>
-                  개강
+                  🟢 개강 중
                 </span>
               )}
               {course.guarantee && (
-                <span className="rounded-full bg-white/90 px-3 py-1 text-[12px] font-black text-ink">
-                  {course.guarantee}
+                <span className="rounded-full bg-green-400/90 px-3 py-1 text-[12px] font-black text-green-900">
+                  ✅ {course.guarantee}
                 </span>
               )}
             </div>
-            <h1 className="mt-4 text-[30px] font-black leading-tight sm:text-[40px]">
+
+            <h1 className="mt-5 text-[30px] font-black leading-tight sm:text-[42px]">
               {course.title}
             </h1>
             <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-white/85">
               {course.subtitle}
             </p>
 
-            {/* 일정·방식 인포 */}
-            {course.schedule && (
-              <div className="mt-5 flex flex-wrap gap-3">
-                <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3.5 py-2 text-[13px] font-semibold text-white">
-                  <span>🗓</span>
-                  {course.schedule}
-                </div>
+            {/* 핵심 정보 칩 */}
+            {(course.schedule || course.delivery || course.duration) && (
+              <div className="mt-6 flex flex-wrap gap-2.5">
+                {course.schedule && (
+                  <div className="flex items-center gap-2 rounded-lg bg-white/15 px-4 py-2.5 text-[13px] font-semibold text-white ring-1 ring-white/20">
+                    🗓 {course.schedule}
+                  </div>
+                )}
                 {course.delivery && (
-                  <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3.5 py-2 text-[13px] font-semibold text-white">
-                    <span>{DELIVERY_ICON[course.delivery] || "📌"}</span>
-                    {course.delivery}
+                  <div className="flex items-center gap-2 rounded-lg bg-white/15 px-4 py-2.5 text-[13px] font-semibold text-white ring-1 ring-white/20">
+                    {DELIVERY_ICON[course.delivery]} {course.delivery}
                   </div>
                 )}
                 {course.duration && (
-                  <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3.5 py-2 text-[13px] font-semibold text-white">
-                    <span>⏱</span>
-                    {course.duration}
+                  <div className="flex items-center gap-2 rounded-lg bg-white/15 px-4 py-2.5 text-[13px] font-semibold text-white ring-1 ring-white/20">
+                    ⏱ {course.duration}
                   </div>
                 )}
-              </div>
-            )}
-
-            {!course.schedule && (
-              <div className="mt-5 text-[13px] text-white/70">
-                {course.instructor} · 총 {course.lessons}강
+                {course.format && (
+                  <div className="flex items-center gap-2 rounded-lg bg-white/15 px-4 py-2.5 text-[13px] font-semibold text-white ring-1 ring-white/20">
+                    {FORMAT_ICON[course.format] || "📌"} {course.format}
+                  </div>
+                )}
               </div>
             )}
 
@@ -105,63 +200,120 @@ export default async function CourseDetail({ params }) {
               <div className="mt-4 flex flex-wrap gap-2">
                 {course.bonus.map((b, i) => (
                   <div key={i} className="flex items-center gap-1.5 rounded-full border border-white/30 bg-white/5 px-3 py-1 text-[12px] text-white/90">
-                    <span>+</span>
+                    <span className="font-black text-white">+</span>
                     {b}
                   </div>
                 ))}
               </div>
             )}
+
+            {/* 강사 */}
+            <div className="mt-6 flex items-center gap-2 text-[13px] text-white/65">
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-[11px] font-black text-white">K</div>
+              {course.instructor}
+              {course.lessons > 0 && <><span>·</span><span>총 {course.lessons}강</span></>}
+            </div>
           </div>
         </section>
 
-        {/* BODY */}
+        {/* ── BODY ──────────────────────────────────────── */}
         <section className="container-edu grid gap-10 py-12 lg:grid-cols-[1fr_360px]">
-          <div className="min-w-0">
+          <div className="min-w-0 space-y-6">
+
+            {/* ▸ 수업 소개 */}
             <div className="rounded-2xl border border-line bg-paper p-7">
-              <h2 className="text-[20px] font-extrabold text-ink">강의 소개</h2>
-              <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">{course.summary}</p>
+              <h2 className="text-[20px] font-extrabold text-ink">수업 소개</h2>
+              <p className="mt-3 text-[15px] leading-[1.85] text-ink-soft">{course.summary}</p>
             </div>
 
-            <div className="mt-6 rounded-2xl border border-line bg-paper p-7">
+            {/* ▸ 이런 걸 배웁니다 */}
+            <div className="rounded-2xl border border-line bg-paper p-7">
               <h2 className="text-[20px] font-extrabold text-ink">이런 걸 배웁니다</h2>
-              <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {course.highlights.map((h, i) => (
-                  <li key={i} className="flex gap-2.5 text-[14px] leading-relaxed text-ink">
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand text-[11px] font-black text-white">
+                  <div key={i} className="flex gap-3 rounded-xl border border-line bg-cream/40 p-4">
+                    <span
+                      className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-black text-white"
+                      style={{ background: color }}
+                    >
                       ✓
                     </span>
-                    {h}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="mt-6 rounded-2xl border border-line bg-paper p-7">
-              <h2 className="text-[20px] font-extrabold text-ink">이런 분께 추천합니다</h2>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {course.target.map((t, i) => (
-                  <span key={i} className="rounded-full bg-cream px-3.5 py-1.5 text-[13px] font-semibold text-ink-soft">
-                    {t}
-                  </span>
+                    <span className="text-[14px] leading-relaxed text-ink">{h}</span>
+                  </div>
                 ))}
               </div>
             </div>
 
-            <div className="mt-6 rounded-2xl border border-line bg-paper p-7">
+            {/* ▸ 라이브 수업 — 다음 수업 일정 하이라이트 */}
+            {course.live && course.schedule && (
+              <div className="overflow-hidden rounded-2xl border-2 bg-paper" style={{ borderColor: color }}>
+                <div className="px-7 py-4 text-white" style={{ background: `linear-gradient(90deg, ${color}, ${color}cc)` }}>
+                  <p className="text-[13px] font-bold uppercase tracking-widest text-white/70">다음 수업 일정</p>
+                  <p className="mt-1 text-[20px] font-black">{course.schedule}</p>
+                </div>
+                <div className="grid gap-0 divide-x divide-line sm:grid-cols-3">
+                  {[
+                    { icon: "📍", label: "장소", val: course.delivery === "온라인" ? "Zoom 온라인" : "리바운드 강의실 (강남)" },
+                    { icon: "⏱", label: "수업 시간", val: course.duration || "-" },
+                    { icon: "💳", label: "수강료", val: course.priceLabel || (course.free ? "무료" : formatPrice(course.price)) },
+                  ].map((item) => (
+                    <div key={item.label} className="flex flex-col items-center justify-center gap-1 p-5 text-center">
+                      <span className="text-[22px]">{item.icon}</span>
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-soft">{item.label}</span>
+                      <span className="text-[14px] font-extrabold text-ink">{item.val}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ▸ 이런 분께 추천합니다 */}
+            <div className="rounded-2xl border border-line bg-paper p-7">
+              <h2 className="text-[20px] font-extrabold text-ink">이런 분께 추천합니다</h2>
+              <div className="mt-5 space-y-2.5">
+                {course.target.map((t, i) => (
+                  <div key={i} className="flex items-start gap-3 rounded-xl bg-cream/50 px-4 py-3">
+                    <span
+                      className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-black text-white"
+                      style={{ background: color }}
+                    >
+                      {i + 1}
+                    </span>
+                    <span className="text-[14px] leading-relaxed text-ink">{t}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ▸ 커리큘럼 */}
+            <div className="rounded-2xl border border-line bg-paper p-7">
               <div className="flex items-baseline justify-between">
                 <h2 className="text-[20px] font-extrabold text-ink">커리큘럼</h2>
-                <span className="text-[13px] text-ink-soft">{course.curriculum.length}개 섹션 · {totalLessons}개 주제</span>
+                <span className="text-[13px] text-ink-soft">
+                  {course.curriculum.length}개 섹션 · {totalLessons}개 주제
+                </span>
               </div>
-              <div className="mt-4 space-y-4">
+              <div className="mt-5 space-y-4">
                 {course.curriculum.map((sec, i) => (
-                  <div key={i} className="rounded-xl border border-line">
-                    <div className="border-b border-line bg-cream/60 px-4 py-3 text-[14px] font-bold text-ink">
-                      {sec.section}
+                  <div key={i} className="overflow-hidden rounded-xl border border-line">
+                    <div
+                      className="flex items-center gap-3 border-b border-line px-5 py-3.5"
+                      style={{ background: `${color}0f` }}
+                    >
+                      <span
+                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white"
+                        style={{ background: color }}
+                      >
+                        {i + 1}
+                      </span>
+                      <span className="text-[14px] font-bold text-ink">{sec.section}</span>
                     </div>
                     <ul className="divide-y divide-line">
                       {sec.items.map((it, j) => (
-                        <li key={j} className="flex items-center gap-3 px-4 py-3 text-[14px] text-ink-soft">
-                          <span className="text-[12px] font-bold text-brand/60">{String(j + 1).padStart(2, "0")}</span>
+                        <li key={j} className="flex items-center gap-3 px-5 py-3 text-[14px] text-ink-soft">
+                          <span className="text-[11px] font-bold" style={{ color: `${color}80` }}>
+                            {String(j + 1).padStart(2, "0")}
+                          </span>
                           {it}
                         </li>
                       ))}
@@ -169,46 +321,84 @@ export default async function CourseDetail({ params }) {
                   </div>
                 ))}
               </div>
-              {course.lessons === 0 && (
-                <p className="mt-4 text-[13px] text-ink-soft/80">
-                  * 본 과정은 라이브/특강 형태로 진행되며, 세부 커리큘럼은 신청 후 안내됩니다.
-                </p>
-              )}
             </div>
 
-            {/* 수강 후 달라지는 것 */}
+            {/* ▸ 수강 후 달라지는 것 */}
             {course.outcomes && course.outcomes.length > 0 && (
-              <div className="mt-6 rounded-2xl border border-line bg-paper p-7">
+              <div className="rounded-2xl border border-line bg-paper p-7">
                 <h2 className="text-[20px] font-extrabold text-ink">수강 후 달라지는 것</h2>
-                <ul className="mt-4 space-y-3">
+                <div className="mt-5 space-y-3">
                   {course.outcomes.map((o, i) => (
-                    <li key={i} className="flex gap-3 text-[14px] leading-relaxed text-ink">
+                    <div
+                      key={i}
+                      className="flex gap-4 rounded-xl p-4"
+                      style={{ background: `${color}0d` }}
+                    >
                       <span
-                        className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white"
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-black text-white"
                         style={{ background: color }}
                       >
                         {i + 1}
                       </span>
-                      {o}
-                    </li>
+                      <span className="flex items-center text-[14px] leading-relaxed text-ink">{o}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
 
-            {/* 강사 프로필 */}
+            {/* ▸ 신청 방법 */}
+            {steps && (
+              <div className="rounded-2xl border border-line bg-paper p-7">
+                <h2 className="text-[20px] font-extrabold text-ink">신청 방법</h2>
+                <div className="mt-5 grid gap-4 sm:grid-cols-3">
+                  {steps.map((s) => (
+                    <div key={s.n} className="rounded-xl border border-line bg-cream/50 p-5">
+                      <div className="text-[26px] font-black" style={{ color: `${color}50` }}>
+                        {s.n}
+                      </div>
+                      <h3 className="mt-2 text-[15px] font-extrabold text-ink">{s.t}</h3>
+                      <p className="mt-1.5 text-[13px] leading-relaxed text-ink-soft">{s.d}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ▸ FAQ */}
+            <div className="rounded-2xl border border-line bg-paper p-7">
+              <h2 className="text-[20px] font-extrabold text-ink">자주 묻는 질문</h2>
+              <div className="mt-5 divide-y divide-line rounded-xl border border-line">
+                {faqs.map((f, i) => (
+                  <details key={i} className="group">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-[14px] font-bold text-ink">
+                      {f.q}
+                      <span
+                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[16px] font-black text-white transition-transform group-open:rotate-45"
+                        style={{ background: color }}
+                      >
+                        +
+                      </span>
+                    </summary>
+                    <div className="px-5 pb-5 text-[14px] leading-relaxed text-ink-soft">{f.a}</div>
+                  </details>
+                ))}
+              </div>
+            </div>
+
+            {/* ▸ 강사 프로필 */}
             {instructor && (
-              <div className="mt-6 rounded-2xl border border-line bg-paper p-7">
+              <div className="rounded-2xl border border-line bg-paper p-7">
                 <h2 className="text-[20px] font-extrabold text-ink">강사 소개</h2>
                 <div className="mt-5 flex gap-5">
                   <div
-                    className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-[22px] font-black text-white"
-                    style={{ background: instructor.color || color }}
+                    className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-[22px] font-black text-white ring-4"
+                    style={{ background: instructor.color || color, ringColor: `${color}30` }}
                   >
                     {instructor.initial || instructor.name.charAt(0)}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[16px] font-extrabold text-ink">{instructor.name}</p>
+                    <p className="text-[17px] font-extrabold text-ink">{instructor.name}</p>
                     <p className="mt-0.5 text-[13px] text-ink-soft">{instructor.title}</p>
                     <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">{instructor.bio}</p>
                     {instructor.credentials && (
@@ -227,83 +417,116 @@ export default async function CourseDetail({ params }) {
             )}
           </div>
 
-          {/* STICKY PURCHASE */}
+          {/* ── STICKY SIDEBAR ──────────────────────────────── */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="rounded-2xl border border-line bg-paper p-6 shadow-[0_18px_40px_-26px_rgba(20,17,15,0.4)]">
+            <div className="rounded-2xl border border-line bg-paper p-6 shadow-[0_18px_40px_-26px_rgba(20,17,15,0.35)]">
+
+              {/* 보증 배지 */}
               {course.guarantee && (
-                <div className="mb-3 flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2 text-[13px] font-bold text-green-700">
-                  <span>✅</span>
+                <div className="mb-4 flex items-center gap-2 rounded-xl bg-green-50 px-4 py-3 text-[13px] font-bold text-green-700">
+                  <span className="text-[16px]">✅</span>
                   {course.guarantee}
                 </div>
               )}
 
-              {course.discountPct ? (
+              {/* 가격 */}
+              {course.discountPct && (
                 <div className="flex items-center gap-2">
                   <span className="rounded-md bg-brand px-2 py-0.5 text-[12px] font-black text-white">
                     {course.discountPct}%
                   </span>
-                  <span className="text-[14px] text-ink-soft line-through">
+                  <span className="text-[13px] text-ink-soft line-through">
                     {formatPrice(course.originalPrice)}
                   </span>
                 </div>
-              ) : null}
-
+              )}
               {course.priceLabel ? (
-                <div className="mt-1">
-                  <div className="text-[22px] font-black text-ink">{course.priceLabel}</div>
-                </div>
+                <div className="text-[22px] font-black text-ink">{course.priceLabel}</div>
               ) : (
-                <div className="mt-1 text-[28px] font-black text-ink">{formatPrice(course.price)}</div>
+                <div className="text-[28px] font-black text-ink">{formatPrice(course.price)}</div>
               )}
 
+              {/* CTA */}
               <Link
                 href={`/checkout/${course.id}`}
-                className="mt-5 block rounded-xl bg-brand px-5 py-3.5 text-center text-[15px] font-bold text-white transition-transform hover:-translate-y-0.5"
+                className="mt-4 block rounded-xl px-5 py-4 text-center text-[15px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5"
+                style={{ background: color, boxShadow: `0 8px 24px -8px ${color}80` }}
               >
-                {course.free ? "무료 신청하기" : course.enrollAlways ? "상시 신청하기" : "결제하기"}
+                {course.free ? "무료 신청하기" : course.enrollAlways ? "지금 신청하기" : "수강 신청하기"}
               </Link>
-              <p className="mt-3 text-center text-[12px] text-ink-soft/80">
-                {course.free ? "로그인 후 바로 신청됩니다." : "신청 후 입금 계좌가 안내됩니다. (무통장입금)"}
+              <p className="mt-2.5 text-center text-[12px] text-ink-soft/70">
+                {course.free
+                  ? "로그인 후 바로 신청됩니다."
+                  : "신청 후 입금 계좌가 안내됩니다. (무통장입금)"}
               </p>
 
+              {/* 수업 정보 */}
               <dl className="mt-6 space-y-2.5 border-t border-line pt-5 text-[13px]">
-                <div className="flex justify-between"><dt className="text-ink-soft">분야</dt><dd className="font-semibold text-ink">{CATEGORY_LABEL[course.category]}</dd></div>
-                <div className="flex justify-between"><dt className="text-ink-soft">난이도</dt><dd className="font-semibold text-ink">{course.level}</dd></div>
-                {course.schedule && (
-                  <div className="flex justify-between"><dt className="text-ink-soft">일정</dt><dd className="text-right font-semibold text-ink" style={{ maxWidth: "200px" }}>{course.scheduleShort || course.schedule}</dd></div>
-                )}
-                {course.delivery && (
-                  <div className="flex justify-between"><dt className="text-ink-soft">방식</dt><dd className="font-semibold text-ink">{course.delivery}</dd></div>
-                )}
-                {course.format && (
-                  <div className="flex justify-between"><dt className="text-ink-soft">포맷</dt><dd className="font-semibold text-ink">{course.format}</dd></div>
-                )}
-                {course.duration && (
-                  <div className="flex justify-between"><dt className="text-ink-soft">시간</dt><dd className="font-semibold text-ink">{course.duration}</dd></div>
-                )}
-                {!course.schedule && course.lessons > 0 && (
-                  <div className="flex justify-between"><dt className="text-ink-soft">강의 수</dt><dd className="font-semibold text-ink">총 {course.lessons}강</dd></div>
-                )}
-                <div className="flex justify-between"><dt className="text-ink-soft">강사</dt><dd className="font-semibold text-ink">{course.instructor}</dd></div>
+                {[
+                  ["분야", CATEGORY_LABEL[course.category]],
+                  ["난이도", course.level],
+                  ...(course.schedule ? [["일정", course.scheduleShort || course.schedule]] : []),
+                  ...(course.delivery ? [["방식", course.delivery]] : []),
+                  ...(course.format ? [["형태", course.format]] : []),
+                  ...(course.duration ? [["시간", course.duration]] : []),
+                  ...(!course.schedule && course.lessons > 0 ? [["강의 수", `총 ${course.lessons}강`]] : []),
+                  ["강사", course.instructor],
+                ].map(([dt, dd]) => (
+                  <div key={dt} className="flex justify-between gap-2">
+                    <dt className="shrink-0 text-ink-soft">{dt}</dt>
+                    <dd className="text-right font-semibold text-ink">{dd}</dd>
+                  </div>
+                ))}
               </dl>
 
+              {/* 수강 혜택 */}
               {course.bonus && course.bonus.length > 0 && (
                 <div className="mt-4 border-t border-line pt-4">
-                  <p className="text-[12px] font-bold text-ink-soft">수강 혜택</p>
+                  <p className="text-[12px] font-bold uppercase tracking-wider text-ink-soft">수강 혜택</p>
                   <ul className="mt-2 space-y-1.5">
                     {course.bonus.map((b, i) => (
                       <li key={i} className="flex gap-1.5 text-[12px] text-ink-soft">
-                        <span className="shrink-0 text-brand">+</span>
+                        <span className="shrink-0 font-bold" style={{ color }}>+</span>
                         {b}
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
+
+              {/* 상담 링크 */}
+              <a
+                href="https://open.kakao.com/o/rebound"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 flex items-center justify-center gap-2 rounded-xl border border-line py-3 text-[13px] font-semibold text-ink-soft transition-colors hover:bg-cream hover:text-ink"
+              >
+                카카오톡으로 문의하기
+              </a>
             </div>
           </aside>
         </section>
       </main>
+
+      {/* ── 모바일 하단 고정 CTA ──────────────────────────── */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-line bg-paper/95 px-4 py-3 backdrop-blur lg:hidden">
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[14px] font-extrabold text-ink">{course.title}</p>
+            <p className="text-[13px] font-black" style={{ color }}>
+              {course.priceLabel || (course.free ? "무료" : formatPrice(course.price))}
+            </p>
+          </div>
+          <Link
+            href={`/checkout/${course.id}`}
+            className="shrink-0 rounded-xl px-5 py-3 text-[14px] font-black text-white"
+            style={{ background: color }}
+          >
+            {course.free ? "무료 신청" : "신청하기"}
+          </Link>
+        </div>
+      </div>
+
       <Footer />
     </>
   );
