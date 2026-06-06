@@ -123,6 +123,51 @@ export default async function CourseDetail({ params }) {
                 </p>
               )}
             </div>
+
+            {/* 수강 후 달라지는 것 */}
+            {course.outcomes && course.outcomes.length > 0 && (
+              <div className="mt-6 rounded-2xl border border-line bg-paper p-7">
+                <h2 className="text-[20px] font-extrabold text-ink">수강 후 달라지는 것</h2>
+                <ul className="mt-4 space-y-3">
+                  {course.outcomes.map((o, i) => (
+                    <li key={i} className="flex gap-3 text-[14px] leading-relaxed text-ink">
+                      <span
+                        className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white"
+                        style={{ background: color }}
+                      >
+                        {i + 1}
+                      </span>
+                      {o}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* 강사 프로필 */}
+            {course.instructorBio && (
+              <div className="mt-6 rounded-2xl border border-line bg-paper p-7">
+                <h2 className="text-[20px] font-extrabold text-ink">강사 소개</h2>
+                <div className="mt-5 flex gap-5">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-[22px] font-black text-white" style={{ background: color }}>
+                    {course.instructorBio.name.charAt(0)}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[16px] font-extrabold text-ink">{course.instructorBio.name}</p>
+                    <p className="mt-0.5 text-[13px] text-ink-soft">{course.instructorBio.role}</p>
+                    <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">{course.instructorBio.intro}</p>
+                    <ul className="mt-3 space-y-1.5">
+                      {course.instructorBio.credentials.map((c, i) => (
+                        <li key={i} className="flex gap-2 text-[13px] text-ink-soft">
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand/60" />
+                          {c}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* STICKY PURCHASE */}
