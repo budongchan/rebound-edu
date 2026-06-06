@@ -55,6 +55,7 @@ const FAQ = [
 ];
 
 export default function Home() {
+  const popular = COURSES.filter((c) => c.popular).slice(0, 3);
   const featured = COURSES.filter((c) => c.lessons > 0).slice(0, 6);
 
   return (
@@ -150,6 +151,28 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* POPULAR COURSES */}
+        {popular.length > 0 && (
+          <section className="bg-cream py-20">
+            <div className="container-edu">
+              <div className="flex items-end justify-between">
+                <div>
+                  <span className="text-[13px] font-bold uppercase tracking-widest text-brand">Best</span>
+                  <h2 className="mt-2 text-[28px] font-black text-ink sm:text-[34px]">지금 가장 많이 듣는 강의</h2>
+                </div>
+                <Link href="/courses" className="hidden text-[14px] font-bold text-ink-soft hover:text-ink sm:block">
+                  전체 보기 →
+                </Link>
+              </div>
+              <div className="mt-9 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {popular.map((c, i) => (
+                  <CourseCard key={c.id} course={c} rank={i + 1} />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* COURSES */}
         <section className="bg-paper py-20">
