@@ -290,10 +290,18 @@ export default function CheckoutForm({ course }) {
             · 입금 후 아래 버튼으로 즉시 확인 가능합니다.
           </p>
 
+          <p className="mt-3 text-center text-[12px] text-ink-soft">
+            나중에 확인하려면{" "}
+            <Link href={`/order/${order.order}`} className="font-semibold text-ink underline underline-offset-2">
+              주문 상태 페이지
+            </Link>
+            를 북마크해 두세요.
+          </p>
+
           <button
             onClick={handleCheckDeposit}
             disabled={confirming}
-            className="mt-6 w-full rounded-xl bg-brand px-5 py-3.5 text-center text-[15px] font-bold text-white transition-transform enabled:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+            className="mt-4 w-full rounded-xl bg-brand px-5 py-3.5 text-center text-[15px] font-bold text-white transition-transform enabled:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {confirming ? "확인 중…" : "입금 확인하기"}
           </button>
