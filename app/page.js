@@ -2,18 +2,33 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
-import { COURSES } from "@/lib/courses";
+import { COURSES, MENU_CATEGORIES } from "@/lib/courses";
 
 const WHY = [
   {
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    ),
     title: "교과서 말고 현장 경험",
     body: "셰어하우스 47호점 창업, 전국 100개 센터 오픈 총괄, 호스텔·스터디카페 직영 운영. 실제로 해본 사람이 직접 가르칩니다. 이론은 현장에서 검증되어야 의미가 있습니다.",
   },
   {
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+      </svg>
+    ),
     title: "배운 것을 바로 쓸 수 있는 구조",
     body: "강의는 현장에서 당장 적용할 수 있는 체크리스트·계산법·판단 기준 중심으로 구성합니다. 듣고 끝이 아니라, 내일 실행할 수 있는 것을 가져갑니다.",
   },
   {
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    ),
     title: "강의 후 전문가와 바로 연결",
     body: "강의로 신뢰가 생기면, 직접 컨설팅과 서비스를 의뢰할 수 있습니다. 교육이 끝이 아니라 전문가와의 연결이 시작되는 플랫폼입니다.",
   },
@@ -67,52 +82,90 @@ export default function Home() {
       <main>
         {/* HERO */}
         <section className="relative overflow-hidden bg-ink text-white">
-          <div
-            className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full opacity-30 blur-3xl"
-            style={{ background: "radial-gradient(circle, #e63329, transparent 70%)" }}
-          />
-          <div className="container-edu relative grid gap-10 py-20 md:grid-cols-[1.1fr_0.9fr] md:py-28">
+          {/* 배경 오브 */}
+          <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full opacity-20 blur-3xl" style={{ background: "radial-gradient(circle, #e63329, transparent 70%)" }} />
+          <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full opacity-10 blur-3xl" style={{ background: "radial-gradient(circle, #e63329, transparent 70%)" }} />
+          {/* 그리드 패턴 */}
+          <div className="pointer-events-none absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
+
+          <div className="container-edu relative grid gap-10 py-20 md:grid-cols-[1.1fr_0.9fr] md:py-32">
             <div>
-              <span className="inline-block rounded-full border border-white/20 px-3 py-1 text-[12px] font-semibold text-white/80">
+              <span className="inline-block rounded-full border border-white/20 bg-white/5 px-3 py-1 text-[12px] font-semibold text-white/80">
                 부동산·공간사업 전문가 교육 플랫폼
               </span>
-              <h1 className="mt-5 text-[34px] font-black leading-[1.2] sm:text-[46px]">
-                현장 전문가가 직접 가르치는<br />
-                <span className="text-brand">부동산 실전 교육</span>
+              <h1 className="mt-5 text-[34px] font-black leading-[1.15] sm:text-[48px]">
+                현장에서 직접 겪은<br />
+                <span className="text-brand">실패와 성공을 가르칩니다</span>
               </h1>
-              <p className="mt-4 max-w-xl text-[16px] leading-relaxed text-white/75">
-                중개업 · 숙박업 · 투자개발 · AI자동화 · 공실해결. 100개+ 센터 오픈을 총괄한
-                현직 CEO가 8년간의 현장 노하우를 강의로 공개합니다.
+              <p className="mt-4 max-w-xl text-[16px] leading-relaxed text-white/70">
+                중개업 · 숙박업 · 투자개발 · AI자동화 · 공실해결.<br />
+                셰어하우스 47호점을 직접 만들고, 전국 100개 센터 오픈을 총괄한 현직 CEO가 8년 노하우를 공개합니다.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/courses" className="rounded-xl bg-brand px-6 py-3.5 text-[15px] font-bold text-white transition-transform hover:-translate-y-0.5">
-                  강의 둘러보고 결제하기
+                <Link href="/courses" className="rounded-xl bg-brand px-6 py-3.5 text-[15px] font-bold text-white shadow-[0_4px_24px_rgba(230,51,41,0.4)] transition-transform hover:-translate-y-0.5">
+                  강의 둘러보기
                 </Link>
                 <Link href="/login" className="rounded-xl bg-white/10 px-6 py-3.5 text-[15px] font-bold text-white ring-1 ring-white/20 transition-colors hover:bg-white/15">
-                  Google로 3초 가입
+                  Google로 로그인
                 </Link>
               </div>
-              <p className="mt-3 text-[12px] text-white/45">
-                유료 강의 결제는 계좌이체(무통장입금)로 진행합니다.
-              </p>
-            </div>
-
-            <div className="flex flex-col justify-center gap-4 rounded-2xl bg-white/5 p-7 ring-1 ring-white/10">
-              <div className="text-[15px] font-bold">김동찬 대표</div>
-              <div className="text-[13px] text-white/60">리바운드 그룹 CEO · KAIST MBA</div>
-              <dl className="mt-2 grid grid-cols-3 gap-3 text-center">
-                {[
-                  ["100+", "센터 오픈"],
-                  ["5권", "실무 도서"],
-                  ["2.8만+", "유튜브 구독"],
-                ].map(([n, l]) => (
-                  <div key={l} className="rounded-xl bg-white/5 py-4">
-                    <div className="text-[22px] font-black text-brand">{n}</div>
-                    <div className="mt-1 text-[11px] text-white/55">{l}</div>
+              <div className="mt-8 flex flex-wrap gap-6">
+                {[["47호점", "셰어하우스 직접 창업"], ["100개+", "센터 오픈 총괄"], ["2.8만+", "유튜브 구독자"]].map(([n, l]) => (
+                  <div key={n}>
+                    <div className="text-[26px] font-black text-brand">{n}</div>
+                    <div className="text-[12px] text-white/50">{l}</div>
                   </div>
                 ))}
-              </dl>
+              </div>
             </div>
+
+            {/* 강사 비주얼 카드 */}
+            <div className="flex items-center justify-center">
+              <div className="w-full max-w-sm rounded-2xl bg-white/5 p-1 ring-1 ring-white/10">
+                {/* 상단 색상 배너 */}
+                <div className="relative h-28 overflow-hidden rounded-xl" style={{ background: "linear-gradient(135deg, #e63329 0%, #14110f 100%)" }}>
+                  <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 11px)" }} />
+                  <div className="absolute bottom-4 left-5 text-[12px] font-semibold text-white/70">강사 프로필</div>
+                </div>
+                {/* 프로필 */}
+                <div className="-mt-8 px-5 pb-5">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-ink bg-brand text-[24px] font-black text-white shadow-lg">
+                    K
+                  </div>
+                  <h3 className="mt-3 text-[18px] font-extrabold text-white">김동찬 대표</h3>
+                  <p className="text-[13px] text-white/60">리바운드 그룹 CEO · KAIST MBA</p>
+                  <ul className="mt-4 space-y-2">
+                    {[
+                      "셰어하우스 47호점 직접 창업",
+                      "홈즈컴퍼니 전국 100개 센터 오픈 총괄",
+                      "공인중개사법인 대표 (5개 법인)",
+                      "실무 도서 5권+ 출간",
+                      "유튜브 부동찬TV 2.8만+ 구독",
+                    ].map((c) => (
+                      <li key={c} className="flex items-start gap-2 text-[13px] text-white/75">
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+                        {c}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 카테고리 빠른 탐색 */}
+        <section className="border-b border-line bg-paper">
+          <div className="container-edu flex flex-wrap gap-2 py-4">
+            {MENU_CATEGORIES.map((cat) => (
+              <Link
+                key={cat.key}
+                href={`/subjects/${cat.key}`}
+                className="flex items-center gap-1.5 rounded-full border border-line px-4 py-2 text-[13px] font-semibold text-ink-soft transition-colors hover:border-ink/30 hover:bg-cream hover:text-ink"
+              >
+                {cat.label}
+              </Link>
+            ))}
           </div>
         </section>
 
@@ -125,9 +178,9 @@ export default function Home() {
             </h2>
             <div className="mt-10 grid gap-6 md:grid-cols-3">
               {WHY.map((w, i) => (
-                <div key={i} className="rounded-2xl border border-line bg-cream/50 p-7">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand text-[16px] font-black text-white">
-                    {i + 1}
+                <div key={i} className="group rounded-2xl border border-line bg-cream/50 p-7 transition-shadow hover:shadow-md">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand text-white">
+                    {w.icon}
                   </div>
                   <h3 className="mt-5 text-[18px] font-extrabold text-ink">{w.title}</h3>
                   <p className="mt-2.5 text-[14px] leading-relaxed text-ink-soft">{w.body}</p>

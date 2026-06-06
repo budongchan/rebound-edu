@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MENU_CATEGORIES } from "@/lib/courses";
+import UserMenu from "@/components/UserMenu";
 
 export default function Header() {
   return (
@@ -32,12 +33,7 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Link
-            href="/login"
-            className="hidden rounded-lg px-3.5 py-2 text-[14px] font-semibold text-ink-soft transition-colors hover:text-ink sm:inline-block"
-          >
-            로그인
-          </Link>
+          <UserMenu />
           <Link
             href="/courses"
             className="rounded-lg bg-ink px-4 py-2 text-[14px] font-bold text-white transition-transform hover:-translate-y-0.5"

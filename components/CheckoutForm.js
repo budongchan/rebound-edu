@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { formatPrice } from "@/lib/courses";
+import { getSupabaseBrowser } from "@/lib/supabase-browser";
 
 function formatValidUntil(iso) {
   if (!iso) return "";
@@ -17,6 +18,9 @@ function formatValidUntil(iso) {
 
 export default function CheckoutForm({ course }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const [authChecked, setAuthChecked] = useState(false);
+  const [user, setUser] = useState(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "", depositName: "" });
   const [agree, setAgree] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | loading | bank | done | error
@@ -36,6 +40,23 @@ export default function CheckoutForm({ course }) {
   const [taxAgree, setTaxAgree] = useState(false);
   const [taxStatus, setTaxStatus] = useState("idle"); // idle | loading | done | error
   const [taxMessage, setTaxMessage] = useState("");
+
+  useEffect(() => {
+    const sb = getSupabaseBrowser();
+    if (!sb) { setAuthChecked(true); return; }
+    sb.auth.getSession().then(({ data }) => {
+      const u = data.session?.user ?? null;
+      setUser(u);
+      setAuthChecked(true);
+      if (u) {
+        setForm((f) => ({
+          ...f,
+          name: f.name || u.user_metadata?.full_name || u.user_metadata?.name || "",
+          email: f.email || u.email || "",
+        }));
+      }
+    });
+  }, []);
 
   const isFree = course.free || course.price === 0;
   const valid =
@@ -142,6 +163,48 @@ export default function CheckoutForm({ course }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     });
+  }
+
+  // 로딩 중
+  if (!authChecked) {
+    return (
+      <div className="flex min-h-[200px] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand border-t-transparent" />
+      </div>
+    );
+  }
+
+  // 로그인 게이트 — Supabase 설정이 되어 있고 미로그인 상태일 때만
+  if (authChecked && !user && getSupabaseBrowser()) {
+    return (
+      <div className="mx-auto max-w-lg rounded-2xl border border-line bg-paper p-8 text-center">
+        <div
+          className="mx-auto flex h-14 w-14 items-center justify-center rounded-full text-2xl text-white"
+          style={{ background: "var(--color-brand)" }}
+        >
+          🔒
+        </div>
+        <h2 className="mt-5 text-[20px] font-extrabold text-ink">로그인이 필요합니다</h2>
+        <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
+          결제를 진행하려면 먼저 Google 계정으로 로그인해 주세요.<br />
+          계정 정보는 수강 안내에 사용됩니다.
+        </p>
+        <div className="mt-4 rounded-xl bg-cream/80 p-4 text-left">
+          <p className="text-[13px] font-bold text-ink">{course.title}</p>
+          <p className="text-[12px] text-ink-soft">{course.subtitle}</p>
+          <p className="mt-2 text-[16px] font-black text-ink">{formatPrice(course.price)}</p>
+        </div>
+        <Link
+          href={`/login?next=${encodeURIComponent(pathname)}`}
+          className="mt-6 block rounded-xl bg-brand px-5 py-3.5 text-[15px] font-bold text-white transition-transform hover:-translate-y-0.5"
+        >
+          Google로 로그인 후 결제하기
+        </Link>
+        <Link href={`/courses/${course.id}`} className="mt-3 block text-[13px] text-ink-soft hover:text-ink">
+          ← 강의 상세로 돌아가기
+        </Link>
+      </div>
+    );
   }
 
   // 무료 신청 완료
@@ -345,7 +408,7 @@ export default function CheckoutForm({ course }) {
             )}
           </div>
           <p className="mt-3 text-[12px] text-ink-soft/80">
-            강의 수강 안내와 입금 확인에 사용됩니다.
+            {user ? `${user.email} 계정으로 로그인되어 있습니다.` : "강의 수강 안내와 입금 확인에 사용됩니다."}
           </p>
         </div>
 
