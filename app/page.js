@@ -26,6 +26,27 @@ const STEPS = [
   { n: "04", t: "수익 창출", d: "강의 수익 + 의뢰 수수료를 통해 지속적으로 수익을 만들어냅니다." },
 ];
 
+const REVIEWS = [
+  {
+    name: "이○○",
+    course: "AI자동화 입문",
+    rating: 5,
+    text: "현장에서 바로 쓸 수 있는 내용들이라 너무 좋았습니다. 강의 듣고 일주일 만에 업무 시간이 눈에 띄게 줄었어요.",
+  },
+  {
+    name: "박○○",
+    course: "26년 내집마련 유료특강",
+    rating: 5,
+    text: "2026년 시장을 데이터로 설명해줘서 설득력이 달랐습니다. 이론 말고 실제 사례 중심이라 믿음이 갔어요.",
+  },
+  {
+    name: "최○○",
+    course: "AI자동화 입문",
+    rating: 5,
+    text: "비개발자인데도 충분히 따라갈 수 있었습니다. 무료 도구로 이렇게까지 된다는 게 놀라웠어요.",
+  },
+];
+
 const FAQ = [
   { q: "강의는 어떻게 결제하나요?", a: "강의 상세 페이지에서 신청하기를 누르고 주문자 정보를 입력하면, 입금 계좌가 안내됩니다. 안내된 계좌로 입금(계좌이체)하시면 확인 후 수강 안내를 보내드립니다." },
   { q: "환불이 가능한가요?", a: "수강 시작 전 또는 콘텐츠 미열람 시 환불정책에 따라 환불됩니다. 자세한 기준은 환불정책 페이지를 확인해 주세요." },
@@ -149,6 +170,30 @@ export default function Home() {
             </div>
             <div className="mt-9 text-center sm:hidden">
               <Link href="/courses" className="text-[14px] font-bold text-ink">전체 강의 보기 →</Link>
+            </div>
+          </div>
+        </section>
+
+        {/* REVIEWS */}
+        <section className="bg-paper py-20">
+          <div className="container-edu">
+            <span className="text-[13px] font-bold uppercase tracking-widest text-brand">Reviews</span>
+            <h2 className="mt-2 text-[28px] font-black text-ink sm:text-[34px]">수강생 후기</h2>
+            <div className="mt-10 grid gap-6 md:grid-cols-3">
+              {REVIEWS.map((r, i) => (
+                <div key={i} className="flex flex-col rounded-2xl border border-line bg-cream/50 p-7">
+                  <div className="flex gap-0.5 text-brand">
+                    {Array.from({ length: r.rating }).map((_, j) => (
+                      <span key={j} className="text-[16px]">★</span>
+                    ))}
+                  </div>
+                  <p className="mt-4 flex-1 text-[14px] leading-relaxed text-ink">{r.text}</p>
+                  <div className="mt-5 border-t border-line pt-4">
+                    <p className="text-[13px] font-semibold text-ink">{r.name}</p>
+                    <p className="text-[12px] text-ink-soft">{r.course} 수강</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
