@@ -34,6 +34,9 @@ export default async function CourseDetail({ params }) {
   const totalLessons = course.curriculum.reduce((n, s) => n + s.items.length, 0);
   const instructor = getInstructor(course.instructor);
 
+  const WEEKDAY_KO = { 월: "월요일", 화: "화요일", 수: "수요일", 목: "목요일", 금: "금요일", 토: "토요일" };
+  const DELIVERY_ICON = { 오프라인: "📍", 온라인: "💻" };
+
   return (
     <>
       <Header />
@@ -51,6 +54,16 @@ export default async function CourseDetail({ params }) {
               <span className="rounded-full bg-white/20 px-3 py-1 text-[12px] font-bold">
                 {course.level}
               </span>
+              {course.live && (
+                <span className="rounded-full bg-white px-3 py-1 text-[12px] font-black" style={{ color }}>
+                  개강
+                </span>
+              )}
+              {course.guarantee && (
+                <span className="rounded-full bg-white/90 px-3 py-1 text-[12px] font-black text-ink">
+                  {course.guarantee}
+                </span>
+              )}
             </div>
             <h1 className="mt-4 text-[30px] font-black leading-tight sm:text-[40px]">
               {course.title}
@@ -58,9 +71,46 @@ export default async function CourseDetail({ params }) {
             <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-white/85">
               {course.subtitle}
             </p>
-            <div className="mt-5 text-[13px] text-white/70">
-              {course.instructor} · 총 {course.lessons}강
-            </div>
+
+            {/* 일정·방식 인포 */}
+            {course.schedule && (
+              <div className="mt-5 flex flex-wrap gap-3">
+                <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3.5 py-2 text-[13px] font-semibold text-white">
+                  <span>🗓</span>
+                  {course.schedule}
+                </div>
+                {course.delivery && (
+                  <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3.5 py-2 text-[13px] font-semibold text-white">
+                    <span>{DELIVERY_ICON[course.delivery] || "📌"}</span>
+                    {course.delivery}
+                  </div>
+                )}
+                {course.duration && (
+                  <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3.5 py-2 text-[13px] font-semibold text-white">
+                    <span>⏱</span>
+                    {course.duration}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!course.schedule && (
+              <div className="mt-5 text-[13px] text-white/70">
+                {course.instructor} · 총 {course.lessons}강
+              </div>
+            )}
+
+            {/* 보너스 */}
+            {course.bonus && course.bonus.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {course.bonus.map((b, i) => (
+                  <div key={i} className="flex items-center gap-1.5 rounded-full border border-white/30 bg-white/5 px-3 py-1 text-[12px] text-white/90">
+                    <span>+</span>
+                    {b}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
@@ -180,6 +230,13 @@ export default async function CourseDetail({ params }) {
           {/* STICKY PURCHASE */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <div className="rounded-2xl border border-line bg-paper p-6 shadow-[0_18px_40px_-26px_rgba(20,17,15,0.4)]">
+              {course.guarantee && (
+                <div className="mb-3 flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2 text-[13px] font-bold text-green-700">
+                  <span>✅</span>
+                  {course.guarantee}
+                </div>
+              )}
+
               {course.discountPct ? (
                 <div className="flex items-center gap-2">
                   <span className="rounded-md bg-brand px-2 py-0.5 text-[12px] font-black text-white">
@@ -190,13 +247,20 @@ export default async function CourseDetail({ params }) {
                   </span>
                 </div>
               ) : null}
-              <div className="mt-1 text-[28px] font-black text-ink">{formatPrice(course.price)}</div>
+
+              {course.priceLabel ? (
+                <div className="mt-1">
+                  <div className="text-[22px] font-black text-ink">{course.priceLabel}</div>
+                </div>
+              ) : (
+                <div className="mt-1 text-[28px] font-black text-ink">{formatPrice(course.price)}</div>
+              )}
 
               <Link
                 href={`/checkout/${course.id}`}
                 className="mt-5 block rounded-xl bg-brand px-5 py-3.5 text-center text-[15px] font-bold text-white transition-transform hover:-translate-y-0.5"
               >
-                {course.free ? "무료 신청하기" : "결제하기"}
+                {course.free ? "무료 신청하기" : course.enrollAlways ? "상시 신청하기" : "결제하기"}
               </Link>
               <p className="mt-3 text-center text-[12px] text-ink-soft/80">
                 {course.free ? "로그인 후 바로 신청됩니다." : "신청 후 입금 계좌가 안내됩니다. (무통장입금)"}
@@ -205,9 +269,37 @@ export default async function CourseDetail({ params }) {
               <dl className="mt-6 space-y-2.5 border-t border-line pt-5 text-[13px]">
                 <div className="flex justify-between"><dt className="text-ink-soft">분야</dt><dd className="font-semibold text-ink">{CATEGORY_LABEL[course.category]}</dd></div>
                 <div className="flex justify-between"><dt className="text-ink-soft">난이도</dt><dd className="font-semibold text-ink">{course.level}</dd></div>
-                <div className="flex justify-between"><dt className="text-ink-soft">강의 수</dt><dd className="font-semibold text-ink">총 {course.lessons}강</dd></div>
+                {course.schedule && (
+                  <div className="flex justify-between"><dt className="text-ink-soft">일정</dt><dd className="text-right font-semibold text-ink" style={{ maxWidth: "200px" }}>{course.scheduleShort || course.schedule}</dd></div>
+                )}
+                {course.delivery && (
+                  <div className="flex justify-between"><dt className="text-ink-soft">방식</dt><dd className="font-semibold text-ink">{course.delivery}</dd></div>
+                )}
+                {course.format && (
+                  <div className="flex justify-between"><dt className="text-ink-soft">포맷</dt><dd className="font-semibold text-ink">{course.format}</dd></div>
+                )}
+                {course.duration && (
+                  <div className="flex justify-between"><dt className="text-ink-soft">시간</dt><dd className="font-semibold text-ink">{course.duration}</dd></div>
+                )}
+                {!course.schedule && course.lessons > 0 && (
+                  <div className="flex justify-between"><dt className="text-ink-soft">강의 수</dt><dd className="font-semibold text-ink">총 {course.lessons}강</dd></div>
+                )}
                 <div className="flex justify-between"><dt className="text-ink-soft">강사</dt><dd className="font-semibold text-ink">{course.instructor}</dd></div>
               </dl>
+
+              {course.bonus && course.bonus.length > 0 && (
+                <div className="mt-4 border-t border-line pt-4">
+                  <p className="text-[12px] font-bold text-ink-soft">수강 혜택</p>
+                  <ul className="mt-2 space-y-1.5">
+                    {course.bonus.map((b, i) => (
+                      <li key={i} className="flex gap-1.5 text-[12px] text-ink-soft">
+                        <span className="shrink-0 text-brand">+</span>
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </aside>
         </section>
