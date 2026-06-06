@@ -79,7 +79,7 @@ export default function Home() {
                 {[
                   ["100+", "센터 오픈"],
                   ["5권", "실무 도서"],
-                  ["2만+", "유튜브 구독"],
+                  ["2.8만+", "유튜브 구독"],
                 ].map(([n, l]) => (
                   <div key={l} className="rounded-xl bg-white/5 py-4">
                     <div className="text-[22px] font-black text-brand">{n}</div>
