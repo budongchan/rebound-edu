@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/courses";
 
 function formatValidUntil(iso) {
@@ -15,6 +16,7 @@ function formatValidUntil(iso) {
 }
 
 export default function CheckoutForm({ course }) {
+  const router = useRouter();
   const [form, setForm] = useState({ name: "", email: "", phone: "", depositName: "" });
   const [agree, setAgree] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | loading | bank | done | error
@@ -64,6 +66,7 @@ export default function CheckoutForm({ course }) {
       if (data.status === "bank_transfer") {
         setOrder(data);
         setStatus("bank");
+        router.push(`/order/${data.order}`);
         return;
       }
       setStatus("error");
