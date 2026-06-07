@@ -1,8 +1,52 @@
 import { NextResponse } from "next/server";
 import { getCourse, formatPrice } from "@/lib/courses";
-import { BANK } from "@/lib/company";
+import { BANK, COMPANY } from "@/lib/company";
 import { getServiceClient } from "@/lib/supabase";
 import { EDU_SERVICE } from "@/lib/depositService";
+
+function cleanPhone(value) {
+  return String(value || "").replace(/[^\d]/g, "");
+}
+
+async function queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil }) {
+  const phone = cleanPhone(buyer.phone);
+  if (!phone) return;
+
+  const deadline = new Date(validUntil).toLocaleString("ko-KR", {
+    timeZone: "Asia/Seoul",
+    month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit",
+  });
+
+  const message = [
+    "[리바운드에듀]",
+    `${course.title} 수강 신청이 접수되었습니다.`,
+    "─",
+    `금액: ${formatPrice(course.price)}`,
+    `입금자명: ${depositorName}`,
+    `입금기한: ${deadline}까지`,
+    "─",
+    `${BANK.name} ${BANK.account}`,
+    `예금주: ${BANK.holder}`,
+    `주문번호: ${order}`,
+    "─",
+    "입금 후 결제 확인 페이지에서 [입금 확인하기] 버튼을 눌러 주세요.",
+    `문의: ${COMPANY.phone}`,
+  ].join("\n");
+
+  await supabase.from("sms_outbox").insert([{
+    channel: "sms",
+    status: "queued",
+    phone,
+    message,
+    service_id: EDU_SERVICE.id,
+    platform: EDU_SERVICE.platform,
+    product: course.title,
+    target_table: EDU_SERVICE.targetTable,
+    order_id: order,
+    dedupe_key: `edu:checkout:${order}`,
+    metadata: { source: "checkout", buyer_name: buyer.name.trim() },
+  }]).catch(() => {});
+}
 
 function orderNo() {
   const d = new Date();
@@ -51,6 +95,11 @@ export async function POST(req) {
       status: course.free || course.price === 0 ? "무료신청완료" : "입금대기",
       deposit_valid_until: course.free || course.price === 0 ? null : validUntil,
     }]).catch(() => {});
+
+    // 1차 알림 문자 — 수강 신청 접수 + 계좌 안내 (유료 강의만)
+    if (!course.free && course.price > 0) {
+      await queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil });
+    }
   }
 
   // 무료 강의 — 즉시 신청

@@ -1,9 +1,51 @@
 import { NextResponse } from "next/server";
 import { getServiceClient } from "@/lib/supabase";
 import { EDU_SERVICE } from "@/lib/depositService";
+import { COMPANY } from "@/lib/company";
 
 function norm(v = "") {
   return String(v).replace(/\s/g, "").trim();
+}
+
+function cleanPhone(value) {
+  return String(value || "").replace(/[^\d]/g, "");
+}
+
+async function queueDepositConfirmedSms(supabase, { order, depositEvent, confirmedAt }) {
+  const phone = cleanPhone(order.buyer_phone);
+  if (!phone) return;
+
+  const message = [
+    "[리바운드에듀]",
+    "입금 확인이 완료되었습니다.",
+    "─",
+    `강의: ${order.course_title || EDU_SERVICE.product}`,
+    `주문번호: ${order.order_id}`,
+    "─",
+    "수강 안내는 개강 전 이메일로 발송됩니다.",
+    `문의: ${COMPANY.phone}`,
+    "감사합니다.",
+  ].join("\n");
+
+  await supabase.from("sms_outbox").insert([{
+    channel: "sms",
+    status: "queued",
+    phone,
+    message,
+    service_id: EDU_SERVICE.id,
+    platform: EDU_SERVICE.platform,
+    product: order.course_title || EDU_SERVICE.product,
+    target_table: EDU_SERVICE.targetTable,
+    target_id: order.id ? String(order.id) : null,
+    order_id: order.order_id,
+    deposit_event_id: depositEvent?.id || null,
+    dedupe_key: `edu:deposit-confirmed:${order.id || order.order_id}:${depositEvent?.id || confirmedAt}`,
+    metadata: {
+      source: "check-deposit",
+      confirmed_at: confirmedAt,
+      buyer_name: order.buyer_name || null,
+    },
+  }]).catch(() => {});
 }
 
 async function sendTelegram(text) {
@@ -120,19 +162,22 @@ export async function POST(req) {
     return NextResponse.json({ ok: true, status: "pending", reason: "deposit-event-already-used" });
   }
 
-  // 5) Telegram [입금매칭] 알림
-  await sendTelegram(
-    [
-      "[입금매칭]",
-      `플랫폼: ${EDU_SERVICE.platform}`,
-      `결제상품: ${order.course_title || EDU_SERVICE.product}`,
-      `주문번호: ${orderId}`,
-      `입금자명: ${hit.depositor_name || "-"}`,
-      `금액: ${amount.toLocaleString("ko-KR")}원`,
-      `상태: 결제완료 반영`,
-      `입금ID: ${hit.id}`,
-    ].join("\n")
-  );
+  // 5) Telegram [입금매칭] 알림 + 고객 2차 알림문자 큐잉 (병렬)
+  await Promise.all([
+    sendTelegram(
+      [
+        "[입금매칭]",
+        `플랫폼: ${EDU_SERVICE.platform}`,
+        `결제상품: ${order.course_title || EDU_SERVICE.product}`,
+        `주문번호: ${orderId}`,
+        `입금자명: ${hit.depositor_name || "-"}`,
+        `금액: ${amount.toLocaleString("ko-KR")}원`,
+        `상태: 결제완료 반영`,
+        `입금ID: ${hit.id}`,
+      ].join("\n")
+    ),
+    queueDepositConfirmedSms(supabase, { order, depositEvent: hit, confirmedAt: now }),
+  ]);
 
   return NextResponse.json({ ok: true, status: "confirmed", confirmedAt: now });
 }
