@@ -45,12 +45,18 @@ export default function Header() {
 
       {/* 모바일 분류 바 */}
       <div className="border-t border-line md:hidden">
-        <nav className="container-edu flex gap-1 overflow-x-auto py-2">
+        <nav className="container-edu flex gap-1 overflow-x-auto py-2 [&::-webkit-scrollbar]:hidden">
+          <Link
+            href="/courses"
+            className="shrink-0 whitespace-nowrap rounded-lg bg-ink px-3 py-1.5 text-[13px] font-bold text-white"
+          >
+            전체 강의
+          </Link>
           {MENU_CATEGORIES.map((cat) => (
             <Link
               key={cat.key}
               href={`/subjects/${cat.key}`}
-              className="whitespace-nowrap rounded-lg px-3 py-1.5 text-[14px] font-semibold text-ink-soft hover:text-ink"
+              className="shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-[14px] font-semibold text-ink-soft hover:text-ink"
             >
               {cat.label}
             </Link>

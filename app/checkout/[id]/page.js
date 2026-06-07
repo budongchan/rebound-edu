@@ -12,7 +12,8 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { id } = await params;
   const course = getCourse(id);
-  return { title: course ? `결제 · ${course.title}` : "결제" };
+  const isFree = course?.free || course?.price === 0;
+  return { title: course ? `${isFree ? "무료 신청" : "수강 신청"} · ${course.title}` : "수강 신청" };
 }
 
 export default async function CheckoutPage({ params }) {
@@ -28,8 +29,14 @@ export default async function CheckoutPage({ params }) {
           <Link href={`/courses/${course.id}`} className="text-[13px] font-semibold text-ink-soft hover:text-ink">
             ← 강의 상세로
           </Link>
-          <h1 className="mt-3 text-[28px] font-black text-ink sm:text-[34px]">결제하기</h1>
-          <p className="mt-2 text-[14px] text-ink-soft">주문 정보를 확인하고 결제를 진행해 주세요.</p>
+          <h1 className="mt-3 text-[28px] font-black text-ink sm:text-[34px]">
+            {course.free || course.price === 0 ? "무료 신청" : "수강 신청 (계좌이체)"}
+          </h1>
+          <p className="mt-2 text-[14px] text-ink-soft">
+            {course.free || course.price === 0
+              ? "신청 정보를 입력하고 무료로 신청하세요."
+              : "신청 정보를 입력하면 입금 계좌를 안내해 드립니다."}
+          </p>
 
           <div className="mt-9">
             <CheckoutForm course={course} />

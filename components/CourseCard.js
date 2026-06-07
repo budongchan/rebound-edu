@@ -56,7 +56,11 @@ export default function CourseCard({ course, rank }) {
           {course.lessons > 0 && (
             <>
               <span>·</span>
-              <span>총 {course.lessons}강</span>
+              <span>
+                {course.lessons === 1 && course.duration && !course.duration.includes("회")
+                  ? `1일 집중 · ${course.duration}`
+                  : `총 ${course.lessons}강`}
+              </span>
             </>
           )}
         </div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { formatPrice } from "@/lib/courses";
+import { COMPANY, BANK } from "@/lib/company";
 import { getSupabaseBrowser } from "@/lib/supabase-browser";
 
 function formatValidUntil(iso) {
@@ -186,7 +187,7 @@ export default function CheckoutForm({ course }) {
         </div>
         <h2 className="mt-5 text-[20px] font-extrabold text-ink">로그인이 필요합니다</h2>
         <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
-          결제를 진행하려면 먼저 Google 계정으로 로그인해 주세요.<br />
+          {isFree ? "무료 신청을 완료하려면" : "수강 신청을 완료하려면"} 먼저 Google 계정으로 로그인해 주세요.<br />
           계정 정보는 수강 안내에 사용됩니다.
         </p>
         <div className="mt-4 rounded-xl bg-cream/80 p-4 text-left">
@@ -198,11 +199,20 @@ export default function CheckoutForm({ course }) {
           href={`/login?next=${encodeURIComponent(pathname)}`}
           className="mt-6 block rounded-xl bg-brand px-5 py-3.5 text-[15px] font-bold text-white transition-transform hover:-translate-y-0.5"
         >
-          Google로 로그인 후 결제하기
+          {isFree ? "Google로 로그인 후 무료 신청하기" : "Google로 로그인 후 신청하기"}
         </Link>
         <Link href={`/courses/${course.id}`} className="mt-3 block text-[13px] text-ink-soft hover:text-ink">
           ← 강의 상세로 돌아가기
         </Link>
+
+        {/* TR-04 안심 블록 */}
+        <div className="mt-6 rounded-xl border border-line bg-cream/60 p-4 text-left text-[12px] text-ink-soft/80 space-y-0.5">
+          <p className="font-semibold text-ink-soft">안심하고 신청하세요</p>
+          <p>{COMPANY.legalName} | 대표: {COMPANY.representative} | 사업자등록번호: {COMPANY.bizNo}</p>
+          <p>통신판매업신고: {COMPANY.ecommerceNo}</p>
+          <p>입금 예금주: {BANK.holder} | 미진행 시 전액 환불</p>
+          <p>문의: {COMPANY.phone} / {COMPANY.email}</p>
+        </div>
       </div>
     );
   }
@@ -464,6 +474,14 @@ export default function CheckoutForm({ course }) {
           <p className="mt-3 text-center text-[12px] text-ink-soft/80">
             {isFree ? "로그인 없이 바로 신청됩니다." : "신청 후 입금 계좌가 안내됩니다."}
           </p>
+
+          {/* TR-04 안심 블록 */}
+          <div className="mt-5 border-t border-line pt-4 text-[11px] leading-relaxed text-ink-soft/70 space-y-0.5">
+            <p className="font-semibold text-ink-soft/80">안심 신청 안내</p>
+            <p>{COMPANY.legalName} | 사업자등록번호: {COMPANY.bizNo}</p>
+            {!isFree && <p>예금주: {BANK.holder} | 미진행 시 전액 환불</p>}
+            <p>문의: {COMPANY.phone}</p>
+          </div>
         </div>
       </aside>
     </form>
