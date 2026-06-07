@@ -211,7 +211,10 @@ export default async function CourseDetail({ params }) {
             <div className="mt-6 flex items-center gap-2 text-[13px] text-white/65">
               <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-[11px] font-black text-white">K</div>
               {course.instructor}
-              {course.lessons > 0 && <><span>·</span><span>총 {course.lessons}강</span></>}
+              {course.format === "주간 정기"
+                ? <><span>·</span><span>주간 정기</span></>
+                : course.lessons > 0 && <><span>·</span><span>총 {course.lessons}강</span></>
+              }
             </div>
           </div>
         </section>
