@@ -216,6 +216,19 @@ export default async function CourseDetail({ params }) {
           </div>
         </section>
 
+        {/* ── 강의 사진 ──────────────────────────────────── */}
+        {course.image && (
+          <div className="container-edu pt-8">
+            <div className="overflow-hidden rounded-2xl border border-line">
+              <img
+                src={course.image}
+                alt={course.title}
+                className="h-[260px] w-full object-cover sm:h-[360px]"
+              />
+            </div>
+          </div>
+        )}
+
         {/* ── BODY ──────────────────────────────────────── */}
         <section className="container-edu grid gap-10 py-12 lg:grid-cols-[1fr_360px]">
           <div className="min-w-0 space-y-6">
