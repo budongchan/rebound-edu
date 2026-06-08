@@ -69,6 +69,12 @@ const SLIDES = [
 ];
 
 const INTERVAL = 5000;
+const INSTRUCTOR_PROFILE = {
+  photo: "/courses/assets/youtube-thumbnails/NAFejjM2nic.jpg",
+  name: "김동찬",
+  role: "(주)리바운드 대표이사 · 공인중개사(제33회)",
+  affiliation: "리바운드에듀 / 리바운드 그룹",
+};
 
 export default function HeroSlider() {
   const [current, setCurrent] = useState(0);
@@ -166,18 +172,29 @@ export default function HeroSlider() {
               )}
             </div>
 
-            {/* 강사 통계 */}
-            <div className="mt-8 flex flex-wrap gap-6">
-              {[
-                ["47호점", "셰어하우스 직접 창업"],
-                ["100개+", "센터 오픈 총괄"],
-                ["2.8만+", "유튜브 구독자"],
-              ].map(([n, l]) => (
-                <div key={n}>
-                  <div className="text-[24px] font-black text-white">{n}</div>
-                  <div className="text-[12px] text-white/50">{l}</div>
-                </div>
-              ))}
+            {/* 강사 프로필 */}
+            <div className="mt-8 flex max-w-xl items-center gap-4 rounded-2xl border border-white/18 bg-white/10 p-4 shadow-[0_18px_44px_-30px_rgba(0,0,0,0.7)] backdrop-blur-md">
+              <div
+                role="img"
+                aria-label={`${INSTRUCTOR_PROFILE.name} 강사 프로필`}
+                className="h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-white/70 bg-white/10 bg-no-repeat shadow-[0_8px_24px_rgba(0,0,0,0.28)]"
+                style={{
+                  backgroundImage: `url(${INSTRUCTOR_PROFILE.photo})`,
+                  backgroundPosition: "88% 18%",
+                  backgroundSize: "225%",
+                }}
+              />
+              <div className="min-w-0">
+                <p className="text-[18px] font-black leading-tight text-white">
+                  {INSTRUCTOR_PROFILE.name}
+                </p>
+                <p className="mt-1 text-[13px] font-semibold leading-snug text-white/86">
+                  {INSTRUCTOR_PROFILE.role}
+                </p>
+                <p className="mt-1 text-[12px] font-medium text-white/58">
+                  {INSTRUCTOR_PROFILE.affiliation}
+                </p>
+              </div>
             </div>
           </div>
 
