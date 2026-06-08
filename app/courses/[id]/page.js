@@ -50,7 +50,7 @@ function buildFaq(course) {
   if (course.live && course.delivery === "오프라인") {
     faqs.push({
       q: "수업 장소는 어디인가요?",
-      a: "서울 강남구 리바운드 강의실에서 진행됩니다. 신청 완료 후 정확한 주소와 교통편을 안내드립니다.",
+      a: "강남(리바운드 역삼점), 강북(리바운드 종로점), 온라인 구글미트 등 수업에 따라 상이하니 수업 안내 페이지를 확인해 주시기 바랍니다.",
     });
   }
   if (course.live && course.delivery === "온라인") {
