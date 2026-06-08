@@ -7,8 +7,11 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-line bg-paper/85 backdrop-blur">
       <div className="container-edu flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-base font-black text-white">
-            R
+          <span
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-[13px] font-black leading-none text-white"
+            aria-label="REBOUND EDU"
+          >
+            RE
           </span>
           <span className="text-[17px] font-extrabold tracking-tight text-ink">
             리바운드 <span className="text-brand">에듀</span>
