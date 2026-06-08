@@ -120,6 +120,20 @@ function getRegisterSteps(course) {
   ];
 }
 
+function getCoursePlaceLabel(course) {
+  if (course.place) return course.place;
+  if (course.delivery === "온라인") return "Zoom 온라인";
+  if (course.delivery === "온라인+오프라인") return "온라인+현장";
+  if (course.delivery === "오프라인") return "리바운드 강의실";
+  return "";
+}
+
+function getCourseScheduleWithDuration(course) {
+  if (!course.schedule) return "";
+  if (!course.duration) return course.schedule;
+  return `${course.schedule} (${course.duration})`;
+}
+
 export default async function CourseDetail({ params }) {
   const { id } = await params;
   const course = getCourse(id);
@@ -132,6 +146,8 @@ export default async function CourseDetail({ params }) {
   const steps = course.live ? getRegisterSteps(course) : null;
   const enrollmentStatus = getCourseEnrollmentStatus(course);
   const deliveryLabel = getCourseDeliveryLabel(course);
+  const placeLabel = getCoursePlaceLabel(course);
+  const scheduleWithDuration = getCourseScheduleWithDuration(course);
   const hasInstructorTrust =
     course.instructorOneLiner &&
     course.instructorWhy &&
@@ -145,8 +161,7 @@ export default async function CourseDetail({ params }) {
     COURSE_HERO_BACKGROUNDS[course.id] ||
     `/courses/assets/course-pages/${course.id}.png`;
 
-  const DELIVERY_ICON = { 오프라인: "📍", 온라인: "💻" };
-  const FORMAT_ICON = { "일일 특강": "⚡", "주간 정기": "📅", "1:1 과정": "🤝", 상시: "🔄" };
+  const DELIVERY_ICON = { 오프라인: "📍", 온라인: "💻", "온라인+오프라인": "📍" };
 
   return (
     <>
@@ -213,26 +228,16 @@ export default async function CourseDetail({ params }) {
             </p>
 
             {/* 핵심 정보 칩 */}
-            {(course.schedule || course.delivery || course.duration) && (
+            {(scheduleWithDuration || placeLabel) && (
               <div className="mt-6 flex flex-wrap gap-2.5">
-                {course.schedule && (
+                {scheduleWithDuration && (
                   <div className="flex items-center gap-2 rounded-lg bg-white/15 px-4 py-2.5 text-[13px] font-semibold text-white ring-1 ring-white/20">
-                    🗓 {course.schedule}
+                    🗓 {scheduleWithDuration}
                   </div>
                 )}
-                {course.delivery && (
+                {placeLabel && (
                   <div className="flex items-center gap-2 rounded-lg bg-white/15 px-4 py-2.5 text-[13px] font-semibold text-white ring-1 ring-white/20">
-                    {DELIVERY_ICON[course.delivery]} {course.delivery}
-                  </div>
-                )}
-                {course.duration && (
-                  <div className="flex items-center gap-2 rounded-lg bg-white/15 px-4 py-2.5 text-[13px] font-semibold text-white ring-1 ring-white/20">
-                    ⏱ {course.duration}
-                  </div>
-                )}
-                {course.format && (
-                  <div className="flex items-center gap-2 rounded-lg bg-white/15 px-4 py-2.5 text-[13px] font-semibold text-white ring-1 ring-white/20">
-                    {FORMAT_ICON[course.format] || "📌"} {course.format}
+                    {DELIVERY_ICON[course.delivery] || "📍"} {placeLabel}
                   </div>
                 )}
               </div>
