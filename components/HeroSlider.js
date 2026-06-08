@@ -7,7 +7,7 @@ const SLIDES = [
   {
     id: "hostel",
     bg: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 60%, #0f766e 100%)",
-    image: "/courses/assets/youtube-thumbnails/NAFejjM2nic.jpg",
+    image: "/courses/assets/real/kim-hostel-lecture.jpg",
     imagePosition: "center 36%",
     tag: "호스텔 창업 특강",
     heading: "셰어하우스 47호점,\n현장에서 직접 배운다",
@@ -20,7 +20,7 @@ const SLIDES = [
   {
     id: "ai-marketing",
     bg: "linear-gradient(135deg, #4c1d95 0%, #7c3aed 55%, #db2777 100%)",
-    image: "/courses/assets/services/budongchan-tv.png",
+    image: "/courses/assets/real/classroom-lecture-privacy.jpg",
     imagePosition: "center 24%",
     tag: "AI 마케팅 자동화",
     heading: "네이버·인스타·구글\n한 번에 자동화한다",
@@ -32,7 +32,7 @@ const SLIDES = [
   {
     id: "ai-dev",
     bg: "linear-gradient(135deg, #14110f 0%, #334155 60%, #0f766e 100%)",
-    image: "/courses/assets/services/publigent.png",
+    image: "/courses/assets/real/kim-space-business.jpg",
     imagePosition: "center 30%",
     tag: "AI 서비스 개발",
     heading: "개발자 없이\n내 서비스를 만든다",
@@ -44,7 +44,7 @@ const SLIDES = [
   {
     id: "brokerage",
     bg: "linear-gradient(135deg, #14110f 0%, #1e3a5f 55%, #0f766e 100%)",
-    image: "/courses/assets/youtube-thumbnails/lBF5FbdMIGQ.jpg",
+    image: "/courses/assets/real/brokerage-classroom-privacy.jpg",
     imagePosition: "center 34%",
     tag: "중개 실무 교육",
     heading: "현직 CEO가 직접 가르치는\n중개 실무 주간 과정",
@@ -57,7 +57,7 @@ const SLIDES = [
   {
     id: "book",
     bg: "linear-gradient(135deg, #78350f 0%, #b45309 55%, #d97706 100%)",
-    image: "/courses/assets/services/publigent.png",
+    image: "/courses/assets/real/classroom-lecture-privacy.jpg",
     imagePosition: "center 34%",
     tag: "책쓰기 과정",
     heading: "당신의 24시간이\n책이 된다",
@@ -70,7 +70,7 @@ const SLIDES = [
 
 const INTERVAL = 5000;
 const INSTRUCTOR_PROFILE = {
-  photo: "/courses/assets/youtube-thumbnails/NAFejjM2nic.jpg",
+  photo: "/courses/instructor/kdc-profile.jpg",
   name: "김동찬",
   role: "(주)리바운드 대표이사 · 공인중개사(제33회)",
   affiliation: "리바운드에듀 / 리바운드 그룹",
@@ -180,8 +180,8 @@ export default function HeroSlider() {
                 className="h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-white/70 bg-white/10 bg-no-repeat shadow-[0_8px_24px_rgba(0,0,0,0.28)]"
                 style={{
                   backgroundImage: `url(${INSTRUCTOR_PROFILE.photo})`,
-                  backgroundPosition: "88% 18%",
-                  backgroundSize: "225%",
+                  backgroundPosition: "center center",
+                  backgroundSize: "112%",
                 }}
               />
               <div className="min-w-0">

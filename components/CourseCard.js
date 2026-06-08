@@ -7,19 +7,19 @@ import {
 } from "@/lib/courses";
 
 const COURSE_THUMBNAILS = {
-  "hostel-live-thu": "/courses/assets/youtube-thumbnails/NAFejjM2nic.jpg",
-  "hostel-live-sat": "/courses/assets/youtube-thumbnails/NAFejjM2nic.jpg",
-  "ai-marketing-auto": "/courses/assets/services/budongchan-tv.png",
-  "ai-service-dev": "/courses/assets/services/publigent.png",
-  "ai-youtube-auto": "/courses/assets/services/budongchan-tv.png",
-  "ai-realestate-homepage": "/courses/assets/services/junggae.png",
-  "brokerage-advanced": "/courses/assets/youtube-thumbnails/lBF5FbdMIGQ.jpg",
-  "book-publishing": "/courses/assets/services/publigent.png",
-  "brokerage-weekly": "/courses/assets/youtube-thumbnails/lBF5FbdMIGQ.jpg",
-  "corp-investment": "/courses/assets/youtube-thumbnails/3_R2iC1ebng.jpg",
-  "ai-intro-special": "/courses/assets/services/buildingsa.png",
-  "vacancy-master": "/courses/assets/youtube-thumbnails/UeGfWTHL9Yg.jpg",
-  "investment-dev-pro": "/courses/assets/youtube-thumbnails/Cyw7oeunK7I.jpg",
+  "hostel-live-thu": "/courses/assets/real/kim-hostel-lecture.jpg",
+  "hostel-live-sat": "/courses/assets/real/kim-hostel-lecture.jpg",
+  "ai-marketing-auto": "/courses/assets/real/classroom-lecture-privacy.jpg",
+  "ai-service-dev": "/courses/assets/real/kim-space-business.jpg",
+  "ai-youtube-auto": "/courses/assets/real/kim-hostel-lecture.jpg",
+  "ai-realestate-homepage": "/courses/assets/real/kim-space-business.jpg",
+  "brokerage-advanced": "/courses/assets/real/brokerage-classroom-privacy.jpg",
+  "book-publishing": "/courses/assets/real/classroom-lecture-privacy.jpg",
+  "brokerage-weekly": "/courses/assets/real/brokerage-classroom-privacy.jpg",
+  "corp-investment": "/courses/assets/real/kim-space-business.jpg",
+  "ai-intro-special": "/courses/assets/real/classroom-lecture-privacy.jpg",
+  "vacancy-master": "/courses/assets/real/kim-space-business.jpg",
+  "investment-dev-pro": "/courses/assets/real/kim-space-business.jpg",
 };
 
 export default function CourseCard({ course, rank }) {
