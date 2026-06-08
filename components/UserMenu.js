@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getSupabaseBrowser } from "@/lib/supabase-browser";
 
 export default function UserMenu() {
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
 
@@ -29,9 +30,11 @@ export default function UserMenu() {
   }
 
   if (!user) {
+    const loginHref = `/login?next=${encodeURIComponent(pathname)}`;
+
     return (
       <Link
-        href="/login"
+        href={loginHref}
         className="hidden rounded-lg px-3.5 py-2 text-[14px] font-semibold text-ink-soft transition-colors hover:text-ink sm:inline-block"
       >
         로그인
