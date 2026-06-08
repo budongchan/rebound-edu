@@ -1,0 +1,166 @@
+{
+  "generatedAt": "2026-06-08",
+  "policy": {
+    "ownership": "Only first-party/public Rebound, Publigent, Buildingsa, Junggae, and BudongchanTV assets were captured. No stock images were used.",
+    "privacy": "Screenshots are from public pages only. No login, admin, payment, personal data, or private workspace screens were captured.",
+    "notes": [
+      "Actual hostel/property/site photos are still user-provided assets and should be placed under public/courses/instructor/ when available.",
+      "YouTube video public availability was checked through YouTube oEmbed before thumbnail capture.",
+      "Course page captures are temporary visual assets generated from the current local branch."
+    ]
+  },
+  "sharedAssets": {
+    "serviceScreenshots": {
+      "buildingsa": "/courses/assets/services/buildingsa.png",
+      "junggae": "/courses/assets/services/junggae.png",
+      "publigent": "/courses/assets/services/publigent.png",
+      "budongchanTv": "/courses/assets/services/budongchan-tv.png"
+    },
+    "thumbnailBasePath": "/courses/assets/youtube-thumbnails/"
+  },
+  "courses": {
+    "hostel-live-thu": {
+      "coursePageCapture": "/courses/assets/course-pages/hostel-live-thu.png",
+      "recommendedAssets": [
+        "/courses/assets/youtube-thumbnails/NAFejjM2nic.jpg",
+        "/courses/assets/youtube-thumbnails/CUREZdZgQ48.jpg",
+        "/courses/assets/youtube-thumbnails/Jt-3IORymu0.jpg"
+      ],
+      "recommendedVideos": [
+        { "id": "V87QwVlUJS0", "title": "29호실 호스텔을 통째로 인수한 이유", "use": "primary" },
+        { "id": "NAFejjM2nic", "title": "이런 건물은 호스텔로 용도변경 못 합니다", "use": "support" },
+        { "id": "CUREZdZgQ48", "title": "주택·상가 → 숙박시설 용도변경 조건과 절차", "use": "support" },
+        { "id": "YnGAPuLqgZ8", "title": "호스텔 창업, 얼마나 벌까?", "use": "support" },
+        { "id": "Jt-3IORymu0", "title": "호스텔 창업, 개인 VS 법인", "use": "support" }
+      ],
+      "missingUserAssets": ["종로 29객실 호스텔 외관", "객실 내부", "공용공간", "공유오피스 내부", "개발 현장 외관"]
+    },
+    "hostel-live-sat": {
+      "coursePageCapture": "/courses/assets/course-pages/hostel-live-sat.png",
+      "recommendedAssets": [
+        "/courses/assets/youtube-thumbnails/NAFejjM2nic.jpg",
+        "/courses/assets/youtube-thumbnails/CUREZdZgQ48.jpg",
+        "/courses/assets/youtube-thumbnails/Jt-3IORymu0.jpg"
+      ],
+      "recommendedVideos": [
+        { "id": "V87QwVlUJS0", "title": "29호실 호스텔을 통째로 인수한 이유", "use": "primary" },
+        { "id": "NAFejjM2nic", "title": "이런 건물은 호스텔로 용도변경 못 합니다", "use": "support" },
+        { "id": "CUREZdZgQ48", "title": "주택·상가 → 숙박시설 용도변경 조건과 절차", "use": "support" },
+        { "id": "YnGAPuLqgZ8", "title": "호스텔 창업, 얼마나 벌까?", "use": "support" },
+        { "id": "Jt-3IORymu0", "title": "호스텔 창업, 개인 VS 법인", "use": "support" }
+      ],
+      "missingUserAssets": ["종로 29객실 호스텔 외관", "객실 내부", "공용공간", "공유오피스 내부", "개발 현장 외관"]
+    },
+    "ai-marketing-auto": {
+      "coursePageCapture": "/courses/assets/course-pages/ai-marketing-auto.png",
+      "recommendedAssets": ["/courses/assets/services/budongchan-tv.png"],
+      "recommendedVideos": [],
+      "missingUserAssets": ["네이버/인스타/구글 자동화 운영 화면 캡처", "AI 에이전트 대시보드 캡처"]
+    },
+    "ai-service-dev": {
+      "coursePageCapture": "/courses/assets/course-pages/ai-service-dev.png",
+      "recommendedAssets": [
+        "/courses/assets/services/publigent.png",
+        "/courses/assets/services/buildingsa.png",
+        "/courses/assets/services/junggae.png"
+      ],
+      "recommendedVideos": [],
+      "missingUserAssets": ["개발 과정 화면 캡처", "배포/결제 연동 데모 캡처"]
+    },
+    "ai-youtube-auto": {
+      "coursePageCapture": "/courses/assets/course-pages/ai-youtube-auto.png",
+      "recommendedAssets": ["/courses/assets/services/budongchan-tv.png"],
+      "recommendedVideos": [],
+      "missingUserAssets": ["영상 자동화 워크플로우 캡처", "편집/업로드 자동화 화면 캡처"]
+    },
+    "ai-realestate-homepage": {
+      "coursePageCapture": "/courses/assets/course-pages/ai-realestate-homepage.png",
+      "recommendedAssets": [
+        "/courses/assets/services/junggae.png",
+        "/courses/assets/services/buildingsa.png"
+      ],
+      "recommendedVideos": [],
+      "missingUserAssets": ["중개사 홈페이지 제작 결과물 캡처", "상담 폼/매물 페이지 샘플 캡처"]
+    },
+    "brokerage-advanced": {
+      "coursePageCapture": "/courses/assets/course-pages/brokerage-advanced.png",
+      "recommendedAssets": [
+        "/courses/assets/youtube-thumbnails/lBF5FbdMIGQ.jpg",
+        "/courses/assets/youtube-thumbnails/DN7DvodV7Ss.jpg",
+        "/courses/assets/youtube-thumbnails/GO6RcC6om1Q.jpg"
+      ],
+      "recommendedVideos": [
+        { "id": "lBF5FbdMIGQ", "title": "공인중개사 자격증 따도 90%가 월 100도 못버는 이유 (현직자 폭로)", "use": "support" },
+        { "id": "DN7DvodV7Ss", "title": "부동산 거래 시 자주 발생하는 사건사고 (feat. 최원기 변호사)", "use": "support" },
+        { "id": "GO6RcC6om1Q", "title": "부동산 매매 안 싸우고 무탈하게 잘 하려면?", "use": "support" }
+      ],
+      "missingUserAssets": ["중개 실무 강의 현장 사진", "사무소/상담 장면 사진"]
+    },
+    "book-publishing": {
+      "coursePageCapture": "/courses/assets/course-pages/book-publishing.png",
+      "recommendedAssets": ["/courses/assets/services/publigent.png"],
+      "recommendedVideos": [],
+      "missingUserAssets": ["출간 도서 표지 이미지", "원고/조판 작업 화면 캡처", "출간 결과물 사진"]
+    },
+    "brokerage-weekly": {
+      "coursePageCapture": "/courses/assets/course-pages/brokerage-weekly.png",
+      "recommendedAssets": [
+        "/courses/assets/youtube-thumbnails/lBF5FbdMIGQ.jpg",
+        "/courses/assets/youtube-thumbnails/DN7DvodV7Ss.jpg"
+      ],
+      "recommendedVideos": [
+        { "id": "lBF5FbdMIGQ", "title": "공인중개사 자격증 따도 90%가 월 100도 못버는 이유 (현직자 폭로)", "use": "support" },
+        { "id": "DN7DvodV7Ss", "title": "부동산 거래 시 자주 발생하는 사건사고 (feat. 최원기 변호사)", "use": "support" }
+      ],
+      "missingUserAssets": ["중개 실무 강의 현장 사진", "온라인 수업 화면 캡처"]
+    },
+    "corp-investment": {
+      "coursePageCapture": "/courses/assets/course-pages/corp-investment.png",
+      "recommendedAssets": ["/courses/assets/youtube-thumbnails/3_R2iC1ebng.jpg"],
+      "recommendedVideos": [
+        { "id": "3_R2iC1ebng", "title": "생활숙박시설 규제완화, 객실 1개 숙박업 가능해진다??", "use": "adjacent" }
+      ],
+      "missingUserAssets": ["법인투자공략집 표지", "법인 구조 설명 슬라이드", "강의 현장 사진"]
+    },
+    "ai-intro-special": {
+      "coursePageCapture": "/courses/assets/course-pages/ai-intro-special.png",
+      "recommendedAssets": [
+        "/courses/assets/services/publigent.png",
+        "/courses/assets/services/buildingsa.png",
+        "/courses/assets/services/junggae.png"
+      ],
+      "recommendedVideos": [],
+      "missingUserAssets": ["AI 에이전트 그룹 화면 캡처", "입문 특강 현장 사진"]
+    },
+    "vacancy-master": {
+      "coursePageCapture": "/courses/assets/course-pages/vacancy-master.png",
+      "recommendedAssets": [
+        "/courses/assets/youtube-thumbnails/UeGfWTHL9Yg.jpg",
+        "/courses/assets/youtube-thumbnails/lTWTIWasvhU.jpg",
+        "/courses/assets/youtube-thumbnails/DiDx0qJtq0M.jpg",
+        "/courses/assets/services/buildingsa.png"
+      ],
+      "recommendedVideos": [
+        { "id": "UeGfWTHL9Yg", "title": "공실 해결부터 매각까지 A to Z 모두 알려드립니다", "use": "primary" },
+        { "id": "lTWTIWasvhU", "title": "실제 현장으로 정리하는 공실 해결 A to Z", "use": "support" },
+        { "id": "DiDx0qJtq0M", "title": "부동찬 인터뷰_공실 해결로 돈 버는 기업", "use": "support" }
+      ],
+      "missingUserAssets": ["공실 진단 현장 사진", "전후 비교 사진", "임대/전환 사례 사진"]
+    },
+    "investment-dev-pro": {
+      "coursePageCapture": "/courses/assets/course-pages/investment-dev-pro.png",
+      "recommendedAssets": [
+        "/courses/assets/youtube-thumbnails/Cyw7oeunK7I.jpg",
+        "/courses/assets/youtube-thumbnails/dzyjdomQ4XQ.jpg",
+        "/courses/assets/youtube-thumbnails/QsarRtyZn_0.jpg",
+        "/courses/assets/services/buildingsa.png"
+      ],
+      "recommendedVideos": [
+        { "id": "Cyw7oeunK7I", "title": "부동산 옥석 가리는 법 이 영상 하나로 끝납니다", "use": "primary" },
+        { "id": "dzyjdomQ4XQ", "title": "이 영상 안 보고 건물 사면 후회합니다", "use": "support" },
+        { "id": "QsarRtyZn_0", "title": "건물주 500명 만나고 알게 된 망하는 건물주 공통점", "use": "support" }
+      ],
+      "missingUserAssets": ["투자 분석 화면 캡처", "현장 임장 사진", "개발 사례 사진"]
+    }
+  }
+}
