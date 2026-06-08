@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import ReceiptRequestBox from "@/components/ReceiptRequestBox";
 
 function formatPrice(value) {
   return `${Number(value || 0).toLocaleString("ko-KR")}원`;
@@ -147,29 +148,37 @@ export default function OrderStatusClient({ initialOrder, bank }) {
       </div>
 
       <aside className="lg:sticky lg:top-24 lg:self-start">
-        <div className="rounded-2xl border border-line bg-paper p-6">
-          <h2 className="text-[16px] font-extrabold text-ink">입금 계좌</h2>
-          <dl className="mt-4 border-t border-line pt-4">
-            <Row label="입금 금액" value={formatPrice(order.amount)} strong />
-            <Row label="은행" value={bank.name} />
-            <div className="flex items-start justify-between gap-4 py-2">
-              <dt className="shrink-0 text-[13px] text-ink-soft">계좌번호</dt>
-              <dd className="text-right">
-                <button onClick={copyAccount} className="text-[14px] font-bold text-ink hover:text-brand">
-                  <span className="font-mono">{bank.account}</span>
-                  <span className="ml-2 rounded-md bg-ink px-2 py-0.5 text-[11px] font-semibold text-white">
-                    {copied ? "복사됨" : "복사"}
-                  </span>
-                </button>
-              </dd>
-            </div>
-            <Row label="예금주" value={bank.holder} />
-          </dl>
-          {isPending && (
-            <p className="mt-4 rounded-lg border border-brand/20 bg-brand/5 p-3 text-[12px] leading-relaxed text-brand-dark">
-              입금자명을 {order.depositor_name || order.buyer_name || "주문자명"}으로 입력해 주세요. 입금 후 상태가 자동으로 갱신됩니다.
-            </p>
-          )}
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-line bg-paper p-6">
+            <h2 className="text-[16px] font-extrabold text-ink">입금 계좌</h2>
+            <dl className="mt-4 border-t border-line pt-4">
+              <Row label="입금 금액" value={formatPrice(order.amount)} strong />
+              <Row label="은행" value={bank.name} />
+              <div className="flex items-start justify-between gap-4 py-2">
+                <dt className="shrink-0 text-[13px] text-ink-soft">계좌번호</dt>
+                <dd className="text-right">
+                  <button onClick={copyAccount} className="text-[14px] font-bold text-ink hover:text-brand">
+                    <span className="font-mono">{bank.account}</span>
+                    <span className="ml-2 rounded-md bg-ink px-2 py-0.5 text-[11px] font-semibold text-white">
+                      {copied ? "복사됨" : "복사"}
+                    </span>
+                  </button>
+                </dd>
+              </div>
+              <Row label="예금주" value={bank.holder} />
+            </dl>
+            {isPending && (
+              <p className="mt-4 rounded-lg border border-brand/20 bg-brand/5 p-3 text-[12px] leading-relaxed text-brand-dark">
+                입금자명을 {order.depositor_name || order.buyer_name || "주문자명"}으로 입력해 주세요. 입금 후 상태가 자동으로 갱신됩니다.
+              </p>
+            )}
+          </div>
+
+          <ReceiptRequestBox
+            orderId={order.order_id}
+            defaultEmail={order.buyer_email || ""}
+            defaultPhone={order.buyer_phone || ""}
+          />
         </div>
       </aside>
     </>
