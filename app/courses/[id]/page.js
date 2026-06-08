@@ -118,6 +118,9 @@ export default async function CourseDetail({ params }) {
     course.instructorWhy &&
     course.instructorMatch &&
     course.trustBadges;
+  const primaryInstructorVideo = course.instructorVideos?.find((video) => video.primary);
+  const secondaryInstructorVideos = course.instructorVideos?.filter((video) => !video.primary) || [];
+  const hasInstructorPhotos = course.instructorPhotos && course.instructorPhotos.length > 0;
 
   const DELIVERY_ICON = { 오프라인: "📍", 온라인: "💻" };
   const FORMAT_ICON = { "일일 특강": "⚡", "주간 정기": "📅", "1:1 과정": "🤝", 상시: "🔄" };
@@ -384,6 +387,68 @@ export default async function CourseDetail({ params }) {
                     </span>
                   ))}
                 </div>
+
+                {course.instructorVideos && course.instructorVideos.length > 0 && (
+                  <div className="mt-7 border-t border-line pt-6">
+                    <h3 className="text-[15px] font-extrabold text-ink">강사가 직접 푼 실전</h3>
+                    {primaryInstructorVideo && (
+                      <div className="mt-4 overflow-hidden rounded-xl border border-line bg-ink">
+                        <iframe
+                          className="aspect-video w-full"
+                          src={`https://www.youtube-nocookie.com/embed/${primaryInstructorVideo.id}`}
+                          title={primaryInstructorVideo.title}
+                          loading="lazy"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                        />
+                      </div>
+                    )}
+                    {secondaryInstructorVideos.length > 0 && (
+                      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                        {secondaryInstructorVideos.map((video) => (
+                          <a
+                            key={video.id}
+                            href={`https://www.youtube.com/watch?v=${video.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group overflow-hidden rounded-xl border border-line bg-cream/40 transition-colors hover:bg-cream"
+                          >
+                            <div className="relative aspect-video bg-ink">
+                              <img
+                                src={`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
+                                alt=""
+                                loading="lazy"
+                                className="h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
+                              />
+                              <span className="absolute inset-0 flex items-center justify-center">
+                                <span className="rounded-full bg-paper/95 px-3 py-1 text-[12px] font-black text-ink shadow">
+                                  재생
+                                </span>
+                              </span>
+                            </div>
+                            <p className="p-3 text-[13px] font-extrabold leading-relaxed text-ink">{video.title}</p>
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {hasInstructorPhotos && (
+                  <div className="mt-7 border-t border-line pt-6">
+                    <h3 className="text-[15px] font-extrabold text-ink">현장 사진</h3>
+                    <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                      {course.instructorPhotos.map((photo) => (
+                        <figure key={photo.src} className="overflow-hidden rounded-xl border border-line bg-cream/40">
+                          <img src={photo.src} alt={photo.alt || ""} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+                          {photo.caption && (
+                            <figcaption className="px-3 py-2 text-[12px] font-semibold text-ink-soft">{photo.caption}</figcaption>
+                          )}
+                        </figure>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <Link
                   href={`/checkout/${course.id}`}
