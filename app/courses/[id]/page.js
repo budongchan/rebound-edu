@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import {
   COURSES,
+  KDC_BIO,
   getCourse,
   formatPrice,
   CATEGORY_LABEL,
@@ -112,6 +113,11 @@ export default async function CourseDetail({ params }) {
   const instructor = getInstructor(course.instructor);
   const faqs = buildFaq(course);
   const steps = course.live ? getRegisterSteps(course) : null;
+  const hasInstructorTrust =
+    course.instructorOneLiner &&
+    course.instructorWhy &&
+    course.instructorMatch &&
+    course.trustBadges;
 
   const DELIVERY_ICON = { 오프라인: "📍", 온라인: "💻" };
   const FORMAT_ICON = { "일일 특강": "⚡", "주간 정기": "📅", "1:1 과정": "🤝", 상시: "🔄" };
@@ -300,6 +306,94 @@ export default async function CourseDetail({ params }) {
                 ))}
               </div>
             </div>
+
+            {/* ▸ 이 강의를 누가 가르치나 */}
+            {hasInstructorTrust && (
+              <div className="rounded-2xl border border-line bg-paper p-7">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <h2 className="text-[20px] font-extrabold text-ink">이 강의를 누가 가르치나</h2>
+                    <p className="mt-2 text-[15px] font-extrabold text-ink">
+                      {KDC_BIO.name} <span className="font-semibold text-ink-soft">— {KDC_BIO.role}</span>
+                    </p>
+                    <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
+                      15년간 20개가 넘는 공간을 직접 창업·운영·매각하고, 약 280개 AI 에이전트로 6개 법인을 직접 굴리고 있는 사람. 강의에서 말하는 건 다 본인이 지금도 하고 있는 일입니다.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 rounded-xl p-5" style={{ background: `${color}0d` }}>
+                  <p className="text-[17px] font-extrabold leading-relaxed text-ink">
+                    {course.instructorOneLiner}
+                  </p>
+                </div>
+
+                <div className="mt-6">
+                  <h3 className="text-[15px] font-extrabold text-ink">왜 김동찬인가</h3>
+                  <ul className="mt-3 space-y-3">
+                    {course.instructorWhy.map((reason, i) => (
+                      <li key={i} className="flex gap-3 text-[14px] leading-relaxed text-ink-soft">
+                        <span
+                          className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-black text-white"
+                          style={{ background: color }}
+                        >
+                          {i + 1}
+                        </span>
+                        <span>{reason}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="mt-6 hidden overflow-hidden rounded-xl border border-line sm:block">
+                  <div className="grid grid-cols-1 bg-cream/70 text-[13px] font-extrabold text-ink sm:grid-cols-2">
+                    <div className="border-b border-line px-4 py-3 sm:border-b-0 sm:border-r">이 강좌에서 배우는 것</div>
+                    <div className="px-4 py-3">김동찬이 실제로 해온 것</div>
+                  </div>
+                  <div className="divide-y divide-line">
+                    {course.instructorMatch.map((item, i) => (
+                      <div key={i} className="grid grid-cols-1 text-[14px] leading-relaxed sm:grid-cols-2">
+                        <div className="border-b border-line px-4 py-3 font-semibold text-ink sm:border-b-0 sm:border-r">
+                          {item.learn}
+                        </div>
+                        <div className="px-4 py-3 text-ink-soft">{item.did}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-6 space-y-3 sm:hidden">
+                  {course.instructorMatch.map((item, i) => (
+                    <div key={i} className="rounded-xl border border-line bg-cream/40 p-4">
+                      <p className="text-[12px] font-extrabold text-ink-soft">이 강좌에서 배우는 것</p>
+                      <p className="mt-1 text-[14px] font-extrabold leading-relaxed text-ink">{item.learn}</p>
+                      <p className="mt-4 text-[12px] font-extrabold text-ink-soft">김동찬이 실제로 해온 것</p>
+                      <p className="mt-1 text-[14px] leading-relaxed text-ink-soft">{item.did}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {course.trustBadges.map((badge) => (
+                    <span
+                      key={badge}
+                      className="rounded-full px-3.5 py-1.5 text-[12px] font-extrabold"
+                      style={{ background: `${color}12`, color }}
+                    >
+                      {badge}
+                    </span>
+                  ))}
+                </div>
+
+                <Link
+                  href={`/checkout/${course.id}`}
+                  className="mt-5 inline-flex rounded-xl px-5 py-3 text-[14px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5"
+                  style={{ background: color, boxShadow: `0 8px 24px -8px ${color}80` }}
+                >
+                  {course.free ? "무료 신청하기" : course.enrollAlways ? "지금 신청하기" : "수강 신청하기"}
+                </Link>
+              </div>
+            )}
 
             {/* ▸ 커리큘럼 */}
             <div className="rounded-2xl border border-line bg-paper p-7">
