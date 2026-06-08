@@ -256,14 +256,40 @@ export default async function CourseDetail({ params }) {
             )}
 
             {/* 강사 */}
-            <div className="mt-6 flex items-center gap-2 text-[13px] text-white/65">
-              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-[11px] font-black text-white">K</div>
-              {course.instructor}
-              {course.format === "주간 정기"
-                ? <><span>·</span><span>주간 정기</span></>
-                : course.lessons > 0 && <><span>·</span><span>총 {course.lessons}강</span></>
-              }
-            </div>
+            {instructor && (
+              <div className="mt-6 flex max-w-2xl items-center gap-3 rounded-2xl border border-white/18 bg-white/10 p-3 text-white shadow-[0_16px_36px_-26px_rgba(0,0,0,0.45)] backdrop-blur-sm">
+                {instructor.photo ? (
+                  <img
+                    src={instructor.photo}
+                    alt={instructor.name}
+                    className="h-14 w-14 shrink-0 rounded-full border-2 border-white/45 object-cover"
+                    loading="eager"
+                  />
+                ) : (
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-white/35 bg-white/20 text-[18px] font-black text-white">
+                    {instructor.initial || instructor.name.charAt(0)}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                    <p className="text-[15px] font-black leading-tight text-white">{instructor.name}</p>
+                    <p className="text-[12px] font-semibold leading-tight text-white/78">{instructor.title}</p>
+                  </div>
+                  {instructor.affiliation && (
+                    <p className="mt-1 text-[12px] font-semibold leading-snug text-white/70">{instructor.affiliation}</p>
+                  )}
+                  {instructor.specialties && instructor.specialties.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {instructor.specialties.slice(0, 3).map((specialty) => (
+                        <span key={specialty} className="rounded-full bg-white/16 px-2 py-0.5 text-[11px] font-bold text-white/82">
+                          {specialty}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </section>
 
