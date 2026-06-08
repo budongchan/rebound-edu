@@ -26,6 +26,22 @@ export async function generateMetadata({ params }) {
   };
 }
 
+const COURSE_HERO_BACKGROUNDS = {
+  "hostel-live-thu": "/courses/assets/youtube-thumbnails/NAFejjM2nic.jpg",
+  "hostel-live-sat": "/courses/assets/youtube-thumbnails/NAFejjM2nic.jpg",
+  "ai-marketing-auto": "/courses/assets/services/budongchan-tv.png",
+  "ai-service-dev": "/courses/assets/services/publigent.png",
+  "ai-youtube-auto": "/courses/assets/services/budongchan-tv.png",
+  "ai-realestate-homepage": "/courses/assets/services/junggae.png",
+  "brokerage-advanced": "/courses/assets/youtube-thumbnails/lBF5FbdMIGQ.jpg",
+  "book-publishing": "/courses/assets/services/publigent.png",
+  "brokerage-weekly": "/courses/assets/youtube-thumbnails/lBF5FbdMIGQ.jpg",
+  "corp-investment": "/courses/assets/youtube-thumbnails/3_R2iC1ebng.jpg",
+  "ai-intro-special": "/courses/assets/services/buildingsa.png",
+  "vacancy-master": "/courses/assets/youtube-thumbnails/UeGfWTHL9Yg.jpg",
+  "investment-dev-pro": "/courses/assets/youtube-thumbnails/Cyw7oeunK7I.jpg",
+};
+
 // ── 수업별 FAQ 생성 ──────────────────────────────────────
 function buildFaq(course) {
   const faqs = [];
@@ -121,6 +137,10 @@ export default async function CourseDetail({ params }) {
   const primaryInstructorVideo = course.instructorVideos?.find((video) => video.primary);
   const secondaryInstructorVideos = course.instructorVideos?.filter((video) => !video.primary) || [];
   const hasInstructorPhotos = course.instructorPhotos && course.instructorPhotos.length > 0;
+  const heroImage =
+    course.image ||
+    COURSE_HERO_BACKGROUNDS[course.id] ||
+    `/courses/assets/course-pages/${course.id}.png`;
 
   const DELIVERY_ICON = { 오프라인: "📍", 온라인: "💻" };
   const FORMAT_ICON = { "일일 특강": "⚡", "주간 정기": "📅", "1:1 과정": "🤝", 상시: "🔄" };
@@ -133,11 +153,25 @@ export default async function CourseDetail({ params }) {
         {/* ── HERO ──────────────────────────────────────── */}
         <section
           className="relative overflow-hidden text-white"
-          style={{ background: `linear-gradient(135deg, ${color} 0%, ${color}bb 60%, ${color}77 100%)` }}
+          style={{ backgroundColor: color }}
         >
+          <div
+            className="pointer-events-none absolute inset-0 bg-cover opacity-75"
+            style={{
+              backgroundImage: `url(${heroImage})`,
+              backgroundPosition: "center 38%",
+            }}
+          />
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background: `linear-gradient(90deg, ${color}fa 0%, ${color}eb 34%, ${color}94 64%, ${color}22 100%)`,
+            }}
+          />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_30%,rgba(255,255,255,0.28),transparent_30%),linear-gradient(180deg,rgba(20,17,15,0.08),rgba(20,17,15,0.34))]" />
           {/* 배경 패턴 */}
           <div
-            className="pointer-events-none absolute inset-0 opacity-[0.06]"
+            className="pointer-events-none absolute inset-0 opacity-[0.08]"
             style={{
               backgroundImage: "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)",
               backgroundSize: "40px 40px",
@@ -146,7 +180,7 @@ export default async function CourseDetail({ params }) {
           <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-20 blur-3xl"
             style={{ background: `radial-gradient(circle,#fff,transparent 70%)` }} />
 
-          <div className="container-edu relative py-14">
+          <div className="container-edu relative py-14 sm:py-16 lg:py-20">
             <Link href="/courses" className="inline-flex items-center gap-1 text-[13px] font-semibold text-white/70 hover:text-white">
               ← 강의 목록
             </Link>
@@ -171,10 +205,10 @@ export default async function CourseDetail({ params }) {
               )}
             </div>
 
-            <h1 className="mt-5 text-[30px] font-black leading-tight sm:text-[42px]">
+            <h1 className="mt-5 max-w-3xl text-[30px] font-black leading-tight drop-shadow-[0_3px_18px_rgba(0,0,0,0.18)] sm:text-[42px]">
               {course.title}
             </h1>
-            <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-white/85">
+            <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-white/90 drop-shadow-[0_2px_14px_rgba(0,0,0,0.18)]">
               {course.subtitle}
             </p>
 
