@@ -7,8 +7,9 @@ import {
   KDC_BIO,
   getCourse,
   formatPrice,
-  CATEGORY_LABEL,
   CATEGORY_COLOR,
+  getCourseDeliveryLabel,
+  getCourseEnrollmentStatus,
 } from "@/lib/courses";
 import { getInstructor } from "@/lib/instructors";
 
@@ -129,6 +130,8 @@ export default async function CourseDetail({ params }) {
   const instructor = getInstructor(course.instructor);
   const faqs = buildFaq(course);
   const steps = course.live ? getRegisterSteps(course) : null;
+  const enrollmentStatus = getCourseEnrollmentStatus(course);
+  const deliveryLabel = getCourseDeliveryLabel(course);
   const hasInstructorTrust =
     course.instructorOneLiner &&
     course.instructorWhy &&
@@ -187,15 +190,12 @@ export default async function CourseDetail({ params }) {
 
             {/* 배지 행 */}
             <div className="mt-5 flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-white/20 px-3 py-1 text-[12px] font-bold">
-                {CATEGORY_LABEL[course.category]}
+              <span className="rounded-full bg-white px-3 py-1 text-[12px] font-black" style={{ color }}>
+                {enrollmentStatus}
               </span>
-              <span className="rounded-full bg-white/20 px-3 py-1 text-[12px] font-bold">
-                {course.level}
-              </span>
-              {course.live && (
-                <span className="rounded-full bg-white px-3 py-1 text-[12px] font-black" style={{ color }}>
-                  🟢 개강 중
+              {deliveryLabel && (
+                <span className="rounded-full bg-white/20 px-3 py-1 text-[12px] font-bold text-white ring-1 ring-white/25">
+                  {deliveryLabel}
                 </span>
               )}
               {course.guarantee && (
@@ -672,10 +672,9 @@ export default async function CourseDetail({ params }) {
               {/* 수업 정보 */}
               <dl className="mt-6 space-y-2.5 border-t border-line pt-5 text-[13px]">
                 {[
-                  ["분야", CATEGORY_LABEL[course.category]],
-                  ["난이도", course.level],
+                  ["상태", enrollmentStatus],
                   ...(course.schedule ? [["일정", course.scheduleShort || course.schedule]] : []),
-                  ...(course.delivery ? [["방식", course.delivery]] : []),
+                  ...(deliveryLabel ? [["방식", deliveryLabel]] : []),
                   ...(course.format ? [["형태", course.format]] : []),
                   ...(course.duration ? [["시간", course.duration]] : []),
                   ...(!course.schedule && course.lessons > 0 ? [["강의 수", `총 ${course.lessons}강`]] : []),
