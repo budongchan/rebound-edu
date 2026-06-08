@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { CATEGORY_LABEL, CATEGORY_COLOR, formatPrice } from "@/lib/courses";
+import {
+  CATEGORY_COLOR,
+  formatPrice,
+  getCourseDeliveryLabel,
+  getCourseEnrollmentStatus,
+} from "@/lib/courses";
 
 const COURSE_THUMBNAILS = {
   "hostel-live-thu": "/courses/assets/youtube-thumbnails/NAFejjM2nic.jpg",
@@ -21,6 +26,8 @@ export default function CourseCard({ course, rank }) {
   const color = CATEGORY_COLOR[course.category] || "#14110f";
   const cta = course.free ? "무료 신청" : "수강 신청";
   const thumbnail = course.image || COURSE_THUMBNAILS[course.id] || `/courses/assets/course-pages/${course.id}.png`;
+  const enrollmentStatus = getCourseEnrollmentStatus(course);
+  const deliveryLabel = getCourseDeliveryLabel(course);
 
   return (
     <Link
@@ -52,8 +59,8 @@ export default function CourseCard({ course, rank }) {
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/78 via-ink/20 to-white/10" />
-        <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-bold text-ink">
-          {course.level}
+        <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-black text-ink">
+          {enrollmentStatus}
         </span>
         <div className="relative z-10 min-w-0">
           <div className="flex items-center gap-2">
@@ -61,7 +68,7 @@ export default function CourseCard({ course, rank }) {
               className="rounded-md px-2 py-0.5 text-[11px] font-bold text-white/90"
               style={{ background: "rgba(0,0,0,0.28)" }}
             >
-              {CATEGORY_LABEL[course.category]}
+              {deliveryLabel}
             </span>
             {course.free && (
               <span className="rounded-md bg-white/90 px-2 py-0.5 text-[11px] font-black text-brand">
