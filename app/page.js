@@ -12,8 +12,10 @@ const WHY = [
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
       </svg>
     ),
-    title: "교과서 말고 현장 경험",
-    body: "셰어하우스 47호점 창업, 전국 100개 센터 오픈 총괄, 호스텔·스터디카페 직영 운영. 실제로 해본 사람이 직접 가르칩니다. 이론은 현장에서 검증되어야 의미가 있습니다.",
+    image: "/courses/assets/youtube-thumbnails/NAFejjM2nic.jpg",
+    imageAlt: "호스텔 용도변경 강의 화면",
+    title: "사업가가 부동산의 세계로 들어왔다",
+    body: "공간을 거래 대상이 아니라 운영·돈·법무·세금·사람이 결합된 사업 구조로 봅니다. 이론을 외운 사람이 아니라, 직접 만들고 운영하며 문제를 겪어본 사람이 가르칩니다.",
   },
   {
     icon: (
@@ -21,8 +23,10 @@ const WHY = [
         <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
       </svg>
     ),
-    title: "배운 것을 바로 쓸 수 있는 구조",
-    body: "강의는 현장에서 당장 적용할 수 있는 체크리스트·계산법·판단 기준 중심으로 구성합니다. 듣고 끝이 아니라, 내일 실행할 수 있는 것을 가져갑니다.",
+    image: "/courses/assets/services/buildingsa.png",
+    imageAlt: "빌딩史 실거래 데이터 서비스 화면",
+    title: "복잡한 현실을 판단 가능한 구조로",
+    body: "좋아 보이는 조건보다 나중에 터질 조건을 먼저 봅니다. 해봤을 때 되는가, 계약서에 남길 수 있는가, 세금과 법무에서 버티는가를 기준으로 강의를 설계합니다.",
   },
   {
     icon: (
@@ -30,8 +34,10 @@ const WHY = [
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
       </svg>
     ),
-    title: "강의 후 전문가와 바로 연결",
-    body: "강의로 신뢰가 생기면, 직접 컨설팅과 서비스를 의뢰할 수 있습니다. 교육이 끝이 아니라 전문가와의 연결이 시작되는 플랫폼입니다.",
+    image: "/courses/assets/services/junggae.png",
+    imageAlt: "공인중개사 전용 AI 중개력 서비스 화면",
+    title: "질문 하나가 강의·책·서비스가 된다",
+    body: "반복 상담은 콘텐츠가 되고, 콘텐츠는 강의가 되고, 강의는 체크리스트와 SaaS로 이어집니다. 리바운드에듀는 배움에서 끝나지 않고 실행과 의뢰로 연결되는 구조입니다.",
   },
 ];
 
@@ -104,16 +110,27 @@ export default function Home() {
           <div className="container-edu">
             <span className="text-[13px] font-bold uppercase tracking-widest text-brand">Why Rebound Edu</span>
             <h2 className="mt-2 text-[28px] font-black text-ink sm:text-[34px]">
-              단순한 교육이 아닌, 비즈니스 플랫폼
+              성공담이 아니라, 실무 판단 기준
             </h2>
             <div className="mt-10 grid gap-6 md:grid-cols-3">
               {WHY.map((w, i) => (
-                <div key={i} className="group rounded-2xl border border-line bg-cream/50 p-7 transition-shadow hover:shadow-md">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand text-white">
-                    {w.icon}
+                <div key={i} className="group overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_16px_38px_-30px_rgba(20,17,15,0.42)] transition-shadow hover:shadow-md">
+                  <div className="relative h-40 overflow-hidden bg-cream">
+                    <img
+                      src={w.image}
+                      alt={w.imageAlt}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/16 to-transparent" />
+                    <div className="absolute bottom-4 left-5 flex h-12 w-12 items-center justify-center rounded-xl bg-brand text-white shadow-[0_10px_24px_-14px_rgba(0,0,0,0.7)]">
+                      {w.icon}
+                    </div>
                   </div>
-                  <h3 className="mt-5 text-[18px] font-extrabold text-ink">{w.title}</h3>
-                  <p className="mt-2.5 text-[14px] leading-relaxed text-ink-soft">{w.body}</p>
+                  <div className="p-7">
+                    <h3 className="text-[18px] font-extrabold leading-snug text-ink">{w.title}</h3>
+                    <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">{w.body}</p>
+                  </div>
                 </div>
               ))}
             </div>
