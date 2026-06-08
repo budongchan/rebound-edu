@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { formatPrice } from "@/lib/courses";
 import { COMPANY, BANK } from "@/lib/company";
 import { getSupabaseBrowser } from "@/lib/supabase-browser";
+import ReceiptRequestBox from "@/components/ReceiptRequestBox";
 
 function formatValidUntil(iso) {
   if (!iso) return "";
@@ -365,6 +366,14 @@ export default function CheckoutForm({ course }) {
             · {order.validUntil ? formatValidUntil(order.validUntil) : "12시간"} 내 미입금 시 주문이 취소될 수 있습니다.<br />
             · 입금 후 아래 버튼으로 즉시 확인 가능합니다.
           </p>
+
+          <div className="mt-5">
+            <ReceiptRequestBox
+              orderId={order.order}
+              defaultEmail={form.email}
+              defaultPhone={form.phone}
+            />
+          </div>
 
           <p className="mt-3 text-center text-[12px] text-ink-soft">
             나중에 확인하려면{" "}
