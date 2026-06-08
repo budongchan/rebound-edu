@@ -630,29 +630,71 @@ export default async function CourseDetail({ params }) {
             {instructor && (
               <div className="rounded-2xl border border-line bg-paper p-7">
                 <h2 className="text-[20px] font-extrabold text-ink">강사 소개</h2>
-                <div className="mt-5 flex gap-5">
-                  <div
-                    className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-[22px] font-black text-white ring-4"
-                    style={{ background: instructor.color || color, ringColor: `${color}30` }}
-                  >
-                    {instructor.initial || instructor.name.charAt(0)}
-                  </div>
+                <div className="mt-5 flex flex-col gap-5 sm:flex-row">
+                  {instructor.photo ? (
+                    <img
+                      src={instructor.photo}
+                      alt={`${instructor.name} 강사 프로필`}
+                      className="h-24 w-24 shrink-0 rounded-full border border-line object-cover ring-4"
+                      style={{ ringColor: `${color}30` }}
+                    />
+                  ) : (
+                    <div
+                      className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full text-[28px] font-black text-white ring-4"
+                      style={{ background: instructor.color || color, ringColor: `${color}30` }}
+                    >
+                      {instructor.initial || instructor.name.charAt(0)}
+                    </div>
+                  )}
                   <div className="min-w-0">
                     <p className="text-[17px] font-extrabold text-ink">{instructor.name}</p>
                     <p className="mt-0.5 text-[13px] text-ink-soft">{instructor.title}</p>
-                    <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">{instructor.bio}</p>
-                    {instructor.credentials && (
-                      <ul className="mt-3 space-y-1.5">
-                        {instructor.credentials.map((cred, i) => (
-                          <li key={i} className="flex gap-2 text-[13px] text-ink-soft">
-                            <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand/60" />
-                            {cred}
-                          </li>
-                        ))}
-                      </ul>
+                    {instructor.affiliation && (
+                      <p className="mt-1 text-[13px] font-bold text-ink-soft">{instructor.affiliation}</p>
                     )}
+                    {instructor.specialties && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {instructor.specialties.slice(0, 3).map((specialty) => (
+                          <span
+                            key={specialty}
+                            className="rounded-full border border-line bg-cream px-3 py-1 text-[12px] font-bold text-ink-soft"
+                          >
+                            {specialty}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">{instructor.bio}</p>
                   </div>
                 </div>
+                {instructor.profileSections ? (
+                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                    {instructor.profileSections.map((section) => (
+                      <div key={section.title} className="rounded-xl border border-line bg-cream/60 p-4">
+                        <h3 className="text-[13px] font-black text-brand">{section.title}</h3>
+                        <ul className="mt-3 space-y-1.5">
+                          {section.items.map((item) => (
+                            <li key={item} className="flex gap-2 text-[13px] leading-relaxed text-ink-soft">
+                              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand/60" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  instructor.credentials && (
+                    <ul className="mt-5 space-y-1.5">
+                      {instructor.credentials.map((cred, i) => (
+                        <li key={i} className="flex gap-2 text-[13px] text-ink-soft">
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand/60" />
+                          {cred}
+                        </li>
+                      ))}
+                    </ul>
+                  )
+                )}
               </div>
             )}
           </div>

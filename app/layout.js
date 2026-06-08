@@ -9,6 +9,11 @@ export const metadata = {
   },
   description:
     "부동산·공간사업 전문가 교육 플랫폼. 현장 전문가가 직접 가르치는 중개업·숙박업·투자개발·AI자동화·공실해결 실전 강의.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
   openGraph: {
     title: "리바운드에듀 | 교육으로 신뢰를 판다",
     description:
