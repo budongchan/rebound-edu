@@ -12,8 +12,8 @@ const WHY = [
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
       </svg>
     ),
-    image: "/courses/assets/youtube-thumbnails/NAFejjM2nic.jpg",
-    imageAlt: "호스텔 용도변경 강의 화면",
+    image: "/courses/assets/real/kim-hostel-lecture.jpg",
+    imageAlt: "호스텔 실무 강의 현장",
     title: "사업가가 부동산의 세계로 들어왔다",
     body: "공간을 거래 대상이 아니라 운영·돈·법무·세금·사람이 결합된 사업 구조로 봅니다. 이론을 외운 사람이 아니라, 직접 만들고 운영하며 문제를 겪어본 사람이 가르칩니다.",
   },
@@ -23,8 +23,8 @@ const WHY = [
         <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
       </svg>
     ),
-    image: "/courses/assets/services/buildingsa.png",
-    imageAlt: "빌딩史 실거래 데이터 서비스 화면",
+    image: "/courses/assets/real/kim-space-business.jpg",
+    imageAlt: "부동산 투자 흐름 강의 현장",
     title: "복잡한 현실을 판단 가능한 구조로",
     body: "좋아 보이는 조건보다 나중에 터질 조건을 먼저 봅니다. 해봤을 때 되는가, 계약서에 남길 수 있는가, 세금과 법무에서 버티는가를 기준으로 강의를 설계합니다.",
   },
@@ -34,8 +34,8 @@ const WHY = [
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
       </svg>
     ),
-    image: "/courses/assets/services/junggae.png",
-    imageAlt: "공인중개사 전용 AI 중개력 서비스 화면",
+    image: "/courses/assets/real/classroom-lecture-privacy.jpg",
+    imageAlt: "리바운드 강의 현장",
     title: "질문 하나가 강의·책·서비스가 된다",
     body: "반복 상담은 콘텐츠가 되고, 콘텐츠는 강의가 되고, 강의는 체크리스트와 SaaS로 이어집니다. 리바운드에듀는 배움에서 끝나지 않고 실행과 의뢰로 연결되는 구조입니다.",
   },
