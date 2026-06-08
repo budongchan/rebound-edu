@@ -42,10 +42,10 @@ const WHY = [
 ];
 
 const STEPS = [
-  { n: "01", t: "강의 등록", d: "전문가가 자신의 노하우를 온라인 강의로 등록합니다. 플랫폼이 기획과 제작을 지원합니다." },
-  { n: "02", t: "고객 확보", d: "플랫폼의 마케팅과 카테고리 노출로 고객이 유입됩니다. 교육으로 신뢰를 쌓습니다." },
-  { n: "03", t: "의뢰 연결", d: "수업에 만족한 고객이 전문가에게 직접 컨설팅·서비스를 의뢰합니다." },
-  { n: "04", t: "수익 창출", d: "강의 수익 + 의뢰 수수료를 통해 지속적으로 수익을 만들어냅니다." },
+  { n: "01", t: "강의 등록", d: "전문가가 자신의 노하우를 온라인 강의로 등록합니다. 플랫폼이 기획과 제작을 지원합니다.", position: "left-1/2 top-0 -translate-x-1/2" },
+  { n: "02", t: "고객 확보", d: "플랫폼의 마케팅과 카테고리 노출로 고객이 유입됩니다. 교육으로 신뢰를 쌓습니다.", position: "right-0 top-1/2 -translate-y-1/2" },
+  { n: "03", t: "의뢰 연결", d: "수업에 만족한 고객이 전문가에게 직접 컨설팅·서비스를 의뢰합니다.", position: "bottom-0 left-1/2 -translate-x-1/2" },
+  { n: "04", t: "수익 창출", d: "강의 수익 + 의뢰 수수료를 통해 지속적으로 수익을 만들어냅니다.", position: "left-0 top-1/2 -translate-y-1/2" },
 ];
 
 const REVIEWS = [
@@ -119,7 +119,7 @@ export default function Home() {
                     <img
                       src={w.image}
                       alt={w.imageAlt}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      className="block h-full w-full max-w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/16 to-transparent" />
@@ -143,12 +143,61 @@ export default function Home() {
             <span className="text-[13px] font-bold uppercase tracking-widest text-brand">How it works</span>
             <h2 className="mt-2 text-[28px] font-black text-ink sm:text-[34px]">전문가의 성장 사이클</h2>
             <p className="mt-3 text-[15px] text-ink-soft">교육에서 시작해 비즈니스로 확장하는 과정</p>
-            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="relative mt-12 hidden min-h-[560px] lg:block">
+              <div className="absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-brand/18" />
+              <div className="absolute left-1/2 top-1/2 h-[330px] w-[330px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-brand/20" />
+              {[
+                { mark: "→", className: "right-[344px] top-[196px]" },
+                { mark: "↓", className: "right-[514px] bottom-[144px]" },
+                { mark: "←", className: "left-[344px] bottom-[196px]" },
+                { mark: "↑", className: "left-[514px] top-[144px]" },
+              ].map((arrow) => (
+                <span
+                  key={arrow.mark}
+                  className={`absolute flex h-8 w-8 items-center justify-center rounded-full bg-brand text-[16px] font-black text-white shadow-[0_12px_24px_-16px_rgba(20,17,15,0.8)] ${arrow.className}`}
+                >
+                  {arrow.mark}
+                </span>
+              ))}
+              <div className="absolute left-1/2 top-1/2 flex h-48 w-48 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-paper text-center shadow-[0_24px_60px_-40px_rgba(20,17,15,0.48)] ring-1 ring-line">
+                <p className="text-[13px] font-extrabold uppercase tracking-widest text-brand">Loop</p>
+                <p className="mt-2 text-[24px] font-black leading-tight text-ink">교육이<br />비즈니스로</p>
+                <p className="mt-2 max-w-[130px] text-[12px] leading-relaxed text-ink-soft">신뢰가 쌓이면 의뢰와 수익이 다시 강의로 돌아옵니다.</p>
+              </div>
+              {[
+                { className: "left-1/2 top-[72px] w-[170px] -translate-x-1/2 border-t border-brand/25" },
+                { className: "right-[168px] top-1/2 h-[150px] -translate-y-1/2 border-r border-brand/25" },
+                { className: "bottom-[72px] left-1/2 w-[170px] -translate-x-1/2 border-b border-brand/25" },
+                { className: "left-[168px] top-1/2 h-[150px] -translate-y-1/2 border-l border-brand/25" },
+              ].map((line) => (
+                <span key={line.className} className={`pointer-events-none absolute ${line.className}`} />
+              ))}
               {STEPS.map((s) => (
-                <div key={s.n} className="rounded-2xl border border-line bg-paper p-6">
-                  <div className="text-[26px] font-black text-brand/30">{s.n}</div>
-                  <h3 className="mt-2 text-[16px] font-extrabold text-ink">{s.t}</h3>
+                <div key={s.n} className={`absolute w-[300px] rounded-2xl border border-line bg-paper p-6 shadow-[0_22px_48px_-34px_rgba(20,17,15,0.5)] ${s.position}`}>
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand text-[15px] font-black text-white">
+                      {s.n}
+                    </div>
+                    <h3 className="text-[16px] font-extrabold text-ink">{s.t}</h3>
+                  </div>
                   <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">{s.d}</p>
+                </div>
+              ))}
+            </div>
+            <div className="relative mt-10 space-y-4 lg:hidden">
+              <div className="absolute bottom-10 left-5 top-10 w-px bg-brand/18" />
+              {STEPS.map((s, i) => (
+                <div key={s.n} className="relative flex gap-4 rounded-2xl border border-line bg-paper p-5 shadow-[0_18px_42px_-34px_rgba(20,17,15,0.5)]">
+                  <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand text-[14px] font-black text-white">
+                    {s.n}
+                  </div>
+                  <div>
+                    <h3 className="text-[16px] font-extrabold text-ink">{s.t}</h3>
+                    <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">{s.d}</p>
+                    {i === STEPS.length - 1 && (
+                      <p className="mt-3 text-[12px] font-extrabold text-brand">다시 강의 등록으로 이어지는 반복 사이클</p>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
