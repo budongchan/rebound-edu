@@ -30,25 +30,27 @@ async function queueDepositConfirmedSms(supabase, { order, depositEvent, confirm
     "감사합니다.",
   ].join("\n");
 
-  await supabase.from("sms_outbox").insert([{
-    channel: "sms",
-    status: "queued",
-    phone,
-    message,
-    service_id: EDU_SERVICE.id,
-    platform: EDU_SERVICE.platform,
-    product: order.course_title || EDU_SERVICE.product,
-    target_table: EDU_SERVICE.targetTable,
-    target_id: order.id ? String(order.id) : null,
-    order_id: order.order_id,
-    deposit_event_id: depositEvent?.id || null,
-    dedupe_key: `edu:deposit-confirmed:${order.id || order.order_id}:${depositEvent?.id || confirmedAt}`,
-    metadata: {
-      source: "check-deposit",
-      confirmed_at: confirmedAt,
-      buyer_name: order.buyer_name || null,
-    },
-  }]).catch(() => {});
+  try {
+    await supabase.from("sms_outbox").insert([{
+      channel: "sms",
+      status: "queued",
+      phone,
+      message,
+      service_id: EDU_SERVICE.id,
+      platform: EDU_SERVICE.platform,
+      product: order.course_title || EDU_SERVICE.product,
+      target_table: EDU_SERVICE.targetTable,
+      target_id: order.id ? String(order.id) : null,
+      order_id: order.order_id,
+      deposit_event_id: depositEvent?.id || null,
+      dedupe_key: `edu:deposit-confirmed:${order.id || order.order_id}:${depositEvent?.id || confirmedAt}`,
+      metadata: {
+        source: "check-deposit",
+        confirmed_at: confirmedAt,
+        buyer_name: order.buyer_name || null,
+      },
+    }]);
+  } catch {}
 }
 
 async function sendTelegram(text) {
