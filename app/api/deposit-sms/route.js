@@ -24,7 +24,7 @@ function parseWooriSms(rawText = "") {
     amount: amountMatch?.[2] ? Number(amountMatch[2].replace(/,/g, "")) : null,
     depositor_name: depositorName,
     is_deposit: amountMatch?.[1] === "입금",
-    is_expected_account: ACCOUNT_SUFFIX ? accountSuffix.endsWith(ACCOUNT_SUFFIX) : false,
+    is_expected_account: ACCOUNT_SUFFIX ? accountSuffix.endsWith(ACCOUNT_SUFFIX) : null,
   };
 }
 
@@ -74,7 +74,7 @@ export async function POST(req) {
 
   const parsed = parseWooriSms(rawText);
 
-  if (!parsed.is_deposit || !parsed.is_expected_account) {
+  if (!parsed.is_deposit || (ACCOUNT_SUFFIX && !parsed.is_expected_account)) {
     return NextResponse.json({ ok: true, status: "ignored", parsed });
   }
 
@@ -89,7 +89,11 @@ export async function POST(req) {
         ...parsed,
         status: "received",
         matched: false,
-        metadata: { source: "edu-deposit-sms-webhook", service_id: null },
+        metadata: {
+          source: "edu-deposit-sms-webhook",
+          service_id: null,
+          account_suffix_check: ACCOUNT_SUFFIX ? "configured" : "not-configured",
+        },
       }])
       .select()
       .single();

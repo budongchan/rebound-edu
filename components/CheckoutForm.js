@@ -240,7 +240,7 @@ export default function CheckoutForm({ course }) {
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#16a34a] text-2xl text-white">✓</div>
           <h2 className="mt-5 text-[20px] font-extrabold text-ink">입금이 확인되었습니다</h2>
           <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
-            수강 안내를 입력하신 이메일과 연락처로 보내드립니다.<br />
+            수강 안내를 입력하신 연락처로 보내드립니다.<br />
             주문번호 <span className="font-mono font-semibold text-ink">{order.order}</span>을 저장해 두세요.
           </p>
           <Link href="/courses" className="mt-6 inline-block rounded-xl bg-ink px-6 py-3 text-[14px] font-bold text-white">

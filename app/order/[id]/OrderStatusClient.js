@@ -24,7 +24,7 @@ function getDisplayStatus(status) {
     return {
       key: "ready",
       title: "수강가능",
-      body: "수강 안내가 발송됩니다. 이메일과 연락처를 확인해 주세요.",
+      body: "수강 안내를 입력하신 연락처로 보내드립니다.",
       tone: "bg-[#16a34a]",
     };
   }

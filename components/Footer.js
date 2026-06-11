@@ -38,7 +38,10 @@ export default function Footer() {
           상호: {COMPANY.legalName} &nbsp;|&nbsp; 대표: {COMPANY.representative} &nbsp;|&nbsp;
           사업자등록번호: {COMPANY.bizNo} &nbsp;|&nbsp; 통신판매업신고번호: {COMPANY.ecommerceNo}
           <br />
-          대표전화: {COMPANY.phone} &nbsp;|&nbsp; 이메일: {COMPANY.email}
+          주소: {COMPANY.address}
+          <br />
+          대표전화: {COMPANY.phone} &nbsp;|&nbsp; 이메일: {COMPANY.email} &nbsp;|&nbsp;
+          호스팅서비스 제공자: {COMPANY.hostingProvider}
           <div className="mt-2 text-ink-soft/70">
             © {new Date().getFullYear()} {COMPANY.legalName}. All rights reserved.
           </div>

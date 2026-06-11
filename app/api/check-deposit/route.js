@@ -3,6 +3,8 @@ import { getServiceClient } from "@/lib/supabase";
 import { EDU_SERVICE } from "@/lib/depositService";
 import { COMPANY } from "@/lib/company";
 
+const ACCOUNT_SUFFIX = process.env.EDU_ACCOUNT_SUFFIX || "";
+
 function norm(v = "") {
   return String(v).replace(/\s/g, "").trim();
 }
@@ -22,7 +24,7 @@ async function queueDepositConfirmedSms(supabase, { order, depositEvent, confirm
     `강의: ${order.course_title || EDU_SERVICE.product}`,
     `주문번호: ${order.order_id}`,
     "─",
-    "수강 안내는 개강 전 이메일로 발송됩니다.",
+    "수강 안내는 개강 전 입력하신 연락처로 보내드립니다.",
     `문의: ${COMPANY.phone}`,
     "감사합니다.",
   ].join("\n");
@@ -110,17 +112,22 @@ export async function POST(req) {
 
   // 2) 공유 bank_deposit_notifications에서 미매칭 입금 조회
   // 입금 row.created_at은 주문 생성 이후, deposit_valid_until 이전이어야 함
-  const { data: deposits } = await supabase
+  let depositQuery = supabase
     .from("bank_deposit_notifications")
     .select("id,depositor_name,amount,created_at,is_deposit,is_expected_account,matched,metadata")
     .eq("matched", false)
     .eq("is_deposit", true)
-    .eq("is_expected_account", true)
     .eq("amount", amount)
     .gte("created_at", order.created_at)
     .lte("created_at", order.deposit_valid_until || new Date(new Date(order.created_at).getTime() + 12 * 3600000).toISOString())
     .order("created_at", { ascending: false })
     .limit(20);
+
+  if (ACCOUNT_SUFFIX) {
+    depositQuery = depositQuery.eq("is_expected_account", true);
+  }
+
+  const { data: deposits } = await depositQuery;
 
   const hit = deposits?.find(
     (d) => !d.matched && d.is_deposit && Number(d.amount) === amount && norm(d.depositor_name) === norm(depositor)

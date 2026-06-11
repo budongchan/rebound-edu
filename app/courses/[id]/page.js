@@ -781,7 +781,7 @@ export default async function CourseDetail({ params }) {
 
               {/* 상담 링크 */}
               <a
-                href="https://open.kakao.com/o/rebound"
+                href="https://pf.kakao.com/_xkxdxgb/chat"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-5 flex items-center justify-center gap-2 rounded-xl border border-line py-3 text-[13px] font-semibold text-ink-soft transition-colors hover:bg-cream hover:text-ink"
