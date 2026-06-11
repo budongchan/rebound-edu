@@ -34,7 +34,7 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
   ].join("\n");
 
   try {
-    await supabase.from("sms_outbox").insert([{
+    const { error } = await supabase.from("sms_outbox").insert([{
       channel: "sms",
       status: "queued",
       phone,
@@ -47,6 +47,7 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
       dedupe_key: `edu:checkout:${order}`,
       metadata: { source: "checkout", buyer_name: buyer.name.trim() },
     }]);
+    if (error) console.error("edu checkout sms queue failed", error);
   } catch {}
 }
 
@@ -80,12 +81,13 @@ export async function POST(req) {
   const depositorName = buyer.depositName?.trim() || buyer.name.trim();
   const now = new Date();
   const validUntil = new Date(now.getTime() + EDU_SERVICE.validHours * 3600 * 1000).toISOString();
+  let persisted = false;
 
   // Supabase에 주문 저장 (실패해도 진행)
   const supabase = getServiceClient();
   if (supabase) {
     try {
-      await supabase.from("edu_orders").insert([{
+      const { error } = await supabase.from("edu_orders").insert([{
         order_id: order,
         course_id: course.id,
         course_title: course.title,
@@ -97,6 +99,8 @@ export async function POST(req) {
         status: course.free || course.price === 0 ? "무료신청완료" : "입금대기",
         deposit_valid_until: course.free || course.price === 0 ? null : validUntil,
       }]);
+      persisted = !error;
+      if (error) console.error("edu order insert failed", error);
     } catch {}
 
     // 1차 알림 문자 — 수강 신청 접수 + 계좌 안내 (유료 강의만)
@@ -128,5 +132,6 @@ export async function POST(req) {
     depositName: depositorName,
     courseTitle: course.title,
     service: EDU_SERVICE.id,
+    persisted,
   });
 }
