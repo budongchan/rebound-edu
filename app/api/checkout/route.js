@@ -33,19 +33,21 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
     `문의: ${COMPANY.phone}`,
   ].join("\n");
 
-  await supabase.from("sms_outbox").insert([{
-    channel: "sms",
-    status: "queued",
-    phone,
-    message,
-    service_id: EDU_SERVICE.id,
-    platform: EDU_SERVICE.platform,
-    product: course.title,
-    target_table: EDU_SERVICE.targetTable,
-    order_id: order,
-    dedupe_key: `edu:checkout:${order}`,
-    metadata: { source: "checkout", buyer_name: buyer.name.trim() },
-  }]).catch(() => {});
+  try {
+    await supabase.from("sms_outbox").insert([{
+      channel: "sms",
+      status: "queued",
+      phone,
+      message,
+      service_id: EDU_SERVICE.id,
+      platform: EDU_SERVICE.platform,
+      product: course.title,
+      target_table: EDU_SERVICE.targetTable,
+      order_id: order,
+      dedupe_key: `edu:checkout:${order}`,
+      metadata: { source: "checkout", buyer_name: buyer.name.trim() },
+    }]);
+  } catch {}
 }
 
 function orderNo() {
@@ -82,18 +84,20 @@ export async function POST(req) {
   // Supabase에 주문 저장 (실패해도 진행)
   const supabase = getServiceClient();
   if (supabase) {
-    await supabase.from("edu_orders").insert([{
-      order_id: order,
-      course_id: course.id,
-      course_title: course.title,
-      amount: course.price,
-      buyer_name: buyer.name.trim(),
-      buyer_email: buyer.email.trim(),
-      buyer_phone: buyer.phone.trim(),
-      depositor_name: depositorName,
-      status: course.free || course.price === 0 ? "무료신청완료" : "입금대기",
-      deposit_valid_until: course.free || course.price === 0 ? null : validUntil,
-    }]).catch(() => {});
+    try {
+      await supabase.from("edu_orders").insert([{
+        order_id: order,
+        course_id: course.id,
+        course_title: course.title,
+        amount: course.price,
+        buyer_name: buyer.name.trim(),
+        buyer_email: buyer.email.trim(),
+        buyer_phone: buyer.phone.trim(),
+        depositor_name: depositorName,
+        status: course.free || course.price === 0 ? "무료신청완료" : "입금대기",
+        deposit_valid_until: course.free || course.price === 0 ? null : validUntil,
+      }]);
+    } catch {}
 
     // 1차 알림 문자 — 수강 신청 접수 + 계좌 안내 (유료 강의만)
     if (!course.free && course.price > 0) {
