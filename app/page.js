@@ -48,30 +48,6 @@ const STEPS = [
   { n: "04", t: "수익 창출", d: "강의 수익 + 의뢰 수수료를 통해 지속적으로 수익을 만들어냅니다.", position: "left-0 top-1/2 -translate-y-1/2" },
 ];
 
-const REVIEWS = [
-  {
-    name: "이○○",
-    role: "공인중개사",
-    course: "중개 심화 — 이기는 중개",
-    rating: 5,
-    text: "3년 경력인데 매출이 정체됐었어요. 특강 듣고 소유주 접근 방식을 바꿨더니 전속 매물이 눈에 띄게 늘었습니다. 직접 해본 사람이 가르쳐주는 게 이렇게 다르구나 싶었어요.",
-  },
-  {
-    name: "정○○",
-    role: "소규모 건물 임대인",
-    course: "공실 해결 실전 마스터",
-    rating: 5,
-    text: "1년 넘게 공실이던 상가를 강의 듣고 2개월 만에 채웠습니다. 공실 원인 진단 프레임이 특히 도움이 됐어요. 어디서 막혔는지 보이니까 해결책도 찾기 쉬웠습니다.",
-  },
-  {
-    name: "최○○",
-    role: "컨설팅 업종 대표",
-    course: "AI자동화 입문 무료특강",
-    rating: 5,
-    text: "개발자가 아니어도 충분히 따라갈 수 있었습니다. 무료 도구로 이렇게까지 된다는 게 놀라웠어요. 강의 듣고 일주일 만에 문서 작업 시간이 절반으로 줄었습니다.",
-  },
-];
-
 const FAQ = [
   { q: "강의는 어떻게 결제하나요?", a: "강의 상세 페이지에서 신청하기를 누르고 주문자 정보를 입력하면, 입금 계좌가 안내됩니다. 계좌이체 후 이체 확인 버튼을 클릭하시면 실시간 이체 확인이 됩니다." },
   { q: "현금영수증, 세금계산서 발급 되나요?", a: "네, 가능합니다. 이체 직후 현금영수증 혹은 세금계산서 발급 정보 팝업을 입력해 주시면 됩니다." },
@@ -246,31 +222,6 @@ export default function Home() {
             </div>
             <div className="mt-9 text-center sm:hidden">
               <Link href="/courses" className="text-[14px] font-bold text-ink">전체 강의 보기 →</Link>
-            </div>
-          </div>
-        </section>
-
-        {/* REVIEWS */}
-        <section className="bg-paper py-20">
-          <div className="container-edu">
-            <span className="text-[13px] font-bold uppercase tracking-widest text-brand">Reviews</span>
-            <h2 className="mt-2 text-[28px] font-black text-ink sm:text-[34px]">수강생 후기</h2>
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
-              {REVIEWS.map((r, i) => (
-                <div key={i} className="flex flex-col rounded-2xl border border-line bg-cream/50 p-7">
-                  <div className="flex gap-0.5 text-brand">
-                    {Array.from({ length: r.rating }).map((_, j) => (
-                      <span key={j} className="text-[16px]">★</span>
-                    ))}
-                  </div>
-                  <p className="mt-4 flex-1 text-[14px] leading-relaxed text-ink">{r.text}</p>
-                  <div className="mt-5 border-t border-line pt-4">
-                    <p className="text-[13px] font-semibold text-ink">{r.name}</p>
-                    {r.role && <p className="text-[12px] text-ink-soft/70">{r.role}</p>}
-                    <p className="mt-0.5 text-[12px] text-ink-soft">{r.course} 수강</p>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </section>
