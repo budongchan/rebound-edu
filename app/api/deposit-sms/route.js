@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServiceClient } from "@/lib/supabase";
 
-const ACCOUNT_SUFFIX = process.env.EDU_ACCOUNT_SUFFIX || "";
+const DEFAULT_ACCOUNT_SUFFIX = "859768";
+const ACCOUNT_SUFFIX = process.env.EDU_ACCOUNT_SUFFIX || DEFAULT_ACCOUNT_SUFFIX;
 
 function parseWooriSms(rawText = "") {
   const text = String(rawText).replace(/\r/g, "").trim();

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCourse, formatPrice } from "@/lib/courses";
-import { BANK, COMPANY, isBankTransferReady } from "@/lib/company";
+import { BANK, COMPANY } from "@/lib/company";
 import { getServiceClient } from "@/lib/supabase";
 import { EDU_SERVICE } from "@/lib/depositService";
 
@@ -74,17 +74,6 @@ export async function POST(req) {
   if (!buyer?.name || !buyer?.email || !buyer?.phone) {
     return NextResponse.json({ status: "error", message: "주문자 정보를 모두 입력해 주세요." }, { status: 400 });
   }
-  if (!course.free && course.price > 0 && !isBankTransferReady()) {
-    return NextResponse.json(
-      {
-        status: "error",
-        message: "결제 준비 중입니다. 카카오톡으로 문의해 주세요.",
-        contactUrl: "https://pf.kakao.com/_xkxdxgb/chat",
-      },
-      { status: 503 }
-    );
-  }
-
   const order = orderNo();
   const depositorName = buyer.depositName?.trim() || buyer.name.trim();
   const now = new Date();

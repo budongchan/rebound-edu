@@ -3,7 +3,8 @@ import { getServiceClient } from "@/lib/supabase";
 import { EDU_SERVICE } from "@/lib/depositService";
 import { COMPANY } from "@/lib/company";
 
-const ACCOUNT_SUFFIX = process.env.EDU_ACCOUNT_SUFFIX || "";
+const DEFAULT_ACCOUNT_SUFFIX = "859768";
+const ACCOUNT_SUFFIX = process.env.EDU_ACCOUNT_SUFFIX || DEFAULT_ACCOUNT_SUFFIX;
 
 function norm(v = "") {
   return String(v).replace(/\s/g, "").trim();
