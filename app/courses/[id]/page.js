@@ -28,19 +28,19 @@ export async function generateMetadata({ params }) {
 }
 
 const COURSE_HERO_BACKGROUNDS = {
-  "hostel-live-thu": "/courses/assets/real/kim-hostel-lecture.jpg",
-  "hostel-live-sat": "/courses/assets/real/kim-hostel-lecture.jpg",
-  "ai-marketing-auto": "/courses/assets/real/classroom-lecture-privacy.jpg",
-  "ai-service-dev": "/courses/assets/real/kim-space-business.jpg",
-  "ai-youtube-auto": "/courses/assets/real/kim-hostel-lecture.jpg",
-  "ai-realestate-homepage": "/courses/assets/real/kim-space-business.jpg",
-  "brokerage-advanced": "/courses/assets/real/brokerage-classroom-privacy.jpg",
-  "book-publishing": "/courses/assets/real/classroom-lecture-privacy.jpg",
-  "brokerage-weekly": "/courses/assets/real/brokerage-classroom-privacy.jpg",
-  "corp-investment": "/courses/assets/real/kim-space-business.jpg",
-  "ai-intro-special": "/courses/assets/real/classroom-lecture-privacy.jpg",
-  "vacancy-master": "/courses/assets/real/kim-space-business.jpg",
-  "investment-dev-pro": "/courses/assets/real/kim-space-business.jpg",
+  "hostel-live-thu": "/courses/assets/real/kdc-hostel-reception.jpg",
+  "hostel-live-sat": "/courses/assets/real/kdc-hostel-reception.jpg",
+  "ai-marketing-auto": "/courses/assets/real/kdc-lecture-qa.jpg",
+  "ai-service-dev": "/courses/assets/real/kdc-startup-stage.jpg",
+  "ai-youtube-auto": "/courses/assets/real/kdc-lecture-qa.jpg",
+  "ai-realestate-homepage": "/courses/assets/real/kdc-brokerage-signage.jpg",
+  "brokerage-advanced": "/courses/assets/real/kdc-brokerage-signage.jpg",
+  "book-publishing": "/courses/assets/real/kdc-book-junggae.jpg",
+  "brokerage-weekly": "/courses/assets/real/kdc-brokerage-signage.jpg",
+  "corp-investment": "/courses/assets/real/kdc-lodging-realestate.jpg",
+  "ai-intro-special": "/courses/assets/real/kdc-lecture-qa.jpg",
+  "vacancy-master": "/courses/assets/real/kdc-space-renovation.jpg",
+  "investment-dev-pro": "/courses/assets/real/kdc-space-building.jpg",
 };
 
 // ── 수업별 FAQ 생성 ──────────────────────────────────────
