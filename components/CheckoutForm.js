@@ -60,6 +60,8 @@ export default function CheckoutForm({ course }) {
   }, []);
 
   const isFree = course.free || course.price === 0;
+  const courseTitle = course.checkoutTitle || course.title;
+  const courseDetailHref = `/courses/${course.parentCourseId || course.id}`;
   const valid =
     form.name.trim() &&
     /\S+@\S+\.\S+/.test(form.email) &&
@@ -190,7 +192,7 @@ export default function CheckoutForm({ course }) {
           계정 정보는 수강 안내에 사용됩니다.
         </p>
         <div className="mt-4 rounded-xl bg-cream/80 p-4 text-left">
-          <p className="text-[13px] font-bold text-ink">{course.title}</p>
+          <p className="text-[13px] font-bold text-ink">{courseTitle}</p>
           <p className="text-[12px] text-ink-soft">{course.subtitle}</p>
           <p className="mt-2 text-[16px] font-black text-ink">{formatPrice(course.price)}</p>
         </div>
@@ -200,7 +202,7 @@ export default function CheckoutForm({ course }) {
         >
           {isFree ? "Google로 로그인 후 무료 신청하기" : "Google로 로그인 후 신청하기"}
         </Link>
-        <Link href={`/courses/${course.id}`} className="mt-3 block text-[13px] text-ink-soft hover:text-ink">
+        <Link href={courseDetailHref} className="mt-3 block text-[13px] text-ink-soft hover:text-ink">
           ← 강의 상세로 돌아가기
         </Link>
 
@@ -456,8 +458,13 @@ export default function CheckoutForm({ course }) {
         <div className="rounded-2xl border border-line bg-paper p-6">
           <h2 className="text-[16px] font-extrabold text-ink">주문 요약</h2>
           <div className="mt-4 border-t border-line pt-4">
-            <div className="text-[14px] font-bold text-ink">{course.title}</div>
+            <div className="text-[14px] font-bold text-ink">{courseTitle}</div>
             <div className="mt-1 text-[13px] text-ink-soft">{course.subtitle}</div>
+            {course.schedule && (
+              <div className="mt-2 rounded-lg bg-cream px-3 py-2 text-[12px] font-semibold text-ink-soft">
+                {course.place ? `${course.schedule} · ${course.place}` : course.schedule}
+              </div>
+            )}
           </div>
           <dl className="mt-5 space-y-2 text-[13px]">
             {course.discountPct ? (

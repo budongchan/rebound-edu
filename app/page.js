@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
 import HeroSlider from "@/components/HeroSlider";
-import { COURSES, MENU_CATEGORIES } from "@/lib/courses";
+import { MENU_CATEGORIES, visibleCourses } from "@/lib/courses";
 
 const WHY = [
   {
@@ -51,8 +51,9 @@ const FAQ = [
 ];
 
 export default function Home() {
-  const popular = COURSES.filter((c) => c.popular).slice(0, 3);
-  const featured = COURSES.filter((c) => c.lessons > 0).slice(0, 6);
+  const courses = visibleCourses();
+  const popular = courses.filter((c) => c.popular).slice(0, 3);
+  const featured = courses.filter((c) => c.lessons > 0).slice(0, 6);
 
   return (
     <>

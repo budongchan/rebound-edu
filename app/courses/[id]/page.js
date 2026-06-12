@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import {
@@ -122,10 +122,82 @@ function getCourseScheduleWithDuration(course) {
   return `${course.schedule} (${course.duration})`;
 }
 
+function ScheduleOptionCards({ course, color }) {
+  if (!course.scheduleOptions?.length) return null;
+
+  return (
+    <div id="schedule-options" className="rounded-2xl border border-line bg-paper p-7 scroll-mt-24">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-[20px] font-extrabold text-ink">요일 선택 후 수강신청</h2>
+          <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
+            같은 커리큘럼을 평일반과 주말반 중 선택해서 들을 수 있습니다.
+          </p>
+        </div>
+        <span className="text-[13px] font-bold text-ink-soft">정원 3명~20명</span>
+      </div>
+
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
+        {course.scheduleOptions.map((option) => (
+          <div key={option.id} className="rounded-xl border border-line bg-cream/40 p-5">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[18px] font-black text-ink">{option.label}</p>
+                <p className="mt-1 text-[13px] font-semibold text-ink-soft">{option.note}</p>
+              </div>
+              <span
+                className="shrink-0 rounded-full px-3 py-1 text-[12px] font-black text-white"
+                style={{ background: color }}
+              >
+                {option.weekday}
+              </span>
+            </div>
+            <dl className="mt-5 space-y-2.5 text-[13px]">
+              {[
+                ["특강", option.schedule],
+                ["장소", option.place],
+                ["인원", option.capacity],
+                ["임장", option.fieldwork],
+              ].map(([label, value]) => (
+                <div key={label} className="flex justify-between gap-3">
+                  <dt className="shrink-0 text-ink-soft">{label}</dt>
+                  <dd className="text-right font-bold text-ink">{value}</dd>
+                </div>
+              ))}
+            </dl>
+            <Link
+              href={`/checkout/${option.courseId}`}
+              className="mt-5 block rounded-xl px-5 py-3 text-center text-[14px] font-black text-white transition-transform hover:-translate-y-0.5"
+              style={{ background: color, boxShadow: `0 8px 24px -8px ${color}80` }}
+            >
+              {option.label} 신청하기
+            </Link>
+          </div>
+        ))}
+      </div>
+
+      {course.scheduleNotes?.length > 0 && (
+        <div className="mt-5 rounded-xl border border-line bg-paper p-4">
+          <p className="text-[13px] font-extrabold text-ink">운영 안내</p>
+          <ul className="mt-2 space-y-1.5">
+            {course.scheduleNotes.map((note) => (
+              <li key={note} className="flex gap-2 text-[13px] leading-relaxed text-ink-soft">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: color }} />
+                {note}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default async function CourseDetail({ params }) {
   const { id } = await params;
   const course = getCourse(id);
   if (!course) notFound();
+  if (course.redirectTo) redirect(course.redirectTo);
 
   const color = CATEGORY_COLOR[course.category] || "#14110f";
   const totalLessons = course.curriculum.reduce((n, s) => n + s.items.length, 0);
@@ -297,6 +369,8 @@ export default async function CourseDetail({ params }) {
               </div>
             </div>
 
+            <ScheduleOptionCards course={course} color={color} />
+
             {/* ▸ 라이브 수업 — 다음 수업 일정 하이라이트 */}
             {course.live && course.schedule && (
               <div className="overflow-hidden rounded-2xl border-2 bg-paper" style={{ borderColor: color }}>
@@ -306,7 +380,7 @@ export default async function CourseDetail({ params }) {
                 </div>
                 <div className="grid gap-0 divide-x divide-line sm:grid-cols-3">
                   {[
-                    { icon: "📍", label: "장소", val: course.delivery === "온라인" ? "Zoom 온라인" : "리바운드 강의실 (강남)" },
+                    { icon: "📍", label: "장소", val: placeLabel || (course.delivery === "온라인" ? "Zoom 온라인" : "리바운드 강의실") },
                     { icon: "⏱", label: "수업 시간", val: course.duration || "-" },
                     { icon: "💳", label: "수강료", val: course.priceLabel || (course.free ? "무료" : formatPrice(course.price)) },
                   ].map((item) => (
@@ -479,11 +553,11 @@ export default async function CourseDetail({ params }) {
                 )}
 
                 <Link
-                  href={`/checkout/${course.id}`}
+                  href={course.scheduleOptions?.length ? "#schedule-options" : `/checkout/${course.id}`}
                   className="mt-5 inline-flex rounded-xl px-5 py-3 text-[14px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5"
                   style={{ background: color, boxShadow: `0 8px 24px -8px ${color}80` }}
                 >
-                  {course.free ? "무료 신청하기" : course.enrollAlways ? "지금 신청하기" : "수강 신청하기"}
+                  {course.scheduleOptions?.length ? "요일 선택하기" : course.free ? "무료 신청하기" : course.enrollAlways ? "지금 신청하기" : "수강 신청하기"}
                 </Link>
               </div>
             )}
@@ -693,11 +767,11 @@ export default async function CourseDetail({ params }) {
 
               {/* CTA */}
               <Link
-                href={`/checkout/${course.id}`}
+                href={course.scheduleOptions?.length ? "#schedule-options" : `/checkout/${course.id}`}
                 className="mt-4 block rounded-xl px-5 py-4 text-center text-[15px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5"
                 style={{ background: color, boxShadow: `0 8px 24px -8px ${color}80` }}
               >
-                {course.free ? "무료 신청하기" : course.enrollAlways ? "지금 신청하기" : "수강 신청하기"}
+                {course.scheduleOptions?.length ? "요일 선택하기" : course.free ? "무료 신청하기" : course.enrollAlways ? "지금 신청하기" : "수강 신청하기"}
               </Link>
               <p className="mt-2.5 text-center text-[12px] text-ink-soft/70">
                 {course.free
@@ -762,11 +836,11 @@ export default async function CourseDetail({ params }) {
             </p>
           </div>
           <Link
-            href={`/checkout/${course.id}`}
+            href={course.scheduleOptions?.length ? "#schedule-options" : `/checkout/${course.id}`}
             className="shrink-0 rounded-xl px-5 py-3 text-[14px] font-black text-white"
             style={{ background: color }}
           >
-            {course.free ? "무료 신청" : "신청하기"}
+            {course.scheduleOptions?.length ? "요일 선택" : course.free ? "무료 신청" : "신청하기"}
           </Link>
         </div>
       </div>
