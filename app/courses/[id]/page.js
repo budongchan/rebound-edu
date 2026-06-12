@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import CourseReviewSection from "@/components/CourseReviewSection";
 import CourseShareButton from "@/components/CourseShareButton";
 import ScheduleCheckoutSelector from "@/components/ScheduleCheckoutSelector";
 import {
@@ -683,13 +682,6 @@ export default async function CourseDetail({ params }) {
                 ))}
               </div>
             </div>
-
-            <CourseReviewSection
-              courseTitle={course.title}
-              reviews={course.reviews || []}
-              color={color}
-              contactEmail={COMPANY.email}
-            />
 
             {/* ▸ 강사 프로필 */}
             {instructor && (
