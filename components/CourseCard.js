@@ -6,26 +6,9 @@ import {
   getCourseEnrollmentStatus,
 } from "@/lib/courses";
 
-const COURSE_THUMBNAILS = {
-  "hostel-live-thu": "/courses/assets/real/kdc-hostel-reception.jpg",
-  "hostel-live-sat": "/courses/assets/real/kdc-hostel-reception.jpg",
-  "ai-marketing-auto": "/courses/assets/real/kdc-lecture-qa.jpg",
-  "ai-service-dev": "/courses/assets/real/kdc-startup-stage.jpg",
-  "ai-youtube-auto": "/courses/assets/real/kdc-lecture-qa.jpg",
-  "ai-realestate-homepage": "/courses/assets/real/kdc-brokerage-signage.jpg",
-  "brokerage-advanced": "/courses/assets/real/kdc-brokerage-signage.jpg",
-  "book-publishing": "/courses/assets/real/kdc-book-junggae.jpg",
-  "brokerage-weekly": "/courses/assets/real/kdc-brokerage-signage.jpg",
-  "corp-investment": "/courses/assets/real/kdc-lodging-realestate.jpg",
-  "ai-intro-special": "/courses/assets/real/kdc-lecture-qa.jpg",
-  "vacancy-master": "/courses/assets/real/kdc-space-renovation.jpg",
-  "investment-dev-pro": "/courses/assets/real/kdc-space-building.jpg",
-};
-
 export default function CourseCard({ course, rank }) {
   const color = CATEGORY_COLOR[course.category] || "#14110f";
   const cta = course.free ? "무료 신청" : "수강 신청";
-  const thumbnail = course.image || COURSE_THUMBNAILS[course.id] || `/courses/assets/course-pages/${course.id}.png`;
   const enrollmentStatus = getCourseEnrollmentStatus(course);
   const deliveryLabel = getCourseDeliveryLabel(course);
 
@@ -46,19 +29,13 @@ export default function CourseCard({ course, rank }) {
       )}
 
       <div className="relative flex h-40 items-end overflow-hidden p-4">
-        <img
-          src={thumbnail}
-          alt=""
-          className="absolute inset-0 block h-full w-full max-w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-          loading="lazy"
-        />
         <div
           className="absolute inset-0"
           style={{
-            background: `linear-gradient(135deg, ${color}f2 0%, ${color}b8 48%, ${color}4d 100%)`,
+            background: `linear-gradient(135deg, ${color}f2 0%, ${color}c9 52%, ${color}68 100%)`,
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/78 via-ink/20 to-white/10" />
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.16)_0,transparent_34%),linear-gradient(180deg,rgba(20,17,15,0)_0,rgba(20,17,15,0.32)_100%)]" />
         <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-black text-ink">
           {enrollmentStatus}
         </span>

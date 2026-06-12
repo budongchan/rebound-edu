@@ -81,33 +81,6 @@ export async function POST(req) {
   const depositorName = buyer.depositName?.trim() || buyer.name.trim();
   const now = new Date();
   const validUntil = new Date(now.getTime() + EDU_SERVICE.validHours * 3600 * 1000).toISOString();
-  let persisted = false;
-
-  // Supabase에 주문 저장 (실패해도 진행)
-  const supabase = getServiceClient();
-  if (supabase) {
-    try {
-      const { error } = await supabase.from("edu_orders").insert([{
-        order_id: order,
-        course_id: course.id,
-        course_title: course.title,
-        amount: course.price,
-        buyer_name: buyer.name.trim(),
-        buyer_email: buyer.email.trim(),
-        buyer_phone: buyer.phone.trim(),
-        depositor_name: depositorName,
-        status: course.free || course.price === 0 ? "무료신청완료" : "입금대기",
-        deposit_valid_until: course.free || course.price === 0 ? null : validUntil,
-      }]);
-      persisted = !error;
-      if (error) console.error("edu order insert failed", error);
-    } catch {}
-
-    // 1차 알림 문자 — 수강 신청 접수 + 계좌 안내 (유료 강의만)
-    if (!course.free && course.price > 0) {
-      await queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil });
-    }
-  }
 
   // 무료 강의 — 즉시 신청
   if (course.free || course.price === 0) {
@@ -116,6 +89,58 @@ export async function POST(req) {
       message: `${course.title} 신청이 완료되었습니다. 수업 안내는 입력하신 연락처로 보내드립니다.`,
     });
   }
+
+  // 유료 강의는 주문 저장이 되어야 입금 알림과 자동 매칭할 수 있다.
+  const supabase = getServiceClient();
+  if (!supabase) {
+    return NextResponse.json(
+      {
+        status: "error",
+        code: "order-storage-not-configured",
+        message: "주문 저장 시스템 연결이 필요합니다. 카카오톡 채널로 문의해 주세요.",
+      },
+      { status: 503 }
+    );
+  }
+
+  try {
+    const { error } = await supabase.from("edu_orders").insert([{
+      order_id: order,
+      course_id: course.id,
+      course_title: course.title,
+      amount: course.price,
+      buyer_name: buyer.name.trim(),
+      buyer_email: buyer.email.trim(),
+      buyer_phone: buyer.phone.trim(),
+      depositor_name: depositorName,
+      status: "입금대기",
+      deposit_valid_until: validUntil,
+    }]);
+
+    if (error) {
+      console.error("edu order insert failed", error);
+      return NextResponse.json(
+        {
+          status: "error",
+          code: "order-storage-failed",
+          message: "주문 저장 중 오류가 발생했습니다. 입금 확인을 위해 카카오톡 채널로 문의해 주세요.",
+        },
+        { status: 500 }
+      );
+    }
+  } catch (error) {
+    console.error("edu order insert crashed", error);
+    return NextResponse.json(
+      {
+        status: "error",
+        code: "order-storage-failed",
+        message: "주문 저장 중 오류가 발생했습니다. 입금 확인을 위해 카카오톡 채널로 문의해 주세요.",
+      },
+      { status: 500 }
+    );
+  }
+
+  await queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil });
 
   // 유료 강의 — 무통장입금 안내
   return NextResponse.json({
@@ -132,6 +157,6 @@ export async function POST(req) {
     depositName: depositorName,
     courseTitle: course.title,
     service: EDU_SERVICE.id,
-    persisted,
+    persisted: true,
   });
 }

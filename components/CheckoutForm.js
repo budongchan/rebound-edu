@@ -362,40 +362,32 @@ export default function CheckoutForm({ course }) {
           <p className="mt-4 rounded-lg border border-brand/20 bg-brand/5 p-3 text-[12px] leading-relaxed text-brand-dark">
             · 입금자명을 <b>{order.depositName}</b>(으)로 입력해 주세요.<br />
             · {order.validUntil ? formatValidUntil(order.validUntil) : "12시간"} 내 미입금 시 주문이 취소될 수 있습니다.<br />
-            · {order.persisted ? "입금 후 아래 버튼으로 즉시 확인 가능합니다." : "입금 후 확인이 필요하면 카카오톡 채널로 문의해 주세요."}
+            · 은행 입금 알림이 시스템에 수신되면 아래 버튼으로 입금 확인이 가능합니다.
           </p>
 
-          {order.persisted ? (
-            <>
-              <div className="mt-5">
-                <ReceiptRequestBox
-                  orderId={order.order}
-                  defaultEmail={form.email}
-                  defaultPhone={form.phone}
-                />
-              </div>
+          <div className="mt-5">
+            <ReceiptRequestBox
+              orderId={order.order}
+              defaultEmail={form.email}
+              defaultPhone={form.phone}
+            />
+          </div>
 
-              <p className="mt-3 text-center text-[12px] text-ink-soft">
-                나중에 확인하려면{" "}
-                <Link href={`/order/${order.order}`} className="font-semibold text-ink underline underline-offset-2">
-                  주문 상태 페이지
-                </Link>
-                를 북마크해 두세요.
-              </p>
+          <p className="mt-3 text-center text-[12px] text-ink-soft">
+            나중에 확인하려면{" "}
+            <Link href={`/order/${order.order}`} className="font-semibold text-ink underline underline-offset-2">
+              주문 상태 페이지
+            </Link>
+            를 북마크해 두세요.
+          </p>
 
-              <button
-                onClick={handleCheckDeposit}
-                disabled={confirming}
-                className="mt-4 w-full rounded-xl bg-brand px-5 py-3.5 text-center text-[15px] font-bold text-white transition-transform enabled:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {confirming ? "확인 중…" : "입금 확인하기"}
-              </button>
-            </>
-          ) : (
-            <p className="mt-5 rounded-lg border border-line bg-paper p-3 text-center text-[12px] leading-relaxed text-ink-soft">
-              주문 상태 조회는 준비 중입니다. 입금 후 확인이 필요하면 카카오톡 채널로 문의해 주세요.
-            </p>
-          )}
+          <button
+            onClick={handleCheckDeposit}
+            disabled={confirming}
+            className="mt-4 w-full rounded-xl bg-brand px-5 py-3.5 text-center text-[15px] font-bold text-white transition-transform enabled:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {confirming ? "확인 중…" : "입금 확인하기"}
+          </button>
           {depositFailed && message && (
             <p className="mt-3 text-center text-[13px] text-brand-dark">{message}</p>
           )}
