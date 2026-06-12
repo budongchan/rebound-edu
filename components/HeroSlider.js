@@ -8,7 +8,7 @@ const SLIDES = [
     id: "hostel",
     bg: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 60%, #0f766e 100%)",
     tag: "호스텔 창업 특강",
-    heading: "셰어하우스 47호점,\n현장에서 직접 배운다",
+    heading: "호스텔 중개 - 임차 - 매입까지\n직접 다 해본 전문가",
     sub: "매입형·임차형 전략 + 현장임장 + 2개월 매물 정보 제공",
     cta: { label: "목요일반 보기", href: "/courses/hostel-live-thu" },
     cta2: { label: "토요일반 보기", href: "/courses/hostel-live-sat" },
