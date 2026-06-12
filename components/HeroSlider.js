@@ -10,9 +10,10 @@ const SLIDES = [
     tag: "호스텔 창업 특강",
     heading: "호스텔 중개 - 임차 - 매입까지\n직접 다 해본 전문가",
     sub: "목요일·토요일 선택 + 리바운드 종로점 + 특강일로부터 1개월 매물 정보 제공",
-    cta: { label: "수업 보기", href: "/courses/hostel-live-thu" },
+    cta: { label: "자세히 보기", href: "/courses/hostel-live-thu" },
     accent: "#2563eb",
-    schedule: "목요일·토요일 13:00-19:00",
+    schedule: "일정 : 목요일·토요일 13:00-19:00",
+    place: "장소 : 리바운드 종로점",
   },
   {
     id: "ai-marketing",
@@ -61,8 +62,7 @@ const INTERVAL = 5000;
 const INSTRUCTOR_PROFILE = {
   photo: "/courses/instructor/kdc-profile.jpg",
   name: "김동찬",
-  role: "(주)리바운드 대표이사 · 공인중개사(제33회)",
-  affiliation: "리바운드에듀 / 리바운드 그룹",
+  role: "(주)리바운드 대표이사 · 중개법인 대표",
 };
 
 export default function HeroSlider() {
@@ -134,6 +134,11 @@ export default function HeroSlider() {
               <span>🗓</span>
               {slide.schedule}
             </div>
+            {slide.place && (
+              <div className="mt-2 w-fit rounded-lg bg-white/10 px-3.5 py-2 text-[13px] font-semibold text-white/90">
+                {slide.place}
+              </div>
+            )}
 
             {/* CTA 버튼 */}
             <div className="mt-7 flex flex-wrap gap-3">
@@ -172,9 +177,11 @@ export default function HeroSlider() {
                 <p className="mt-1 text-[13px] font-semibold leading-snug text-white/86">
                   {INSTRUCTOR_PROFILE.role}
                 </p>
-                <p className="mt-1 text-[12px] font-medium text-white/58">
-                  {INSTRUCTOR_PROFILE.affiliation}
-                </p>
+                {INSTRUCTOR_PROFILE.affiliation && (
+                  <p className="mt-1 text-[12px] font-medium text-white/58">
+                    {INSTRUCTOR_PROFILE.affiliation}
+                  </p>
+                )}
               </div>
             </div>
           </div>
