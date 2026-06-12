@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CourseGrid from "@/components/CourseGrid";
-import { COURSES } from "@/lib/courses";
+import { visibleCourses } from "@/lib/courses";
 
 export const metadata = {
   title: "강의 목록",
@@ -28,7 +28,7 @@ export default function CoursesPage() {
         </section>
 
         <section className="container-edu py-9">
-          <CourseGrid courses={COURSES} />
+          <CourseGrid courses={visibleCourses()} />
         </section>
       </main>
       <Footer />

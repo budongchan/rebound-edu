@@ -11,6 +11,7 @@ function cleanPhone(value) {
 async function queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil }) {
   const phone = cleanPhone(buyer.phone);
   if (!phone) return;
+  const courseTitle = course.checkoutTitle || course.title;
 
   const deadline = new Date(validUntil).toLocaleString("ko-KR", {
     timeZone: "Asia/Seoul",
@@ -19,7 +20,7 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
 
   const message = [
     "[리바운드에듀]",
-    `${course.title} 수강 신청이 접수되었습니다.`,
+    `${courseTitle} 수강 신청이 접수되었습니다.`,
     "─",
     `금액: ${formatPrice(course.price)}`,
     `입금자명: ${depositorName}`,
@@ -41,7 +42,7 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
       message,
       service_id: EDU_SERVICE.id,
       platform: EDU_SERVICE.platform,
-      product: course.title,
+      product: courseTitle,
       target_table: EDU_SERVICE.targetTable,
       order_id: order,
       dedupe_key: `edu:checkout:${order}`,
@@ -104,10 +105,11 @@ export async function POST(req) {
   }
 
   try {
+    const courseTitle = course.checkoutTitle || course.title;
     const { error } = await supabase.from("edu_orders").insert([{
       order_id: order,
       course_id: course.id,
-      course_title: course.title,
+      course_title: courseTitle,
       amount: course.price,
       buyer_name: buyer.name.trim(),
       buyer_email: buyer.email.trim(),
@@ -155,7 +157,7 @@ export async function POST(req) {
       holder: BANK.holder,
     },
     depositName: depositorName,
-    courseTitle: course.title,
+    courseTitle: course.checkoutTitle || course.title,
     service: EDU_SERVICE.id,
     persisted: true,
   });
