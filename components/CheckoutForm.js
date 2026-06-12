@@ -7,6 +7,7 @@ import { formatPrice } from "@/lib/courses";
 import { COMPANY, BANK } from "@/lib/company";
 import { getSupabaseBrowser } from "@/lib/supabase-browser";
 import ReceiptRequestBox from "@/components/ReceiptRequestBox";
+import CourseGuidanceBox from "@/components/CourseGuidanceBox";
 
 function formatValidUntil(iso) {
   if (!iso) return "";
@@ -27,6 +28,7 @@ export default function CheckoutForm({ course }) {
   const [status, setStatus] = useState("idle"); // idle | loading | bank | done | error
   const [message, setMessage] = useState("");
   const [order, setOrder] = useState(null);
+  const [guidance, setGuidance] = useState(null);
   const [copied, setCopied] = useState(false);
 
   // 입금확인
@@ -89,6 +91,7 @@ export default function CheckoutForm({ course }) {
       }
       if (data.status === "bank_transfer") {
         setOrder(data);
+        setGuidance(data.guidance || null);
         setStatus("bank");
         return;
       }
@@ -120,6 +123,7 @@ export default function CheckoutForm({ course }) {
         if (data.status === "confirmed") {
           setDepositConfirmed(true);
           setConfirmedAt(data.confirmedAt);
+          setGuidance(data.guidance || order.guidance || guidance || null);
           setConfirming(false);
           return;
         }
@@ -238,11 +242,14 @@ export default function CheckoutForm({ course }) {
       <div className="mx-auto max-w-lg space-y-5">
         <div className="rounded-2xl border border-line bg-paper p-8 text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#16a34a] text-2xl text-white">✓</div>
-          <h2 className="mt-5 text-[20px] font-extrabold text-ink">입금이 확인되었습니다</h2>
+          <h2 className="mt-5 text-[20px] font-extrabold text-ink">입금 완료 처리되었습니다</h2>
           <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
-            수강 안내를 입력하신 연락처로 보내드립니다.<br />
+            수업 장소와 단톡방 안내를 아래에서 확인해 주세요.<br />
             주문번호 <span className="font-mono font-semibold text-ink">{order.order}</span>을 저장해 두세요.
           </p>
+          <div className="mt-5 text-left">
+            <CourseGuidanceBox guidance={guidance || order.guidance} compact />
+          </div>
           <Link href="/courses" className="mt-6 inline-block rounded-xl bg-ink px-6 py-3 text-[14px] font-bold text-white">
             다른 강의 보기
           </Link>
