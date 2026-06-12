@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import ReceiptRequestBox from "@/components/ReceiptRequestBox";
+import CourseGuidanceBox from "@/components/CourseGuidanceBox";
 
 function formatPrice(value) {
   return `${Number(value || 0).toLocaleString("ko-KR")}원`;
@@ -24,7 +25,7 @@ function getDisplayStatus(status) {
     return {
       key: "ready",
       title: "수강가능",
-      body: "수강 안내를 입력하신 연락처로 보내드립니다.",
+      body: "수업 장소와 입장 안내를 확인해 주세요.",
       tone: "bg-[#16a34a]",
     };
   }
@@ -32,7 +33,7 @@ function getDisplayStatus(status) {
     return {
       key: "confirmed",
       title: "입금확인",
-      body: "입금이 확인되었습니다. 수강 권한 반영 후 안내를 보내드립니다.",
+      body: "입금이 확인되었습니다. 아래 수업 장소와 단톡방 안내를 확인해 주세요.",
       tone: "bg-ink",
     };
   }
@@ -61,6 +62,7 @@ export default function OrderStatusClient({ initialOrder, bank }) {
   const [lastCheckedAt, setLastCheckedAt] = useState(null);
   const display = useMemo(() => getDisplayStatus(order.status), [order.status]);
   const isPending = display.key === "pending";
+  const inquiryUrl = order.guidance?.inquiryUrl || "https://pf.kakao.com/_xkxdxgb/chat";
 
   useEffect(() => {
     let cancelled = false;
@@ -128,12 +130,18 @@ export default function OrderStatusClient({ initialOrder, bank }) {
             </dl>
           </div>
 
+          {display.key !== "pending" && order.guidance ? (
+            <div className="mt-5">
+              <CourseGuidanceBox guidance={order.guidance} />
+            </div>
+          ) : null}
+
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/courses" className="rounded-xl bg-ink px-5 py-3 text-[14px] font-bold text-white">
               다른 강의 보기
             </Link>
             <a
-              href="https://pf.kakao.com/_xkxdxgb/chat"
+              href={inquiryUrl}
               target="_blank"
               rel="noreferrer"
               className="rounded-xl border border-line bg-paper px-5 py-3 text-[14px] font-bold text-ink-soft hover:text-ink"

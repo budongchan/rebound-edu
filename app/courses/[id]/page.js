@@ -16,6 +16,7 @@ import {
 } from "@/lib/courses";
 import { getInstructor } from "@/lib/instructors";
 import { COMPANY } from "@/lib/company";
+import { getCourseInquiryUrl } from "@/lib/courseGuidance";
 
 export function generateStaticParams() {
   return COURSES.map((c) => ({ id: c.id }));
@@ -207,6 +208,7 @@ export default async function CourseDetail({ params }) {
   const deliveryLabel = getCourseDeliveryLabel(course);
   const placeLabel = getCoursePlaceLabel(course);
   const scheduleWithDuration = getCourseScheduleWithDuration(course);
+  const inquiryUrl = getCourseInquiryUrl(course);
   const hasInstructorTrust =
     course.instructorOneLiner &&
     course.instructorWhy &&
@@ -656,7 +658,7 @@ export default async function CourseDetail({ params }) {
                   </p>
                 </div>
                 <a
-                  href="https://pf.kakao.com/_xkxdxgb/chat"
+                  href={inquiryUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="shrink-0 rounded-xl border border-line bg-cream px-4 py-2.5 text-[13px] font-black text-ink transition-colors hover:bg-paper"
@@ -845,7 +847,7 @@ export default async function CourseDetail({ params }) {
 
               {/* 상담 링크 */}
               <a
-                href="https://pf.kakao.com/_xkxdxgb/chat"
+                href={inquiryUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-5 flex items-center justify-center gap-2 rounded-xl border border-line py-3 text-[13px] font-semibold text-ink-soft transition-colors hover:bg-cream hover:text-ink"

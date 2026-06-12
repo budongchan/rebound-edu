@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServiceClient } from "@/lib/supabase";
 import { EDU_SERVICE } from "@/lib/depositService";
-import { COMPANY } from "@/lib/company";
+import { mergeStoredGuidance } from "@/lib/courseGuidance";
 
 const DEFAULT_ACCOUNT_SUFFIX = "859768";
 const ACCOUNT_SUFFIX = process.env.EDU_ACCOUNT_SUFFIX || DEFAULT_ACCOUNT_SUFFIX;
@@ -14,21 +14,24 @@ function cleanPhone(value) {
   return String(value || "").replace(/[^\d]/g, "");
 }
 
-async function queueDepositConfirmedSms(supabase, { order, depositEvent, confirmedAt }) {
+async function queueDepositConfirmedSms(supabase, { order, depositEvent, confirmedAt, guidance }) {
   const phone = cleanPhone(order.buyer_phone);
   if (!phone) return;
 
   const message = [
     "[리바운드에듀]",
-    "입금 확인이 완료되었습니다.",
+    "입금 완료 처리되었습니다.",
     "─",
     `강의: ${order.course_title || EDU_SERVICE.product}`,
     `주문번호: ${order.order_id}`,
     "─",
-    "수강 안내는 개강 전 입력하신 연락처로 보내드립니다.",
-    `문의: ${COMPANY.phone}`,
+    guidance?.locationName ? `수업장소: ${guidance.locationName}` : null,
+    guidance?.address ? `주소: ${guidance.address}` : null,
+    guidance?.naverPlaceUrl ? `네이버플레이스: ${guidance.naverPlaceUrl}` : null,
+    guidance?.groupChatUrl ? `단톡방: ${guidance.groupChatUrl}` : guidance?.groupChatLabel,
+    guidance?.inquiryUrl ? `문의하기: ${guidance.inquiryUrl}` : null,
     "감사합니다.",
-  ].join("\n");
+  ].filter(Boolean).join("\n");
 
   try {
     await supabase.from("sms_outbox").insert([{
@@ -99,10 +102,16 @@ export async function POST(req) {
   if (!order) {
     return NextResponse.json({ ok: true, status: "pending", reason: "order-not-found" });
   }
+  const guidance = mergeStoredGuidance(order);
 
   // 이미 결제완료
   if (EDU_SERVICE.paidStatuses.includes(order.status)) {
-    return NextResponse.json({ ok: true, status: "confirmed", confirmedAt: order.deposit_confirmed_at || order.paid_at });
+    return NextResponse.json({
+      ok: true,
+      status: "confirmed",
+      confirmedAt: order.deposit_confirmed_at || order.paid_at,
+      guidance,
+    });
   }
 
   // deposit_valid_until 만료 체크
@@ -183,11 +192,12 @@ export async function POST(req) {
         `입금자명: ${hit.depositor_name || "-"}`,
         `금액: ${amount.toLocaleString("ko-KR")}원`,
         `상태: 결제완료 반영`,
+        `후속안내: 수업장소/단톡방 안내 문자 큐잉`,
         `입금ID: ${hit.id}`,
       ].join("\n")
     ),
-    queueDepositConfirmedSms(supabase, { order, depositEvent: hit, confirmedAt: now }),
+    queueDepositConfirmedSms(supabase, { order, depositEvent: hit, confirmedAt: now, guidance }),
   ]);
 
-  return NextResponse.json({ ok: true, status: "confirmed", confirmedAt: now });
+  return NextResponse.json({ ok: true, status: "confirmed", confirmedAt: now, guidance });
 }

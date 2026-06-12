@@ -6,6 +6,7 @@ import OrderStatusClient from "./OrderStatusClient";
 import { BANK } from "@/lib/company";
 import { getServiceClient } from "@/lib/supabase";
 import { EDU_SERVICE } from "@/lib/depositService";
+import { mergeStoredGuidance } from "@/lib/courseGuidance";
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
@@ -23,7 +24,7 @@ async function getOrder(orderId) {
     .limit(1)
     .maybeSingle();
 
-  return data || null;
+  return data ? { ...data, guidance: mergeStoredGuidance(data) } : null;
 }
 
 export default async function OrderPage({ params }) {

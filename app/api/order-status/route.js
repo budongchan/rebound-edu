@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServiceClient } from "@/lib/supabase";
 import { EDU_SERVICE } from "@/lib/depositService";
+import { mergeStoredGuidance } from "@/lib/courseGuidance";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -17,7 +18,7 @@ export async function GET(req) {
 
   const { data: orders } = await supabase
     .from("edu_orders")
-    .select("order_id,course_title,amount,status,depositor_name,deposit_valid_until,deposit_confirmed_at,paid_at")
+    .select("order_id,course_id,course_title,amount,status,depositor_name,deposit_valid_until,deposit_confirmed_at,paid_at")
     .eq("order_id", orderId)
     .limit(1);
 
@@ -39,5 +40,6 @@ export async function GET(req) {
     validUntil: order.deposit_valid_until,
     status: isPaid ? "confirmed" : isExpired ? "expired" : "pending",
     confirmedAt: order.deposit_confirmed_at || order.paid_at || null,
+    guidance: mergeStoredGuidance(order),
   });
 }

@@ -3,6 +3,7 @@ import { getCourse, formatPrice } from "@/lib/courses";
 import { BANK, COMPANY } from "@/lib/company";
 import { getServiceClient } from "@/lib/supabase";
 import { EDU_SERVICE } from "@/lib/depositService";
+import { buildCourseGuidance } from "@/lib/courseGuidance";
 
 function cleanPhone(value) {
   return String(value || "").replace(/[^\d]/g, "");
@@ -21,6 +22,7 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
   const message = [
     "[리바운드에듀]",
     `${courseTitle} 수강 신청이 접수되었습니다.`,
+    "상태: 입금대기",
     "─",
     `금액: ${formatPrice(course.price)}`,
     `입금자명: ${depositorName}`,
@@ -29,6 +31,7 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
     `${BANK.name} ${BANK.account}`,
     `예금주: ${BANK.holder}`,
     `주문번호: ${order}`,
+    `상태조회: https://edu.rebound.io.kr/order/${order}`,
     "─",
     "입금 후 결제 확인 페이지에서 [입금 확인하기] 버튼을 눌러 주세요.",
     `문의: ${COMPANY.phone}`,
@@ -50,6 +53,32 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
     }]);
     if (error) console.error("edu checkout sms queue failed", error);
   } catch {}
+}
+
+async function insertOrderWithGuidance(supabase, orderRow, guidance) {
+  const rowWithGuidance = {
+    ...orderRow,
+    course_schedule: guidance.schedule || null,
+    course_place: guidance.locationName || null,
+    course_address: guidance.address || null,
+    course_naver_place_url: guidance.naverPlaceUrl || null,
+    course_group_chat_url: guidance.groupChatUrl || null,
+    course_inquiry_url: guidance.inquiryUrl || null,
+  };
+
+  const { error } = await supabase.from("edu_orders").insert([rowWithGuidance]);
+  if (!error) return { error: null };
+
+  const message = `${error.message || ""} ${error.details || ""}`.toLowerCase();
+  const missingGuidanceColumn =
+    message.includes("course_") ||
+    message.includes("schema cache") ||
+    message.includes("column");
+
+  if (!missingGuidanceColumn) return { error };
+
+  console.warn("edu order guidance columns unavailable, retrying base insert", error);
+  return supabase.from("edu_orders").insert([orderRow]);
 }
 
 function orderNo() {
@@ -82,6 +111,7 @@ export async function POST(req) {
   const depositorName = buyer.depositName?.trim() || buyer.name.trim();
   const now = new Date();
   const validUntil = new Date(now.getTime() + EDU_SERVICE.validHours * 3600 * 1000).toISOString();
+  const guidance = buildCourseGuidance(course);
 
   // 무료 강의 — 즉시 신청
   if (course.free || course.price === 0) {
@@ -106,7 +136,7 @@ export async function POST(req) {
 
   try {
     const courseTitle = course.checkoutTitle || course.title;
-    const { error } = await supabase.from("edu_orders").insert([{
+    const { error } = await insertOrderWithGuidance(supabase, {
       order_id: order,
       course_id: course.id,
       course_title: courseTitle,
@@ -117,7 +147,7 @@ export async function POST(req) {
       depositor_name: depositorName,
       status: "입금대기",
       deposit_valid_until: validUntil,
-    }]);
+    }, guidance);
 
     if (error) {
       console.error("edu order insert failed", error);
@@ -158,6 +188,7 @@ export async function POST(req) {
     },
     depositName: depositorName,
     courseTitle: course.checkoutTitle || course.title,
+    guidance,
     service: EDU_SERVICE.id,
     persisted: true,
   });

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServiceClient } from "@/lib/supabase";
 import { EDU_SERVICE } from "@/lib/depositService";
+import { mergeStoredGuidance } from "@/lib/courseGuidance";
 
 export async function GET(_req, { params }) {
   const { id } = await params;
@@ -27,5 +28,5 @@ export async function GET(_req, { params }) {
     return NextResponse.json({ ok: false, error: "order-not-found" }, { status: 404 });
   }
 
-  return NextResponse.json({ ok: true, order: data });
+  return NextResponse.json({ ok: true, order: { ...data, guidance: mergeStoredGuidance(data) } });
 }
