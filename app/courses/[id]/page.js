@@ -27,22 +27,6 @@ export async function generateMetadata({ params }) {
   };
 }
 
-const COURSE_HERO_BACKGROUNDS = {
-  "hostel-live-thu": "/courses/assets/real/kdc-hostel-reception.jpg",
-  "hostel-live-sat": "/courses/assets/real/kdc-hostel-reception.jpg",
-  "ai-marketing-auto": "/courses/assets/real/kdc-lecture-qa.jpg",
-  "ai-service-dev": "/courses/assets/real/kdc-startup-stage.jpg",
-  "ai-youtube-auto": "/courses/assets/real/kdc-lecture-qa.jpg",
-  "ai-realestate-homepage": "/courses/assets/real/kdc-brokerage-signage.jpg",
-  "brokerage-advanced": "/courses/assets/real/kdc-brokerage-signage.jpg",
-  "book-publishing": "/courses/assets/real/kdc-book-junggae.jpg",
-  "brokerage-weekly": "/courses/assets/real/kdc-brokerage-signage.jpg",
-  "corp-investment": "/courses/assets/real/kdc-lodging-realestate.jpg",
-  "ai-intro-special": "/courses/assets/real/kdc-lecture-qa.jpg",
-  "vacancy-master": "/courses/assets/real/kdc-space-renovation.jpg",
-  "investment-dev-pro": "/courses/assets/real/kdc-space-building.jpg",
-};
-
 // ── 수업별 FAQ 생성 ──────────────────────────────────────
 function buildFaq(course) {
   const faqs = [];
@@ -160,11 +144,6 @@ export default async function CourseDetail({ params }) {
   const primaryInstructorVideo = course.instructorVideos?.find((video) => video.primary);
   const secondaryInstructorVideos = course.instructorVideos?.filter((video) => !video.primary) || [];
   const hasInstructorPhotos = course.instructorPhotos && course.instructorPhotos.length > 0;
-  const heroImage =
-    course.image ||
-    COURSE_HERO_BACKGROUNDS[course.id] ||
-    `/courses/assets/course-pages/${course.id}.png`;
-
   const DELIVERY_ICON = { 오프라인: "📍", 온라인: "💻", "온라인+오프라인": "📍" };
 
   return (
@@ -178,16 +157,9 @@ export default async function CourseDetail({ params }) {
           style={{ backgroundColor: color }}
         >
           <div
-            className="pointer-events-none absolute inset-0 bg-cover opacity-75"
-            style={{
-              backgroundImage: `url(${heroImage})`,
-              backgroundPosition: "center 38%",
-            }}
-          />
-          <div
             className="pointer-events-none absolute inset-0"
             style={{
-              background: `linear-gradient(90deg, ${color}fa 0%, ${color}eb 34%, ${color}94 64%, ${color}22 100%)`,
+              background: `linear-gradient(90deg, ${color}fa 0%, ${color}e8 46%, ${color}70 100%)`,
             }}
           />
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_30%,rgba(255,255,255,0.28),transparent_30%),linear-gradient(180deg,rgba(20,17,15,0.08),rgba(20,17,15,0.34))]" />
@@ -296,19 +268,6 @@ export default async function CourseDetail({ params }) {
             )}
           </div>
         </section>
-
-        {/* ── 강의 사진 ──────────────────────────────────── */}
-        {course.image && (
-          <div className="container-edu pt-8">
-            <div className="overflow-hidden rounded-2xl border border-line">
-              <img
-                src={course.image}
-                alt={course.title}
-                className="h-[260px] w-full object-cover sm:h-[360px]"
-              />
-            </div>
-          </div>
-        )}
 
         {/* ── BODY ──────────────────────────────────────── */}
         <section className="container-edu grid gap-10 py-12 lg:grid-cols-[1fr_360px]">

@@ -7,8 +7,6 @@ const SLIDES = [
   {
     id: "hostel",
     bg: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 60%, #0f766e 100%)",
-    image: "/courses/assets/real/kdc-hostel-reception.jpg",
-    imagePosition: "center 46%",
     tag: "호스텔 창업 특강",
     heading: "셰어하우스 47호점,\n현장에서 직접 배운다",
     sub: "매입형·임차형 전략 + 현장임장 + 2개월 매물 정보 제공",
@@ -20,8 +18,6 @@ const SLIDES = [
   {
     id: "ai-marketing",
     bg: "linear-gradient(135deg, #4c1d95 0%, #7c3aed 55%, #db2777 100%)",
-    image: "/courses/assets/real/kdc-lecture-qa.jpg",
-    imagePosition: "center 35%",
     tag: "AI 마케팅 자동화",
     heading: "네이버·인스타·구글\n한 번에 자동화한다",
     sub: "못하면 직접 해드립니다 — 수업 당일 내 채널 세팅 완성",
@@ -32,8 +28,6 @@ const SLIDES = [
   {
     id: "ai-dev",
     bg: "linear-gradient(135deg, #14110f 0%, #334155 60%, #0f766e 100%)",
-    image: "/courses/assets/real/kdc-startup-stage.jpg",
-    imagePosition: "center 45%",
     tag: "AI 서비스 개발",
     heading: "개발자 없이\n내 서비스를 만든다",
     sub: "기획·코딩·결제·배포까지 하루 안에 — 못하면 해드림",
@@ -44,8 +38,6 @@ const SLIDES = [
   {
     id: "brokerage",
     bg: "linear-gradient(135deg, #14110f 0%, #1e3a5f 55%, #0f766e 100%)",
-    image: "/courses/assets/real/kdc-brokerage-signage.jpg",
-    imagePosition: "center 48%",
     tag: "중개 실무 교육",
     heading: "현직 CEO가 직접 가르치는\n중개 실무 주간 과정",
     sub: "매주 화요일·금요일 온라인 — 우수 수강생 채용 기회 제공",
@@ -57,8 +49,6 @@ const SLIDES = [
   {
     id: "book",
     bg: "linear-gradient(135deg, #78350f 0%, #b45309 55%, #d97706 100%)",
-    image: "/courses/assets/real/kdc-book-junggae.jpg",
-    imagePosition: "center 50%",
     tag: "책쓰기 과정",
     heading: "당신의 24시간이\n책이 된다",
     sub: "5권+ 출간 저자 직강 — 기획·집필·출간 전 과정 1:1 완성",
@@ -100,18 +90,10 @@ export default function HeroSlider() {
       onMouseLeave={() => setPaused(false)}
     >
       <div
-        key={`${slide.id}-image`}
-        className="pointer-events-none absolute inset-0 bg-cover opacity-70 transition-opacity duration-700"
-        style={{
-          backgroundImage: `url(${slide.image})`,
-          backgroundPosition: slide.imagePosition,
-        }}
-      />
-      <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(90deg, rgba(14,24,48,0.94) 0%, rgba(25,65,150,0.86) 42%, rgba(20,90,150,0.52) 70%, rgba(10,74,84,0.24) 100%)",
+            "linear-gradient(90deg, rgba(14,24,48,0.9) 0%, rgba(25,65,150,0.62) 48%, rgba(10,74,84,0.2) 100%)",
         }}
       />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_82%_28%,rgba(255,255,255,0.26),transparent_32%),linear-gradient(180deg,rgba(0,0,0,0.06),rgba(0,0,0,0.28))]" />
