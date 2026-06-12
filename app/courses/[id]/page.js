@@ -35,7 +35,11 @@ export async function generateMetadata({ params }) {
 function buildFaq(course) {
   const faqs = [];
 
-  if (course.live && course.delivery === "오프라인") {
+  if (course.faq?.length) {
+    faqs.push(...course.faq);
+  }
+
+  if (course.live && course.delivery === "오프라인" && !course.faq?.length) {
     faqs.push({
       q: "수업 장소는 어디인가요?",
       a: course.place
@@ -49,7 +53,7 @@ function buildFaq(course) {
       a: "입금 확인 후 수업 전날 또는 당일 오전 중 카카오톡 또는 이메일로 Zoom 링크를 발송드립니다.",
     });
   }
-  if (course.guarantee) {
+  if (course.guarantee && !course.faq?.length) {
     faqs.push({
       q: `'${course.guarantee}'이 정확히 어떤 의미인가요?`,
       a: "수업 시간 내에 설정·구현이 완료되지 않으면, 수업 후 강사가 직접 원격으로 완성해드립니다. 도구·계정 문제나 인터넷 환경 문제는 제외됩니다.",
@@ -383,7 +387,7 @@ export default async function CourseDetail({ params }) {
                 </div>
                 <div className="grid gap-0 divide-x divide-line sm:grid-cols-3">
                   {[
-                    { icon: "📍", label: "장소", val: placeLabel || (course.delivery === "온라인" ? "Zoom 온라인" : "리바운드 강의실") },
+                    { icon: "📍", label: "장소", val: course.delivery === "온라인" ? "Zoom 온라인" : (course.place || "리바운드 강의실") },
                     { icon: "⏱", label: "수업 시간", val: course.duration || "-" },
                     { icon: "💳", label: "수강료", val: course.priceLabel || (course.free ? "무료" : formatPrice(course.price)) },
                   ].map((item) => (
