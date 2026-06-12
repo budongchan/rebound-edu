@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CourseReviewSection from "@/components/CourseReviewSection";
+import CourseShareButton from "@/components/CourseShareButton";
 import ScheduleCheckoutSelector from "@/components/ScheduleCheckoutSelector";
 import {
   COURSES,
@@ -13,6 +15,7 @@ import {
   getCourseEnrollmentStatus,
 } from "@/lib/courses";
 import { getInstructor } from "@/lib/instructors";
+import { COMPANY } from "@/lib/company";
 
 export function generateStaticParams() {
   return COURSES.map((c) => ({ id: c.id }));
@@ -243,9 +246,12 @@ export default async function CourseDetail({ params }) {
             style={{ background: `radial-gradient(circle,#fff,transparent 70%)` }} />
 
           <div className="container-edu relative py-14 sm:py-16 lg:py-20">
-            <Link href="/courses" className="inline-flex items-center gap-1 text-[13px] font-semibold text-white/70 hover:text-white">
-              ← 강의 목록
-            </Link>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <Link href="/courses" className="inline-flex items-center gap-1 text-[13px] font-semibold text-white/70 hover:text-white">
+                ← 강의 목록
+              </Link>
+              <CourseShareButton title={course.title} summary={course.subtitle || course.summary} variant="dark" />
+            </div>
 
             {/* 배지 행 */}
             <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -640,9 +646,24 @@ export default async function CourseDetail({ params }) {
               </div>
             )}
 
-            {/* ▸ FAQ */}
+            {/* ▸ Q&A */}
             <div className="rounded-2xl border border-line bg-paper p-7">
-              <h2 className="text-[20px] font-extrabold text-ink">자주 묻는 질문</h2>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h2 className="text-[20px] font-extrabold text-ink">수업 관련 Q&A</h2>
+                  <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
+                    일정, 장소, 결제, 환불처럼 수강 전에 자주 묻는 내용을 수업별로 정리했습니다.
+                  </p>
+                </div>
+                <a
+                  href="https://pf.kakao.com/_xkxdxgb/chat"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0 rounded-xl border border-line bg-cream px-4 py-2.5 text-[13px] font-black text-ink transition-colors hover:bg-paper"
+                >
+                  질문하기
+                </a>
+              </div>
               <div className="mt-5 divide-y divide-line rounded-xl border border-line">
                 {faqs.map((f, i) => (
                   <details key={i} className="group">
@@ -660,6 +681,13 @@ export default async function CourseDetail({ params }) {
                 ))}
               </div>
             </div>
+
+            <CourseReviewSection
+              courseTitle={course.title}
+              reviews={course.reviews || []}
+              color={color}
+              contactEmail={COMPANY.email}
+            />
 
             {/* ▸ 강사 프로필 */}
             {instructor && (
@@ -824,6 +852,9 @@ export default async function CourseDetail({ params }) {
               >
                 카카오톡으로 문의하기
               </a>
+              <div className="mt-3 flex justify-center">
+                <CourseShareButton title={course.title} summary={course.subtitle || course.summary} color={color} />
+              </div>
             </div>
           </aside>
         </section>
