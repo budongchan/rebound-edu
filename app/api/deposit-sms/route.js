@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { getServiceClient } from "@/lib/supabase";
-
-const DEFAULT_ACCOUNT_SUFFIX = "859768";
-const ACCOUNT_SUFFIX = process.env.EDU_ACCOUNT_SUFFIX || DEFAULT_ACCOUNT_SUFFIX;
+import { getEduAccountSuffix } from "@/lib/depositAccount";
 
 function parseWooriSms(rawText = "") {
+  const accountSuffixToMatch = getEduAccountSuffix();
   const text = String(rawText).replace(/\r/g, "").trim();
   const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
   const bankLine = lines.find((l) => l.startsWith("우리 ")) || "";
@@ -25,7 +24,7 @@ function parseWooriSms(rawText = "") {
     amount: amountMatch?.[2] ? Number(amountMatch[2].replace(/,/g, "")) : null,
     depositor_name: depositorName,
     is_deposit: amountMatch?.[1] === "입금",
-    is_expected_account: ACCOUNT_SUFFIX ? accountSuffix.endsWith(ACCOUNT_SUFFIX) : null,
+    is_expected_account: accountSuffixToMatch ? accountSuffix.endsWith(accountSuffixToMatch) : null,
   };
 }
 
@@ -74,8 +73,9 @@ export async function POST(req) {
   }
 
   const parsed = parseWooriSms(rawText);
+  const accountSuffixToMatch = getEduAccountSuffix();
 
-  if (!parsed.is_deposit || (ACCOUNT_SUFFIX && !parsed.is_expected_account)) {
+  if (!parsed.is_deposit || (accountSuffixToMatch && !parsed.is_expected_account)) {
     return NextResponse.json({ ok: true, status: "ignored", parsed });
   }
 
@@ -93,7 +93,7 @@ export async function POST(req) {
         metadata: {
           source: "edu-deposit-sms-webhook",
           service_id: null,
-          account_suffix_check: ACCOUNT_SUFFIX ? "configured" : "not-configured",
+          account_suffix_check: accountSuffixToMatch ? "configured" : "not-configured",
         },
       }])
       .select()
