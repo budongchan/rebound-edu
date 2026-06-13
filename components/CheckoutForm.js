@@ -107,7 +107,9 @@ export default function CheckoutForm({ course }) {
     if (!order || confirming) return;
     setConfirming(true);
     setDepositFailed(false);
-    for (let i = 0; i < 3; i++) {
+    setMessage("입금 내역을 확인하고 있습니다. 자동확인이 지연되면 관리자 확인 후 안내드립니다.");
+    const deadline = Date.now() + 60_000;
+    while (Date.now() < deadline) {
       try {
         const res = await fetch("/api/check-deposit", {
           method: "POST",
@@ -134,10 +136,11 @@ export default function CheckoutForm({ course }) {
           return;
         }
       } catch { /* 무시 */ }
-      if (i < 2) await new Promise((r) => setTimeout(r, 2000));
+      await new Promise((r) => setTimeout(r, 4000));
     }
     setConfirming(false);
     setDepositFailed(true);
+    setMessage("아직 자동으로 확인되지 않았습니다. 입금자명과 금액을 확인해 주세요. 확인이 지연되면 관리자가 확인 후 안내드립니다.");
   }
 
   async function handleTaxInvoice(e) {

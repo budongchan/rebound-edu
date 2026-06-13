@@ -23,13 +23,21 @@ function isAuthorized(req) {
   return bearer === secret || headerToken === secret;
 }
 
-function parseLimit(value) {
-  const n = Number(value || DEFAULT_LIMIT);
+function parseLimit(value, fallback = DEFAULT_LIMIT) {
+  const n = Number(value || fallback);
   if (!Number.isFinite(n) || n < 1) return DEFAULT_LIMIT;
   return Math.min(Math.floor(n), MAX_LIMIT);
 }
 
-async function claimMessages(req) {
+function normalizeIds(body) {
+  const rawIds = Array.isArray(body.ids) ? body.ids : [body.id].filter(Boolean);
+  return rawIds
+    .map((id) => String(id).split(":").pop())
+    .map((id) => Number(id))
+    .filter((id) => Number.isFinite(id));
+}
+
+async function claimMessages(req, body = {}) {
   if (!getRouterSecret()) {
     return NextResponse.json({ ok: false, error: "sms-router-secret-not-configured" }, { status: 503 });
   }
@@ -43,7 +51,7 @@ async function claimMessages(req) {
   }
 
   const { searchParams } = new URL(req.url);
-  const limit = parseLimit(searchParams.get("limit"));
+  const limit = parseLimit(body.limit || searchParams.get("limit"));
 
   const { data: queued, error: selectError } = await supabase
     .from("sms_outbox")
@@ -58,7 +66,7 @@ async function claimMessages(req) {
 
   const ids = (queued || []).map((row) => row.id);
   if (!ids.length) {
-    return NextResponse.json({ ok: true, messages: [] });
+    return NextResponse.json({ ok: true, status: "claimed", messages: [], items: [], jobs: [] });
   }
 
   const now = new Date().toISOString();
@@ -73,7 +81,8 @@ async function claimMessages(req) {
     return NextResponse.json({ ok: false, error: "claim-failed" }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, messages: claimed || [] });
+  const messages = claimed || [];
+  return NextResponse.json({ ok: true, status: "claimed", messages, items: messages, jobs: messages });
 }
 
 async function updateMessageStatus(req, body) {
@@ -89,13 +98,13 @@ async function updateMessageStatus(req, body) {
     return NextResponse.json({ ok: false, error: "supabase-not-configured" }, { status: 503 });
   }
 
-  const ids = Array.isArray(body.ids) ? body.ids : [body.id].filter(Boolean);
+  const ids = normalizeIds(body);
   if (!ids.length) {
     return NextResponse.json({ ok: false, error: "missing-id" }, { status: 400 });
   }
 
   const now = new Date().toISOString();
-  const status = body.action === "failed" ? "failed" : "sent";
+  const status = body.action === "failed" || body.ok === false || body.status === "failed" ? "failed" : "sent";
   const patch = {
     status,
     updated_at: now,
@@ -112,7 +121,7 @@ async function updateMessageStatus(req, body) {
     return NextResponse.json({ ok: false, error: "update-failed" }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, status, ids });
+  return NextResponse.json({ ok: true, status, ids, action: body.action || "ack" });
 }
 
 export async function GET(req) {
@@ -128,9 +137,9 @@ export async function POST(req) {
   }
 
   if (!body.action || body.action === "claim") {
-    return claimMessages(req);
+    return claimMessages(req, body);
   }
-  if (body.action === "sent" || body.action === "failed") {
+  if (body.action === "ack" || body.action === "sent" || body.action === "failed") {
     return updateMessageStatus(req, body);
   }
 
