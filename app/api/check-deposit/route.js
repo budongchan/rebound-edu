@@ -2,9 +2,7 @@ import { NextResponse } from "next/server";
 import { getServiceClient } from "@/lib/supabase";
 import { EDU_SERVICE } from "@/lib/depositService";
 import { mergeStoredGuidance } from "@/lib/courseGuidance";
-
-const DEFAULT_ACCOUNT_SUFFIX = "859768";
-const ACCOUNT_SUFFIX = process.env.EDU_ACCOUNT_SUFFIX || DEFAULT_ACCOUNT_SUFFIX;
+import { getEduAccountSuffix } from "@/lib/depositAccount";
 
 function norm(v = "") {
   return String(v).replace(/\s/g, "").trim();
@@ -121,6 +119,7 @@ export async function POST(req) {
 
   const amount = Number(expectedAmount || order.amount);
   const depositor = depositorName || order.depositor_name;
+  const accountSuffixToMatch = getEduAccountSuffix();
 
   // 2) 공유 bank_deposit_notifications에서 미매칭 입금 조회
   // 입금 row.created_at은 주문 생성 이후, deposit_valid_until 이전이어야 함
@@ -135,7 +134,7 @@ export async function POST(req) {
     .order("created_at", { ascending: false })
     .limit(20);
 
-  if (ACCOUNT_SUFFIX) {
+  if (accountSuffixToMatch) {
     depositQuery = depositQuery.eq("is_expected_account", true);
   }
 
@@ -151,13 +150,7 @@ export async function POST(req) {
 
   const now = new Date().toISOString();
 
-  // 3) 주문 상태 업데이트
-  await supabase
-    .from("edu_orders")
-    .update({ status: "결제완료", paid_at: now, deposit_confirmed_at: now, payment_method: "bank_transfer" })
-    .eq("id", order.id);
-
-  // 4) 입금 이벤트 사용 처리 (matched=false 조건으로 중복 방지, matched_target_id는 FK 충돌로 미사용)
+  // 3) 입금 이벤트를 먼저 사용 처리한다. matched=false 조건으로 중복 사용을 막는다.
   const { data: updated } = await supabase
     .from("bank_deposit_notifications")
     .update({
@@ -179,6 +172,28 @@ export async function POST(req) {
 
   if (!updated?.length) {
     return NextResponse.json({ ok: true, status: "pending", reason: "deposit-event-already-used" });
+  }
+
+  // 4) 입금 이벤트 확보 후 주문 상태 업데이트
+  const { error: orderUpdateError } = await supabase
+    .from("edu_orders")
+    .update({ status: "결제완료", paid_at: now, deposit_confirmed_at: now, payment_method: "bank_transfer" })
+    .eq("id", order.id);
+
+  if (orderUpdateError) {
+    await supabase
+      .from("bank_deposit_notifications")
+      .update({
+        matched: false,
+        confirmed_at: null,
+        matched_by: null,
+        status: "received",
+        metadata: hit.metadata || {},
+      })
+      .eq("id", hit.id)
+      .eq("matched_by", "customer-check-deposit-edu");
+
+    return NextResponse.json({ ok: false, status: "error", reason: "order-update-failed" }, { status: 500 });
   }
 
   // 5) Telegram [입금매칭] 알림 + 고객 2차 알림문자 큐잉 (병렬)

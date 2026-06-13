@@ -33,7 +33,9 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
     `주문번호: ${order}`,
     `상태조회: https://edu.rebound.io.kr/order/${order}`,
     "─",
-    "입금 후 결제 확인 페이지에서 [입금 확인하기] 버튼을 눌러 주세요.",
+    "입금 알림 수신 후 상태조회 페이지에서 자동 확인됩니다.",
+    "바로 확인이 필요하면 [입금 확인하기] 버튼을 눌러 주세요.",
+    "영업시간 기준 최대 1시간 내 장소와 단톡방 안내 문자가 발송됩니다.",
     `문의: ${COMPANY.phone}`,
   ].join("\n");
 
