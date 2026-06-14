@@ -559,15 +559,26 @@ export default async function CourseDetail({ params }) {
                   </div>
                 )}
 
-                {!course.scheduleOptions?.length && (
-                  <Link
-                    href={`/checkout/${course.id}`}
-                    className="mt-5 inline-flex rounded-xl px-5 py-3 text-[14px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5"
-                    style={{ background: color, boxShadow: `0 8px 24px -8px ${color}80` }}
-                  >
-                    {course.free ? "무료 신청하기" : course.enrollAlways ? "지금 신청하기" : "수강 신청하기"}
-                  </Link>
-                )}
+                {!course.scheduleOptions?.length &&
+                  (course.cardPaymentUrl ? (
+                    <a
+                      href={course.cardPaymentUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-5 inline-flex rounded-xl px-5 py-3 text-[14px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5"
+                      style={{ background: color, boxShadow: `0 8px 24px -8px ${color}80` }}
+                    >
+                      카드로 결제하기
+                    </a>
+                  ) : (
+                    <Link
+                      href={`/checkout/${course.id}`}
+                      className="mt-5 inline-flex rounded-xl px-5 py-3 text-[14px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5"
+                      style={{ background: color, boxShadow: `0 8px 24px -8px ${color}80` }}
+                    >
+                      {course.free ? "무료 신청하기" : course.enrollAlways ? "지금 신청하기" : "수강 신청하기"}
+                    </Link>
+                  ))}
               </div>
             )}
 
@@ -811,17 +822,40 @@ export default async function CourseDetail({ params }) {
                 <ScheduleCheckoutSelector options={course.scheduleOptions} color={color} />
               ) : (
                 <>
+                  {course.cardPaymentUrl && (
+                    <a
+                      href={course.cardPaymentUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 block rounded-xl px-5 py-4 text-center text-[15px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5"
+                      style={{ background: color, boxShadow: `0 8px 24px -8px ${color}80` }}
+                    >
+                      카드로 결제하기
+                    </a>
+                  )}
                   <Link
                     href={`/checkout/${course.id}`}
-                    className="mt-4 block rounded-xl px-5 py-4 text-center text-[15px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5"
-                    style={{ background: color, boxShadow: `0 8px 24px -8px ${color}80` }}
+                    className={
+                      course.cardPaymentUrl
+                        ? "mt-2.5 block rounded-xl border border-line bg-paper px-5 py-4 text-center text-[15px] font-black text-ink transition-transform hover:-translate-y-0.5"
+                        : "mt-4 block rounded-xl px-5 py-4 text-center text-[15px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5"
+                    }
+                    style={course.cardPaymentUrl ? undefined : { background: color, boxShadow: `0 8px 24px -8px ${color}80` }}
                   >
-                    {course.free ? "무료 신청하기" : course.enrollAlways ? "지금 신청하기" : "수강 신청하기"}
+                    {course.free
+                      ? "무료 신청하기"
+                      : course.cardPaymentUrl
+                        ? "무통장 입금으로 신청"
+                        : course.enrollAlways
+                          ? "지금 신청하기"
+                          : "수강 신청하기"}
                   </Link>
                   <p className="mt-2.5 text-center text-[12px] text-ink-soft/70">
                     {course.free
                       ? "로그인 후 바로 신청됩니다."
-                      : "신청 후 입금 계좌가 안내됩니다. (무통장입금)"}
+                      : course.cardPaymentUrl
+                        ? "카드결제는 외부 결제창(리바운드 스토어)으로 연결됩니다. 무통장입금도 선택할 수 있습니다."
+                        : "신청 후 입금 계좌가 안내됩니다. (무통장입금)"}
                   </p>
                 </>
               )}
@@ -888,13 +922,25 @@ export default async function CourseDetail({ params }) {
                 {course.priceLabel || (course.free ? "무료" : formatPrice(course.price))}
               </p>
             </div>
-            <Link
-              href={`/checkout/${course.id}`}
-              className="shrink-0 rounded-xl px-5 py-3 text-[14px] font-black text-white"
-              style={{ background: color }}
-            >
-              {course.free ? "무료 신청" : "신청하기"}
-            </Link>
+            {course.cardPaymentUrl ? (
+              <a
+                href={course.cardPaymentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 rounded-xl px-5 py-3 text-[14px] font-black text-white"
+                style={{ background: color }}
+              >
+                카드결제
+              </a>
+            ) : (
+              <Link
+                href={`/checkout/${course.id}`}
+                className="shrink-0 rounded-xl px-5 py-3 text-[14px] font-black text-white"
+                style={{ background: color }}
+              >
+                {course.free ? "무료 신청" : "신청하기"}
+              </Link>
+            )}
           </div>
         )}
       </div>
