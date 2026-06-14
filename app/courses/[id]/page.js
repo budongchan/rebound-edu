@@ -571,6 +571,24 @@ export default async function CourseDetail({ params }) {
               </div>
             )}
 
+            {/* ▸ 숫자로 보는 실적 (사회적 증거) */}
+            {course.socialProof && (
+              <div className="rounded-2xl border border-line bg-paper p-7">
+                <h2 className="text-[20px] font-extrabold text-ink">{course.socialProof.title || "숫자로 보는 실적"}</h2>
+                <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {course.socialProof.stats.map((s) => (
+                    <div key={s.label} className="rounded-xl border border-line bg-cream/40 p-5 text-center">
+                      <p className="text-[26px] font-black leading-tight" style={{ color }}>{s.value}</p>
+                      <p className="mt-2 text-[12.5px] font-semibold leading-relaxed text-ink-soft">{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+                {course.socialProof.note && (
+                  <p className="mt-4 text-[12px] leading-relaxed text-ink-soft">{course.socialProof.note}</p>
+                )}
+              </div>
+            )}
+
             {/* ▸ 커리큘럼 */}
             <div className="rounded-2xl border border-line bg-paper p-7">
               <div className="flex items-baseline justify-between">
