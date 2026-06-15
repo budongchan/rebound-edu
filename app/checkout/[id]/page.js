@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CheckoutForm from "@/components/CheckoutForm";
@@ -20,6 +20,9 @@ export default async function CheckoutPage({ params }) {
   const { id } = await params;
   const course = getCourse(id);
   if (!course) notFound();
+  if (course.redirectTo) {
+    redirect(course.redirectTo.replace("/courses/", "/checkout/"));
+  }
   const backCourseId = course.parentCourseId || course.id;
   const title = course.checkoutTitle || course.title;
 
