@@ -206,7 +206,9 @@ export default function CheckoutForm({ course }) {
         </p>
         <div className="mt-4 rounded-xl bg-cream/80 p-4 text-left">
           <p className="text-[13px] font-bold text-ink">{courseTitle}</p>
-          <p className="text-[12px] text-ink-soft">{course.subtitle}</p>
+          {(course.scheduleShort || course.schedule) && (
+            <p className="text-[12px] text-ink-soft">{course.scheduleShort || course.schedule}</p>
+          )}
           <p className="mt-2 text-[16px] font-black text-ink">{formatPrice(course.price)}</p>
         </div>
         <Link
