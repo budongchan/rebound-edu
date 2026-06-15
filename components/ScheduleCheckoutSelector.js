@@ -67,10 +67,7 @@ export default function ScheduleCheckoutSelector({ options = [], color = "#14110
       <dl className="mt-4 space-y-2 text-[12px]">
         {[
           ["수업", selected.schedule],
-          ["장소", selected.place],
           ["임장", selected.fieldwork],
-          ["저녁", selected.dinner],
-          ["인원", selected.capacity],
         ].filter(([, value]) => value).map(([label, value]) => (
           <div key={label} className="flex justify-between gap-3">
             <dt className="shrink-0 text-ink-soft">{label}</dt>
