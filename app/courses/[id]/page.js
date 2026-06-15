@@ -189,7 +189,8 @@ function ScheduleInfoCards({ course, color }) {
                 ["장소", option.place],
                 ["인원", option.capacity],
                 ["임장", option.fieldwork],
-              ].map(([label, value]) => (
+                ["저녁", option.dinner],
+              ].filter(([, value]) => value).map(([label, value]) => (
                 <div key={label} className="flex justify-between gap-3">
                   <dt className="shrink-0 text-ink-soft">{label}</dt>
                   <dd className="text-right font-bold text-ink">{value}</dd>
@@ -888,6 +889,16 @@ export default async function CourseDetail({ params }) {
                 <div className="text-[22px] font-black text-ink">{course.priceLabel}</div>
               ) : (
                 <div className="text-[28px] font-black text-ink">{formatPrice(course.price)}</div>
+              )}
+
+              {course.sidebarSummary?.length > 0 && (
+                <div className="mt-4 space-y-2 rounded-xl border border-line bg-cream/60 p-4">
+                  {course.sidebarSummary.map((line) => (
+                    <p key={line} className="text-[12px] font-extrabold leading-relaxed text-ink">
+                      {line}
+                    </p>
+                  ))}
+                </div>
               )}
 
               {course.scheduleOptions?.length ? (

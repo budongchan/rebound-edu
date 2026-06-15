@@ -22,7 +22,7 @@ export default async function CheckoutPage({ params, searchParams }) {
   const course = getCourse(id);
   if (!course) notFound();
   if (course.redirectTo) {
-    const scheduleQuery = id === "hostel-live-thu" ? "?schedule=thu" : "";
+    const scheduleQuery = id === "hostel-live-thu" ? "?schedule=wed" : "";
     redirect(`${course.redirectTo.replace("/courses/", "/checkout/")}${scheduleQuery}`);
   }
   const selectedScheduleOption =
