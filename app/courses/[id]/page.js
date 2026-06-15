@@ -253,6 +253,155 @@ function CourseSectionTabs({ course, hasReviews }) {
   );
 }
 
+function BestReviewBlock({ course, color }) {
+  const bestReview = course.studentReviews?.[0];
+  if (!bestReview) return null;
+
+  return (
+    <div className="rounded-2xl border border-line bg-paper p-7">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-[12px] font-black uppercase tracking-[0.16em]" style={{ color }}>
+            Best Review
+          </p>
+          <h2 className="mt-1 text-[20px] font-extrabold text-ink">베스트 수강 사례</h2>
+        </div>
+        <div className="flex items-center gap-1 text-[13px] font-black text-ink">
+          <span className="text-yellow-400">★★★★★</span>
+          <span>선별 영상 후기</span>
+        </div>
+      </div>
+      <div className="mt-5 grid gap-5 lg:grid-cols-[220px_1fr] lg:items-center">
+        <a
+          href={`https://www.youtube.com/watch?v=${bestReview.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group overflow-hidden rounded-xl border border-line bg-ink"
+        >
+          <div className="relative aspect-video">
+            <img
+              src={`https://img.youtube.com/vi/${bestReview.id}/hqdefault.jpg`}
+              alt={`${bestReview.title} 베스트 수강 사례 영상 썸네일`}
+              loading="lazy"
+              className="h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
+            />
+            <span className="absolute inset-0 flex items-center justify-center">
+              <span className="rounded-full bg-paper/95 px-3 py-1 text-[12px] font-black text-ink shadow">
+                후기 보기
+              </span>
+            </span>
+          </div>
+        </a>
+        <div>
+          <p className="text-[18px] font-black leading-relaxed text-ink">{bestReview.title}</p>
+          <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
+            실제 공개 영상으로 확인 가능한 수강 사례만 노출합니다. 별도 후기 기능을 열어두지 않고, 운영자가 검증한 사례만 상세페이지에 선별 등록합니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PurchaseGuideBlock({ guide, color }) {
+  if (!guide?.steps?.length) return null;
+
+  return (
+    <div className="rounded-2xl border border-line bg-paper p-7">
+      <h2 className="text-[20px] font-extrabold text-ink">{guide.title || "수강신청 안내"}</h2>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        {guide.steps.map((step, index) => (
+          <div key={step.title} className="rounded-xl border border-line bg-cream/45 p-5">
+            <div className="flex items-center gap-3">
+              <span
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-black text-white"
+                style={{ background: color }}
+              >
+                {index + 1}
+              </span>
+              <h3 className="text-[15px] font-black text-ink">{step.title}</h3>
+            </div>
+            <p className="mt-3 text-[13px] leading-relaxed text-ink-soft">{step.description}</p>
+          </div>
+        ))}
+      </div>
+      {guide.notices?.length > 0 && (
+        <div className="mt-5 rounded-xl border border-line bg-paper p-4">
+          <p className="text-[13px] font-black text-ink">확인해 주세요</p>
+          <ul className="mt-2 space-y-1.5">
+            {guide.notices.map((notice) => (
+              <li key={notice} className="flex gap-2 text-[13px] leading-relaxed text-ink-soft">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: color }} />
+                {notice}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CourseBooksBlock({ books, color }) {
+  if (!books?.length) return null;
+
+  return (
+    <div className="rounded-2xl border border-line bg-paper p-7">
+      <h2 className="text-[20px] font-extrabold text-ink">강사 저서</h2>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        {books.map((book) => (
+          <div key={book.title} className="rounded-xl border border-line bg-cream/45 p-5">
+            <p className="text-[17px] font-black text-ink">{book.title}</p>
+            <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">{book.description}</p>
+            {book.tags?.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {book.tags.map((tag) => (
+                  <span key={tag} className="rounded-full px-3 py-1 text-[12px] font-extrabold" style={{ background: `${color}12`, color }}>
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RefundPolicyBlock({ policy, color }) {
+  if (!policy?.items?.length) return null;
+
+  return (
+    <div id="course-refund" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="text-[20px] font-extrabold text-ink">{policy.title || "환불정책"}</h2>
+          {policy.guarantee && (
+            <p className="mt-2 text-[15px] font-black leading-relaxed" style={{ color }}>
+              {policy.guarantee}
+            </p>
+          )}
+        </div>
+        <a
+          href="#faq-refund"
+          className="shrink-0 rounded-xl border border-line bg-cream px-4 py-2.5 text-[13px] font-black text-ink transition-colors hover:bg-paper"
+        >
+          환급 조건 FAQ
+        </a>
+      </div>
+      <ul className="mt-5 space-y-3">
+        {policy.items.map((item) => (
+          <li key={item} className="flex gap-3 rounded-xl bg-cream/45 p-4 text-[14px] leading-relaxed text-ink-soft">
+            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: color }} />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default async function CourseDetail({ params }) {
   const { id } = await params;
   const course = getCourse(id);
@@ -423,6 +572,8 @@ export default async function CourseDetail({ params }) {
               <p className="mt-3 text-[15px] leading-[1.85] text-ink-soft">{course.summary}</p>
             </div>
 
+            <BestReviewBlock course={course} color={color} />
+
             {/* ▸ 이런 걸 배웁니다 */}
             <div className="rounded-2xl border border-line bg-paper p-7">
               <h2 className="text-[20px] font-extrabold text-ink">이런 걸 배웁니다</h2>
@@ -442,6 +593,8 @@ export default async function CourseDetail({ params }) {
             </div>
 
             <ScheduleInfoCards course={course} color={color} />
+
+            <PurchaseGuideBlock guide={course.purchaseGuide} color={color} />
 
             {/* ▸ 라이브 수업 — 다음 수업 일정 하이라이트 */}
             {course.live && course.schedule && !course.scheduleOptions?.length && (
@@ -762,7 +915,7 @@ export default async function CourseDetail({ params }) {
             )}
 
             {/* ▸ Q&A */}
-            <div id="course-refund" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
+            <div id={course.refundPolicy ? undefined : "course-refund"} className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h2 className="text-[20px] font-extrabold text-ink">수업 관련 Q&A</h2>
@@ -891,6 +1044,10 @@ export default async function CourseDetail({ params }) {
                 )}
               </div>
             )}
+
+            <CourseBooksBlock books={course.books} color={color} />
+
+            <RefundPolicyBlock policy={course.refundPolicy} color={color} />
           </div>
 
           {/* ── STICKY SIDEBAR ──────────────────────────────── */}
