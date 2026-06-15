@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CourseShareButton from "@/components/CourseShareButton";
 import ScheduleCheckoutSelector from "@/components/ScheduleCheckoutSelector";
+import VideoReviewGrid from "@/components/VideoReviewGrid";
 import {
   COURSES,
   KDC_BIO,
@@ -597,6 +598,17 @@ export default async function CourseDetail({ params }) {
                 {course.socialProof.note && (
                   <p className="mt-4 text-[12px] leading-relaxed text-ink-soft">{course.socialProof.note}</p>
                 )}
+              </div>
+            )}
+
+            {/* ▸ 수강생 후기 */}
+            {course.studentReviews?.length > 0 && (
+              <div className="rounded-2xl border border-line bg-paper p-7">
+                <h2 className="text-[20px] font-extrabold text-ink">수강생 후기</h2>
+                <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
+                  실제 수강생들의 이야기 — 썸네일을 누르면 영상이 열립니다.
+                </p>
+                <VideoReviewGrid videos={course.studentReviews} color={color} />
               </div>
             )}
 
