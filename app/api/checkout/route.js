@@ -4,6 +4,7 @@ import { BANK } from "@/lib/company";
 import { getServiceClient } from "@/lib/supabase";
 import { EDU_SERVICE } from "@/lib/depositService";
 import { buildCourseGuidance } from "@/lib/courseGuidance";
+import { getSurveyUrl } from "@/lib/studentSurvey";
 
 function cleanPhone(value) {
   return String(value || "").replace(/[^\d]/g, "");
@@ -36,6 +37,7 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
   const phone = cleanPhone(buyer.phone);
   if (!phone) return { queued: false, error: "missing-phone" };
   const courseTitle = guidance?.courseTitle || course.checkoutTitle || course.title;
+  const surveyUrl = getSurveyUrl(order, process.env.NEXT_PUBLIC_SITE_URL);
 
   const deadline = new Date(validUntil).toLocaleString("ko-KR", {
     timeZone: "Asia/Seoul",
@@ -60,6 +62,7 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
     "수강생 단톡방 및 상세 안내를 문자로 보내드립니다.",
     "",
     `수강생 단톡방: ${guidance?.groupChatUrl || guidance?.groupChatLabel || "입금 완료 후 안내"}`,
+    `사전 질문지: ${surveyUrl}`,
     `카톡 문의: ${guidance?.inquiryUrl || course.inquiryUrl || "https://pf.kakao.com/_xkxdxgb/chat"}`,
     `주문번호: ${order}`,
     "",

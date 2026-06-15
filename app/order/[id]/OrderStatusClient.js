@@ -63,6 +63,7 @@ export default function OrderStatusClient({ initialOrder, bank }) {
   const display = useMemo(() => getDisplayStatus(order.status), [order.status]);
   const isPending = display.key === "pending";
   const inquiryUrl = order.guidance?.inquiryUrl || "https://pf.kakao.com/_xkxdxgb/chat";
+  const surveyUrl = `/survey/${encodeURIComponent(order.order_id)}`;
 
   useEffect(() => {
     let cancelled = false;
@@ -135,6 +136,16 @@ export default function OrderStatusClient({ initialOrder, bank }) {
               <CourseGuidanceBox guidance={order.guidance} />
             </div>
           ) : null}
+
+          <div className="mt-5 rounded-xl border border-line bg-cream/60 p-5">
+            <h2 className="text-[15px] font-black text-ink">수강생 사전 질문지</h2>
+            <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">
+              창업 유형, 예산, 관심 지역, 임장 가능 일정 등을 미리 알려주시면 수업·임장 준비에 반영합니다.
+            </p>
+            <Link href={surveyUrl} className="mt-4 inline-flex rounded-xl bg-brand px-4 py-3 text-[13px] font-black text-white">
+              사전 질문지 작성하기
+            </Link>
+          </div>
 
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/courses" className="rounded-xl bg-ink px-5 py-3 text-[14px] font-bold text-white">

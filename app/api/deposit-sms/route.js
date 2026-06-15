@@ -3,6 +3,7 @@ import { getServiceClient } from "@/lib/supabase";
 import { getEduAccountSuffix } from "@/lib/depositAccount";
 import { EDU_SERVICE } from "@/lib/depositService";
 import { mergeStoredGuidance } from "@/lib/courseGuidance";
+import { getSurveyUrl } from "@/lib/studentSurvey";
 
 function norm(v = "") {
   return String(v).replace(/\s/g, "").trim();
@@ -72,6 +73,7 @@ async function sendTelegram(text) {
 async function queueDepositConfirmedSms(supabase, { order, depositEvent, confirmedAt, guidance }) {
   const phone = cleanPhone(order.buyer_phone);
   if (!phone) return;
+  const surveyUrl = getSurveyUrl(order.order_id, process.env.NEXT_PUBLIC_SITE_URL);
 
   const message = [
     "[리바운드에듀]",
@@ -86,6 +88,9 @@ async function queueDepositConfirmedSms(supabase, { order, depositEvent, confirm
     "",
     "수강생 단톡방:",
     guidance?.groupChatUrl || guidance?.groupChatLabel || "개강 전 카카오톡으로 별도 안내드립니다.",
+    "",
+    "수강생 사전 질문지:",
+    surveyUrl,
     "",
     "수업 전 안내사항과 준비물은 단톡방을 통해 공지됩니다.",
     "장소 확인 및 문의가 필요하시면 아래 카톡으로 연락 주세요.",
