@@ -297,7 +297,7 @@ export default async function CourseDetail({ params }) {
             </div>
             {course.guaranteeNote && (
               <p className="mt-2 max-w-2xl text-[12px] font-semibold leading-relaxed text-white/78">
-                {course.guaranteeNote}
+                {course.guaranteeNote} · <a href="#faq-refund" className="underline underline-offset-2 hover:text-white">조건 자세히 보기</a>
               </p>
             )}
 
@@ -741,8 +741,10 @@ export default async function CourseDetail({ params }) {
                 </a>
               </div>
               <div className="mt-5 divide-y divide-line rounded-xl border border-line">
-                {faqs.map((f, i) => (
-                  <details key={i} className="group">
+                {faqs.map((f, i) => {
+                  const isRefundFaq = f.q.includes("100% 환급");
+                  return (
+                  <details key={i} id={isRefundFaq ? "faq-refund" : undefined} className="group scroll-mt-24">
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-[14px] font-bold text-ink">
                       {f.q}
                       <span
@@ -754,7 +756,8 @@ export default async function CourseDetail({ params }) {
                     </summary>
                     <div className="px-5 pb-5 text-[14px] leading-relaxed text-ink-soft">{f.a}</div>
                   </details>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -779,8 +782,8 @@ export default async function CourseDetail({ params }) {
                     </div>
                   )}
                   <div className="min-w-0">
-                    <p className="text-[17px] font-extrabold text-ink">{instructor.name}</p>
-                    <p className="mt-0.5 text-[13px] text-ink-soft">{instructor.title}</p>
+                    <p className="text-[17px] font-extrabold text-ink">{course.instructorCompactProfile?.name || instructor.name}</p>
+                    <p className="mt-0.5 text-[13px] text-ink-soft">{course.instructorCompactProfile?.role || instructor.title}</p>
                     {instructor.affiliation && (
                       <p className="mt-1 text-[13px] font-bold text-ink-soft">{instructor.affiliation}</p>
                     )}
@@ -796,10 +799,23 @@ export default async function CourseDetail({ params }) {
                         ))}
                       </div>
                     )}
-                    <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">{instructor.bio}</p>
+                    {course.instructorCompactProfile?.tagline && (
+                      <p className="mt-3 text-[13px] font-extrabold leading-relaxed text-ink">
+                        {course.instructorCompactProfile.tagline}
+                      </p>
+                    )}
+                    <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">
+                      {course.instructorCompactProfile?.bio || instructor.bio}
+                    </p>
                   </div>
                 </div>
-                {instructor.profileSections ? (
+                {course.instructorCompactProfile ? (
+                  course.revenueDisclaimer && (
+                    <p className="mt-4 text-[12px] font-semibold leading-relaxed text-ink-soft">
+                      {course.revenueDisclaimer}
+                    </p>
+                  )
+                ) : instructor.profileSections ? (
                   <>
                     <div className="mt-6 grid gap-3 sm:grid-cols-2">
                       {instructor.profileSections.map((section) => (
@@ -851,7 +867,7 @@ export default async function CourseDetail({ params }) {
                   </div>
                   {course.guaranteeNote && (
                     <p className="mt-1.5 text-[11px] font-semibold leading-relaxed text-green-800/75">
-                      {course.guaranteeNote}
+                      {course.guaranteeNote} · <a href="#faq-refund" className="underline underline-offset-2 hover:text-green-950">조건 자세히 보기</a>
                     </p>
                   )}
                 </div>
