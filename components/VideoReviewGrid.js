@@ -33,7 +33,7 @@ export default function VideoReviewGrid({ videos = [], color = "#14110f" }) {
             <div className="relative aspect-video bg-ink">
               <img
                 src={`https://img.youtube.com/vi/${v.id}/hqdefault.jpg`}
-                alt=""
+                alt={`${v.title} 후기 영상 썸네일`}
                 loading="lazy"
                 className="h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
               />
