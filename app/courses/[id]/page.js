@@ -518,18 +518,15 @@ export default async function CourseDetail({ params }) {
                 </span>
               )}
             </div>
-            {course.guaranteeNote && (
-              <p className="mt-2 max-w-2xl text-[12px] font-semibold leading-relaxed text-white/78">
-                {course.guaranteeNote} · <a href="#faq-refund" className="underline underline-offset-2 hover:text-white">조건 자세히 보기</a>
-              </p>
-            )}
 
             <h1 className="mt-5 max-w-3xl text-[30px] font-black leading-tight drop-shadow-[0_3px_18px_rgba(0,0,0,0.18)] sm:text-[42px]">
               {course.title}
             </h1>
-            <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-white/90 drop-shadow-[0_2px_14px_rgba(0,0,0,0.18)]">
-              {course.subtitle}
-            </p>
+            {course.subtitle && (
+              <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-white/90 drop-shadow-[0_2px_14px_rgba(0,0,0,0.18)]">
+                {course.subtitle}
+              </p>
+            )}
 
             {/* 핵심 정보 칩 */}
             {(scheduleWithDuration || placeLabel) && (
@@ -1102,11 +1099,6 @@ export default async function CourseDetail({ params }) {
                     <span className="text-[16px]">✅</span>
                     <span>{course.guarantee}{course.guaranteeNote ? " · 조건 있음" : ""}</span>
                   </div>
-                  {course.guaranteeNote && (
-                    <p className="mt-1.5 text-[11px] font-semibold leading-relaxed text-green-800/75">
-                      {course.guaranteeNote} · <a href="#faq-refund" className="underline underline-offset-2 hover:text-green-950">조건 자세히 보기</a>
-                    </p>
-                  )}
                 </div>
               )}
 
@@ -1189,7 +1181,6 @@ export default async function CourseDetail({ params }) {
                   ["상태", enrollmentStatus],
                   ...(course.schedule ? [["일정", course.scheduleShort || course.schedule]] : []),
                   ...(deliveryLabel ? [["방식", deliveryLabel]] : []),
-                  ...(course.format ? [["형태", course.format]] : []),
                   ...(course.duration ? [["시간", course.duration]] : []),
                   ...(!course.schedule && course.lessons > 0 ? [["강의 수", `총 ${course.lessons}강`]] : []),
                   ["강사", course.instructor],
