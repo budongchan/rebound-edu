@@ -1138,7 +1138,11 @@ export default async function CourseDetail({ params }) {
               )}
 
               {course.scheduleOptions?.length ? (
-                <ScheduleCheckoutSelector options={course.scheduleOptions} color={color} />
+                <ScheduleCheckoutSelector
+                  options={course.scheduleOptions}
+                  color={color}
+                  priceText={course.priceLabel || (course.free ? "무료" : formatPrice(course.price))}
+                />
               ) : (
                 <>
                   {course.cardPaymentUrl && (

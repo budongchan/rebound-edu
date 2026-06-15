@@ -4,9 +4,56 @@ import { BANK } from "@/lib/company";
 import { getServiceClient } from "@/lib/supabase";
 import { EDU_SERVICE } from "@/lib/depositService";
 import { buildCourseGuidance } from "@/lib/courseGuidance";
+import { getSurveyUrl } from "@/lib/studentSurvey";
 
 function cleanPhone(value) {
   return String(value || "").replace(/[^\d]/g, "");
+}
+
+function cleanText(value) {
+  return String(value || "").trim();
+}
+
+function fallbackEmailFromPhone(phone) {
+  const cleaned = cleanPhone(phone);
+  return `${cleaned || "unknown"}@no-email.rebound-edu.local`;
+}
+
+function normalizeReceipt(value) {
+  const type = cleanText(value?.type);
+  if (!["cash_receipt", "tax_invoice"].includes(type)) {
+    return { type: "", cashReceiptPhone: "", businessNumber: "", invoiceEmail: "" };
+  }
+
+  return {
+    type,
+    cashReceiptPhone: cleanText(value?.cashReceiptPhone),
+    businessNumber: cleanText(value?.businessNumber),
+    invoiceEmail: cleanText(value?.invoiceEmail),
+  };
+}
+
+function buildReceiptLabel(receipt) {
+  if (receipt.type === "tax_invoice") return "세금계산서";
+  if (receipt.type === "cash_receipt") return "현금영수증";
+  return "미선택";
+}
+
+function buildReceiptTelegramLines(receipt) {
+  if (receipt.type === "tax_invoice") {
+    return [
+      "증빙: 세금계산서",
+      `사업자등록번호: ${receipt.businessNumber}`,
+      `계산서 이메일: ${receipt.invoiceEmail}`,
+    ];
+  }
+  if (receipt.type === "cash_receipt") {
+    return [
+      "증빙: 현금영수증",
+      `현금영수증 번호: ${receipt.cashReceiptPhone}`,
+    ];
+  }
+  return ["증빙: 미선택"];
 }
 
 function getSelectedScheduleOption(course, optionId) {
@@ -32,10 +79,11 @@ function getSelectedCourseTitle(course, selectedScheduleOption) {
   return selectedScheduleOption ? `${baseTitle} · ${selectedScheduleOption.label}` : baseTitle;
 }
 
-async function queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil, guidance }) {
+async function queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil, guidance, receipt }) {
   const phone = cleanPhone(buyer.phone);
   if (!phone) return { queued: false, error: "missing-phone" };
   const courseTitle = guidance?.courseTitle || course.checkoutTitle || course.title;
+  const surveyUrl = getSurveyUrl(order, process.env.NEXT_PUBLIC_SITE_URL);
 
   const deadline = new Date(validUntil).toLocaleString("ko-KR", {
     timeZone: "Asia/Seoul",
@@ -60,6 +108,7 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
     "수강생 단톡방 및 상세 안내를 문자로 보내드립니다.",
     "",
     `수강생 단톡방: ${guidance?.groupChatUrl || guidance?.groupChatLabel || "입금 완료 후 안내"}`,
+    `사전 질문지: ${surveyUrl}`,
     `카톡 문의: ${guidance?.inquiryUrl || course.inquiryUrl || "https://pf.kakao.com/_xkxdxgb/chat"}`,
     `주문번호: ${order}`,
     "",
@@ -79,7 +128,13 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
       target_table: EDU_SERVICE.targetTable,
       order_id: order,
       dedupe_key: `edu:checkout:${order}`,
-      metadata: { source: "checkout", buyer_name: buyer.name.trim() },
+      metadata: {
+        source: "checkout",
+        buyer_name: buyer.name.trim(),
+        receipt_type: receipt?.type || null,
+        receipt_label: buildReceiptLabel(receipt || {}),
+        receipt,
+      },
     }]);
     if (error) {
       console.error("edu checkout sms queue failed", error);
@@ -105,7 +160,7 @@ async function sendTelegram(text) {
   }).catch(() => {});
 }
 
-async function insertOrderWithGuidance(supabase, orderRow, guidance) {
+async function insertOrderWithGuidance(supabase, orderRow, guidance, optionalOrderFields = {}, fallbackOrderFields = {}) {
   const rowWithGuidance = {
     ...orderRow,
     course_schedule: guidance.schedule || null,
@@ -115,19 +170,31 @@ async function insertOrderWithGuidance(supabase, orderRow, guidance) {
     course_group_chat_url: guidance.groupChatUrl || null,
     course_inquiry_url: guidance.inquiryUrl || null,
   };
+  const rowWithGuidanceAndOptional = {
+    ...rowWithGuidance,
+    ...optionalOrderFields,
+  };
 
-  const { error } = await supabase.from("edu_orders").insert([rowWithGuidance]);
+  const { error } = await supabase.from("edu_orders").insert([rowWithGuidanceAndOptional]);
   if (!error) return { error: null };
 
   const message = `${error.message || ""} ${error.details || ""}`.toLowerCase();
-  const missingGuidanceColumn =
-    message.includes("course_") ||
+  const missingColumn =
     message.includes("schema cache") ||
     message.includes("column");
 
-  if (!missingGuidanceColumn) return { error };
+  if (!missingColumn) return { error };
 
-  console.warn("edu order guidance columns unavailable, retrying base insert", error);
+  console.warn("edu order optional/guidance columns unavailable, retrying with fallback fields", error);
+  const retryGuidance = await supabase.from("edu_orders").insert([{ ...rowWithGuidance, ...fallbackOrderFields }]);
+  if (!retryGuidance.error) return { error: null };
+
+  const retryMessage = `${retryGuidance.error.message || ""} ${retryGuidance.error.details || ""}`.toLowerCase();
+  if (!retryMessage.includes("schema cache") && !retryMessage.includes("column")) {
+    return { error: retryGuidance.error };
+  }
+
+  console.warn("edu order guidance columns unavailable, retrying base insert", retryGuidance.error);
   return supabase.from("edu_orders").insert([orderRow]);
 }
 
@@ -154,11 +221,13 @@ export async function POST(req) {
   if (!course) {
     return NextResponse.json({ status: "error", message: "존재하지 않는 강의입니다." }, { status: 404 });
   }
-  if (!buyer?.name || !buyer?.email || !buyer?.phone) {
+  if (!buyer?.name || !buyer?.phone) {
     return NextResponse.json({ status: "error", message: "주문자 정보를 모두 입력해 주세요." }, { status: 400 });
   }
+  const receipt = normalizeReceipt(body?.receipt);
   const order = orderNo();
   const depositorName = buyer.depositName?.trim() || buyer.name.trim();
+  const buyerEmail = cleanText(buyer.email) || fallbackEmailFromPhone(buyer.phone);
   const now = new Date();
   const validUntil = new Date(now.getTime() + EDU_SERVICE.validHours * 3600 * 1000).toISOString();
   const selectedScheduleOption = getSelectedScheduleOption(course, scheduleOptionId);
@@ -178,6 +247,16 @@ export async function POST(req) {
     });
   }
 
+  if (!receipt.type) {
+    return NextResponse.json({ status: "error", message: "증빙 발급 방식을 선택해 주세요." }, { status: 400 });
+  }
+  if (receipt.type === "cash_receipt" && !receipt.cashReceiptPhone) {
+    return NextResponse.json({ status: "error", message: "현금영수증 발급용 번호를 입력해 주세요." }, { status: 400 });
+  }
+  if (receipt.type === "tax_invoice" && (!receipt.businessNumber || !receipt.invoiceEmail)) {
+    return NextResponse.json({ status: "error", message: "세금계산서 발급 정보를 입력해 주세요." }, { status: 400 });
+  }
+
   // 유료 강의는 주문 저장이 되어야 입금 알림과 자동 매칭할 수 있다.
   const supabase = getServiceClient();
   if (!supabase) {
@@ -192,18 +271,38 @@ export async function POST(req) {
   }
 
   try {
+    const taxInvoiceFields = receipt.type === "tax_invoice"
+      ? {
+          tax_invoice_requested: true,
+          tax_invoice_business_number: receipt.businessNumber,
+          tax_invoice_email: receipt.invoiceEmail,
+          tax_invoice_requested_at: now.toISOString(),
+        }
+      : {};
+    const optionalOrderFields = receipt.type === "tax_invoice"
+      ? {
+          ...taxInvoiceFields,
+          receipt_type: receipt.type,
+          receipt_payload: receipt,
+        }
+      : {
+          receipt_type: receipt.type,
+          receipt_payload: receipt,
+          cash_receipt_phone: receipt.cashReceiptPhone,
+        };
+
     const { error } = await insertOrderWithGuidance(supabase, {
       order_id: order,
       course_id: course.id,
       course_title: courseTitle,
       amount: course.price,
       buyer_name: buyer.name.trim(),
-      buyer_email: buyer.email.trim(),
+      buyer_email: buyerEmail,
       buyer_phone: buyer.phone.trim(),
       depositor_name: depositorName,
       status: "입금대기",
       deposit_valid_until: validUntil,
-    }, guidance);
+    }, guidance, optionalOrderFields, taxInvoiceFields);
 
     if (error) {
       console.error("edu order insert failed", error);
@@ -228,7 +327,7 @@ export async function POST(req) {
     );
   }
 
-  const smsResult = await queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil, guidance });
+  const smsResult = await queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil, guidance, receipt });
   await sendTelegram(
     [
       "[수강신청]",
@@ -240,6 +339,7 @@ export async function POST(req) {
       `연락처: ${cleanPhone(buyer.phone) || buyer.phone.trim()}`,
       `입금자명: ${depositorName}`,
       `금액: ${formatPrice(course.price)}`,
+      ...buildReceiptTelegramLines(receipt),
       `입금기한: ${new Date(validUntil).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}`,
       `고객문자: ${smsResult.queued ? "큐 등록 완료" : `큐 실패(${smsResult.error || "-"})`}`,
       `상태조회: https://edu.rebound.io.kr/order/${order}`,

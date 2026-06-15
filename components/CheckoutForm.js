@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { formatPrice } from "@/lib/courses";
 import { COMPANY, BANK } from "@/lib/company";
 import { getSupabaseBrowser } from "@/lib/supabase-browser";
-import ReceiptRequestBox from "@/components/ReceiptRequestBox";
 import CourseGuidanceBox from "@/components/CourseGuidanceBox";
 
 function formatValidUntil(iso) {
@@ -19,11 +18,23 @@ function formatValidUntil(iso) {
   return `${mm}/${dd} ${hh}:${mi}까지`;
 }
 
+function formatCompactPrice(price) {
+  const amount = Number(price || 0);
+  if (amount > 0 && amount % 10000 === 0) return `${amount / 10000}만원`;
+  return formatPrice(amount);
+}
+
 export default function CheckoutForm({ course, selectedScheduleOption = null }) {
   const pathname = usePathname();
   const [authChecked, setAuthChecked] = useState(false);
   const [user, setUser] = useState(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "", depositName: "" });
+  const [receipt, setReceipt] = useState({
+    type: "cash_receipt",
+    cashReceiptPhone: "",
+    businessNumber: "",
+    invoiceEmail: "",
+  });
   const [agree, setAgree] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | loading | bank | done | error
   const [message, setMessage] = useState("");
@@ -72,13 +83,20 @@ export default function CheckoutForm({ course, selectedScheduleOption = null }) 
     ? `${course.checkoutTitle || course.title} · ${selectedScheduleOption.label}`
     : course.checkoutTitle || course.title;
   const courseDetailHref = `/courses/${course.parentCourseId || course.id}`;
+  const isTaxInvoice = receipt.type === "tax_invoice";
+  const receiptValid =
+    isFree ||
+    (isTaxInvoice
+      ? receipt.businessNumber.trim() && /\S+@\S+\.\S+/.test(receipt.invoiceEmail)
+      : (receipt.cashReceiptPhone.trim() || form.phone.trim()));
   const valid =
     form.name.trim() &&
-    /\S+@\S+\.\S+/.test(form.email) &&
     form.phone.trim() &&
+    receiptValid &&
     agree;
 
   function update(k, v) { setForm((f) => ({ ...f, [k]: v })); }
+  function updateReceipt(k, v) { setReceipt((r) => ({ ...r, [k]: v })); }
   function updateTax(k, v) { setTaxForm((f) => ({ ...f, [k]: v })); }
 
   async function handleSubmit(e) {
@@ -89,7 +107,18 @@ export default function CheckoutForm({ course, selectedScheduleOption = null }) 
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courseId: course.id, scheduleOptionId: selectedScheduleOption?.id, buyer: form }),
+        body: JSON.stringify({
+          courseId: course.id,
+          scheduleOptionId: selectedScheduleOption?.id,
+          buyer: {
+            ...form,
+            email: form.email || user?.email || "",
+          },
+          receipt: isFree ? null : {
+            ...receipt,
+            cashReceiptPhone: receipt.cashReceiptPhone || form.phone,
+          },
+        }),
       });
       const data = await res.json();
       if (data.status === "free_enrolled") {
@@ -387,14 +416,6 @@ export default function CheckoutForm({ course, selectedScheduleOption = null }) 
             · 은행 입금 알림이 시스템에 수신되면 아래 버튼으로 입금 확인이 가능합니다.
           </p>
 
-          <div className="mt-5">
-            <ReceiptRequestBox
-              orderId={order.order}
-              defaultEmail={form.email}
-              defaultPhone={form.phone}
-            />
-          </div>
-
           <p className="mt-3 text-center text-[12px] text-ink-soft">
             나중에 확인하려면{" "}
             <Link href={`/order/${order.order}`} className="font-semibold text-ink underline underline-offset-2">
@@ -451,7 +472,6 @@ export default function CheckoutForm({ course, selectedScheduleOption = null }) 
           <h2 className="text-[18px] font-extrabold text-ink">주문자 정보</h2>
           <div className="mt-5 space-y-4">
             <Field label="이름" value={form.name} onChange={(v) => update("name", v)} placeholder="홍길동" />
-            <Field label="이메일" type="email" value={form.email} onChange={(v) => update("email", v)} placeholder="example@email.com" />
             <Field label="연락처" value={form.phone} onChange={(v) => update("phone", v)} placeholder="010-0000-0000" />
             {!isFree && (
               <Field
@@ -463,9 +483,17 @@ export default function CheckoutForm({ course, selectedScheduleOption = null }) 
             )}
           </div>
           <p className="mt-3 text-[12px] text-ink-soft/80">
-            {user ? `${user.email} 계정으로 로그인되어 있습니다.` : "강의 수강 안내와 입금 확인에 사용됩니다."}
+            강의 수강 안내와 입금 확인에 사용됩니다.
           </p>
         </div>
+
+        {!isFree && (
+          <ReceiptFields
+            receipt={receipt}
+            formPhone={form.phone}
+            onChange={updateReceipt}
+          />
+        )}
 
         <div className="rounded-2xl border border-line bg-paper p-7">
           <label className="flex cursor-pointer items-start gap-3">
@@ -495,7 +523,6 @@ export default function CheckoutForm({ course, selectedScheduleOption = null }) 
           <h2 className="text-[16px] font-extrabold text-ink">주문 요약</h2>
           <div className="mt-4 border-t border-line pt-4">
             <div className="text-[14px] font-bold text-ink">{courseTitle}</div>
-            <div className="mt-1 text-[13px] text-ink-soft">{course.subtitle}</div>
             {course.schedule && (
               <div className="mt-2 rounded-lg bg-cream px-3 py-2 text-[12px] font-semibold text-ink-soft">
                 {selectedScheduleOption
@@ -515,7 +542,7 @@ export default function CheckoutForm({ course, selectedScheduleOption = null }) 
             ) : null}
             <div className="flex items-baseline justify-between border-t border-line pt-3">
               <dt className="text-[14px] font-bold text-ink">{isFree ? "수강료" : "입금 금액"}</dt>
-              <dd className="text-[22px] font-black text-ink">{formatPrice(course.price)}</dd>
+              <dd className="text-[22px] font-black text-ink">{formatCompactPrice(course.price)}</dd>
             </div>
           </dl>
           <button
@@ -523,7 +550,7 @@ export default function CheckoutForm({ course, selectedScheduleOption = null }) 
             disabled={!valid || status === "loading"}
             className="mt-5 w-full rounded-xl bg-brand px-5 py-3.5 text-[15px] font-bold text-white transition-all enabled:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {status === "loading" ? "처리 중…" : isFree ? "무료 신청하기" : "계좌이체로 신청하기"}
+            {status === "loading" ? "처리 중…" : isFree ? "무료 신청하기" : `${formatCompactPrice(course.price)} 계좌이체로 신청하기`}
           </button>
           <p className="mt-3 text-center text-[12px] text-ink-soft/80">
             {isFree ? "로그인 없이 바로 신청됩니다." : "신청 후 입금 계좌가 안내됩니다."}
@@ -549,6 +576,81 @@ function Row({ label, value, strong, mono }) {
       <span className={`${strong ? "text-[15px] font-black text-ink" : "text-[14px] font-semibold text-ink"} ${mono ? "font-mono" : ""}`}>
         {value}
       </span>
+    </div>
+  );
+}
+
+function ReceiptFields({ receipt, formPhone, onChange }) {
+  const isTaxInvoice = receipt.type === "tax_invoice";
+
+  return (
+    <div className="rounded-2xl border border-line bg-paper p-7">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="text-[18px] font-extrabold text-ink">증빙 발급 정보</h2>
+          <p className="mt-1 text-[13px] leading-relaxed text-ink-soft">
+            입금 확인 후 선택하신 방식으로 현금영수증 또는 세금계산서를 발급합니다.
+          </p>
+        </div>
+        <span className="mt-2 w-fit rounded-full bg-cream px-3 py-1 text-[11px] font-bold text-ink-soft sm:mt-0">
+          계좌이체 전용
+        </span>
+      </div>
+
+      <div className="mt-5 grid grid-cols-2 gap-2 rounded-xl bg-cream/60 p-1.5">
+        {[
+          ["cash_receipt", "현금영수증"],
+          ["tax_invoice", "세금계산서"],
+        ].map(([value, label]) => {
+          const selected = receipt.type === value;
+          return (
+            <button
+              key={value}
+              type="button"
+              onClick={() => onChange("type", value)}
+              className={`rounded-lg px-3 py-2.5 text-[13px] font-bold transition-colors ${
+                selected ? "bg-ink text-white shadow-sm" : "text-ink-soft hover:text-ink"
+              }`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-4 space-y-3">
+        {isTaxInvoice ? (
+          <>
+            <Field
+              key="receipt-business-number"
+              label="사업자등록번호"
+              value={receipt.businessNumber}
+              onChange={(v) => onChange("businessNumber", v)}
+              placeholder="000-00-00000"
+            />
+            <Field
+              key="receipt-invoice-email"
+              label="세금계산서 수신 이메일"
+              type="email"
+              value={receipt.invoiceEmail}
+              onChange={(v) => onChange("invoiceEmail", v)}
+              placeholder="tax@example.com"
+            />
+          </>
+        ) : (
+          <Field
+            key="receipt-cash-phone"
+            label="현금영수증 발급용 휴대폰번호"
+            value={receipt.cashReceiptPhone}
+            onChange={(v) => onChange("cashReceiptPhone", v)}
+            placeholder={formPhone || "010-0000-0000"}
+          />
+        )}
+      </div>
+
+      <p className="mt-3 text-[12px] leading-relaxed text-ink-soft/80">
+        개인 수강생은 현금영수증, 사업자·법인 수강생은 세금계산서를 선택해 주세요.
+      </p>
     </div>
   );
 }

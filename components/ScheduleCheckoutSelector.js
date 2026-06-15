@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 
-export default function ScheduleCheckoutSelector({ options = [], color = "#14110f", compact = false }) {
+export default function ScheduleCheckoutSelector({ options = [], color = "#14110f", compact = false, priceText = "" }) {
   const initialId = options[0]?.id || "";
   const [selectedId, setSelectedId] = useState(initialId);
   const selected = useMemo(
@@ -25,7 +25,7 @@ export default function ScheduleCheckoutSelector({ options = [], color = "#14110
         >
           {options.map((option) => (
             <option key={option.id} value={option.id}>
-              {option.label} · {option.weekday}
+              {option.label} ({option.weekday})
             </option>
           ))}
         </select>
@@ -34,7 +34,7 @@ export default function ScheduleCheckoutSelector({ options = [], color = "#14110
           className="shrink-0 rounded-xl px-4 py-3 text-[13px] font-black text-white"
           style={{ background: color }}
         >
-          신청하기
+          {priceText ? `${priceText} 신청하기` : "신청하기"}
         </Link>
       </div>
     );
@@ -84,7 +84,7 @@ export default function ScheduleCheckoutSelector({ options = [], color = "#14110
         className="mt-4 block rounded-xl px-5 py-4 text-center text-[15px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5"
         style={{ background: color, boxShadow: `0 8px 24px -8px ${color}80` }}
       >
-        수강 신청하기
+        {priceText ? `${priceText} 수강 신청하기` : "수강 신청하기"}
       </Link>
       <p className="mt-2.5 text-center text-[12px] text-ink-soft/70">
         선택한 요일 기준으로 결제 안내가 열립니다.
