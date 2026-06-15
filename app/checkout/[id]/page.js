@@ -16,15 +16,28 @@ export async function generateMetadata({ params }) {
   return { title: course ? `${isFree ? "무료 신청" : "수강 신청"} · ${course.title}` : "수강 신청" };
 }
 
-export default async function CheckoutPage({ params }) {
+export default async function CheckoutPage({ params, searchParams }) {
   const { id } = await params;
+  const query = await searchParams;
   const course = getCourse(id);
   if (!course) notFound();
   if (course.redirectTo) {
-    redirect(course.redirectTo.replace("/courses/", "/checkout/"));
+    const scheduleQuery = id === "hostel-live-thu" ? "?schedule=thu" : "";
+    redirect(`${course.redirectTo.replace("/courses/", "/checkout/")}${scheduleQuery}`);
   }
+  const selectedScheduleOption =
+    course.scheduleOptions?.find((option) => option.id === query?.schedule) ||
+    course.scheduleOptions?.find((option) => option.id === "sat") ||
+    course.scheduleOptions?.[0] ||
+    null;
   const backCourseId = course.parentCourseId || course.id;
   const title = course.checkoutTitle || course.title;
+  const displayTitle = selectedScheduleOption ? `${title} · ${selectedScheduleOption.label}` : title;
+  const displaySchedule = selectedScheduleOption
+    ? `${selectedScheduleOption.schedule} · ${selectedScheduleOption.place}`
+    : course.place
+      ? `${course.schedule} · ${course.place}`
+      : course.schedule;
 
   return (
     <>
@@ -43,16 +56,16 @@ export default async function CheckoutPage({ params }) {
               : "신청 정보를 입력하면 입금 계좌를 안내해 드립니다."}
           </p>
           <div className="mt-5 rounded-2xl border border-line bg-paper p-5">
-            <p className="text-[15px] font-black text-ink">{title}</p>
-            {course.schedule && (
+            <p className="text-[15px] font-black text-ink">{displayTitle}</p>
+            {displaySchedule && (
               <p className="mt-1.5 text-[13px] font-semibold text-ink-soft">
-                {course.place ? `${course.schedule} · ${course.place}` : course.schedule}
+                {displaySchedule}
               </p>
             )}
           </div>
 
           <div className="mt-9">
-            <CheckoutForm course={course} />
+            <CheckoutForm course={course} selectedScheduleOption={selectedScheduleOption} />
           </div>
         </section>
       </main>

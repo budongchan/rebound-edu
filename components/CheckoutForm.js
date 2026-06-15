@@ -19,7 +19,7 @@ function formatValidUntil(iso) {
   return `${mm}/${dd} ${hh}:${mi}까지`;
 }
 
-export default function CheckoutForm({ course }) {
+export default function CheckoutForm({ course, selectedScheduleOption = null }) {
   const pathname = usePathname();
   const [authChecked, setAuthChecked] = useState(false);
   const [user, setUser] = useState(null);
@@ -68,7 +68,9 @@ export default function CheckoutForm({ course }) {
   }, []);
 
   const isFree = course.free || course.price === 0;
-  const courseTitle = course.checkoutTitle || course.title;
+  const courseTitle = selectedScheduleOption
+    ? `${course.checkoutTitle || course.title} · ${selectedScheduleOption.label}`
+    : course.checkoutTitle || course.title;
   const courseDetailHref = `/courses/${course.parentCourseId || course.id}`;
   const valid =
     form.name.trim() &&
@@ -87,7 +89,7 @@ export default function CheckoutForm({ course }) {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courseId: course.id, buyer: form }),
+        body: JSON.stringify({ courseId: course.id, scheduleOptionId: selectedScheduleOption?.id, buyer: form }),
       });
       const data = await res.json();
       if (data.status === "free_enrolled") {
@@ -207,7 +209,7 @@ export default function CheckoutForm({ course }) {
         <div className="mt-4 rounded-xl bg-cream/80 p-4 text-left">
           <p className="text-[13px] font-bold text-ink">{courseTitle}</p>
           {(course.scheduleShort || course.schedule) && (
-            <p className="text-[12px] text-ink-soft">{course.scheduleShort || course.schedule}</p>
+            <p className="text-[12px] text-ink-soft">{selectedScheduleOption?.schedule || course.scheduleShort || course.schedule}</p>
           )}
           <p className="mt-2 text-[16px] font-black text-ink">{formatPrice(course.price)}</p>
         </div>
@@ -496,7 +498,11 @@ export default function CheckoutForm({ course }) {
             <div className="mt-1 text-[13px] text-ink-soft">{course.subtitle}</div>
             {course.schedule && (
               <div className="mt-2 rounded-lg bg-cream px-3 py-2 text-[12px] font-semibold text-ink-soft">
-                {course.place ? `${course.schedule} · ${course.place}` : course.schedule}
+                {selectedScheduleOption
+                  ? `${selectedScheduleOption.schedule} · ${selectedScheduleOption.place}`
+                  : course.place
+                    ? `${course.schedule} · ${course.place}`
+                    : course.schedule}
               </div>
             )}
           </div>

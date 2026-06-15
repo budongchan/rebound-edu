@@ -9,10 +9,33 @@ function cleanPhone(value) {
   return String(value || "").replace(/[^\d]/g, "");
 }
 
+function getSelectedScheduleOption(course, optionId) {
+  if (!course?.scheduleOptions?.length) return null;
+  return (
+    course.scheduleOptions.find((option) => option.id === optionId) ||
+    course.scheduleOptions.find((option) => option.id === "sat") ||
+    course.scheduleOptions[0]
+  );
+}
+
+function buildSelectedGuidance(course, guidance, selectedScheduleOption) {
+  if (!selectedScheduleOption) return guidance;
+  return {
+    ...guidance,
+    schedule: selectedScheduleOption.schedule || guidance.schedule,
+    locationName: selectedScheduleOption.place || guidance.locationName,
+  };
+}
+
+function getSelectedCourseTitle(course, selectedScheduleOption) {
+  const baseTitle = course.checkoutTitle || course.title;
+  return selectedScheduleOption ? `${baseTitle} · ${selectedScheduleOption.label}` : baseTitle;
+}
+
 async function queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil, guidance }) {
   const phone = cleanPhone(buyer.phone);
   if (!phone) return { queued: false, error: "missing-phone" };
-  const courseTitle = course.checkoutTitle || course.title;
+  const courseTitle = guidance?.courseTitle || course.checkoutTitle || course.title;
 
   const deadline = new Date(validUntil).toLocaleString("ko-KR", {
     timeZone: "Asia/Seoul",
@@ -125,7 +148,7 @@ export async function POST(req) {
     return NextResponse.json({ status: "error", message: "잘못된 요청입니다." }, { status: 400 });
   }
 
-  const { courseId, buyer } = body || {};
+  const { courseId, scheduleOptionId, buyer } = body || {};
   const course = getCourse(courseId);
 
   if (!course) {
@@ -138,7 +161,14 @@ export async function POST(req) {
   const depositorName = buyer.depositName?.trim() || buyer.name.trim();
   const now = new Date();
   const validUntil = new Date(now.getTime() + EDU_SERVICE.validHours * 3600 * 1000).toISOString();
-  const guidance = buildCourseGuidance(course);
+  const selectedScheduleOption = getSelectedScheduleOption(course, scheduleOptionId);
+  const courseTitle = getSelectedCourseTitle(course, selectedScheduleOption);
+  const guidance = {
+    ...buildSelectedGuidance(course, buildCourseGuidance(course), selectedScheduleOption),
+    courseTitle,
+    scheduleOptionId: selectedScheduleOption?.id || null,
+    scheduleOptionLabel: selectedScheduleOption?.label || null,
+  };
 
   // 무료 강의 — 즉시 신청
   if (course.free || course.price === 0) {
@@ -162,7 +192,6 @@ export async function POST(req) {
   }
 
   try {
-    const courseTitle = course.checkoutTitle || course.title;
     const { error } = await insertOrderWithGuidance(supabase, {
       order_id: order,
       course_id: course.id,
@@ -204,7 +233,8 @@ export async function POST(req) {
     [
       "[수강신청]",
       `플랫폼: ${EDU_SERVICE.platform}`,
-      `신청수업: ${course.checkoutTitle || course.title}`,
+      `신청수업: ${courseTitle}`,
+      selectedScheduleOption ? `선택요일: ${selectedScheduleOption.weekday}` : null,
       `주문번호: ${order}`,
       `신청자: ${buyer.name.trim()}`,
       `연락처: ${cleanPhone(buyer.phone) || buyer.phone.trim()}`,
@@ -213,7 +243,7 @@ export async function POST(req) {
       `입금기한: ${new Date(validUntil).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}`,
       `고객문자: ${smsResult.queued ? "큐 등록 완료" : `큐 실패(${smsResult.error || "-"})`}`,
       `상태조회: https://edu.rebound.io.kr/order/${order}`,
-    ].join("\n")
+    ].filter(Boolean).join("\n")
   );
 
   // 유료 강의 — 무통장입금 안내
@@ -229,7 +259,7 @@ export async function POST(req) {
       holder: BANK.holder,
     },
     depositName: depositorName,
-    courseTitle: course.checkoutTitle || course.title,
+    courseTitle,
     guidance,
     service: EDU_SERVICE.id,
     persisted: true,
