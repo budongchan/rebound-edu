@@ -68,6 +68,20 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
   }
 }
 
+async function sendTelegram(text) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.OFFICE_DEPOSIT_ALERT_CHAT_ID;
+  const topicId = process.env.OFFICE_DEPOSIT_ALERT_TOPIC_ID;
+  if (!token || !chatId) return;
+  const body = { chat_id: chatId, text, disable_web_page_preview: true };
+  if (topicId) body.message_thread_id = Number(topicId);
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  }).catch(() => {});
+}
+
 async function insertOrderWithGuidance(supabase, orderRow, guidance) {
   const rowWithGuidance = {
     ...orderRow,
@@ -186,6 +200,21 @@ export async function POST(req) {
   }
 
   const smsResult = await queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil, guidance });
+  await sendTelegram(
+    [
+      "[수강신청]",
+      `플랫폼: ${EDU_SERVICE.platform}`,
+      `신청수업: ${course.checkoutTitle || course.title}`,
+      `주문번호: ${order}`,
+      `신청자: ${buyer.name.trim()}`,
+      `연락처: ${cleanPhone(buyer.phone) || buyer.phone.trim()}`,
+      `입금자명: ${depositorName}`,
+      `금액: ${formatPrice(course.price)}`,
+      `입금기한: ${new Date(validUntil).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}`,
+      `고객문자: ${smsResult.queued ? "큐 등록 완료" : `큐 실패(${smsResult.error || "-"})`}`,
+      `상태조회: https://edu.rebound.io.kr/order/${order}`,
+    ].join("\n")
+  );
 
   // 유료 강의 — 무통장입금 안내
   return NextResponse.json({
