@@ -552,7 +552,7 @@ export default function CheckoutForm({ course, selectedScheduleOption = null }) 
             disabled={!valid || status === "loading"}
             className="mt-5 w-full rounded-xl bg-brand px-5 py-3.5 text-[15px] font-bold text-white transition-all enabled:hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {status === "loading" ? "처리 중…" : isFree ? "무료 신청하기" : `${formatCompactPrice(course.price)} 계좌이체로 신청하기`}
+            {status === "loading" ? "처리 중…" : isFree ? "무료 신청하기" : "결제하기"}
           </button>
           <p className="mt-3 text-center text-[12px] text-ink-soft/80">
             {isFree ? "로그인 없이 바로 신청됩니다." : "신청 후 입금 계좌가 안내됩니다."}
