@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { formatPrice } from "@/lib/courses";
 import { COMPANY, BANK } from "@/lib/company";
 import { getSupabaseBrowser } from "@/lib/supabase-browser";
@@ -26,6 +26,8 @@ function formatCompactPrice(price) {
 
 export default function CheckoutForm({ course, selectedScheduleOption = null }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentPath = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
   const [authChecked, setAuthChecked] = useState(false);
   const [user, setUser] = useState(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "", depositName: "" });
@@ -243,7 +245,7 @@ export default function CheckoutForm({ course, selectedScheduleOption = null }) 
           <p className="mt-2 text-[16px] font-black text-ink">{formatCompactPrice(course.price)}</p>
         </div>
         <Link
-          href={`/login?next=${encodeURIComponent(pathname)}`}
+          href={`/login?next=${encodeURIComponent(currentPath)}`}
           className="mt-6 block rounded-xl bg-brand px-5 py-3.5 text-[15px] font-bold text-white transition-transform hover:-translate-y-0.5"
         >
           {isFree ? "Google로 로그인 후 무료 신청하기" : "Google로 로그인 후 신청하기"}

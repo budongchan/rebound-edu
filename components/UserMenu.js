@@ -10,8 +10,10 @@ export default function UserMenu() {
   const pathname = usePathname();
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
+    setSearch(window.location.search || "");
     const sb = getSupabaseBrowser();
     if (!sb) return;
     sb.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
@@ -30,7 +32,8 @@ export default function UserMenu() {
   }
 
   if (!user) {
-    const loginHref = `/login?next=${encodeURIComponent(pathname)}`;
+    const currentPath = `${pathname}${search}`;
+    const loginHref = `/login?next=${encodeURIComponent(currentPath)}`;
 
     return (
       <Link
