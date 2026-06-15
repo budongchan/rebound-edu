@@ -26,9 +26,29 @@ export async function generateMetadata({ params }) {
   const { id } = await params;
   const course = getCourse(id);
   if (!course) return { title: "강의를 찾을 수 없습니다" };
+  const title = `${course.title} | 리바운드 에듀`;
+  const description = course.tagline || course.subtitle || course.summary?.slice(0, 150);
+  const image = course.ogImage || `/courses/assets/course-pages/${course.id}.png`;
+  const url = `/courses/${course.redirectTo ? course.redirectTo.split("/").pop() : course.id}`;
   return {
-    title: `${course.title} | 리바운드 에듀`,
-    description: course.summary?.slice(0, 150),
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: "리바운드에듀",
+      locale: "ko_KR",
+      type: "website",
+      images: [{ url: image, width: 1200, height: 630, alt: `${course.title} 대표 이미지` }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
   };
 }
 
@@ -271,10 +291,15 @@ export default async function CourseDetail({ params }) {
               )}
               {course.guarantee && (
                 <span className="rounded-full bg-green-400/90 px-3 py-1 text-[12px] font-black text-green-900">
-                  ✅ {course.guarantee}
+                  ✅ {course.guarantee}{course.guaranteeNote ? " · 조건 있음" : ""}
                 </span>
               )}
             </div>
+            {course.guaranteeNote && (
+              <p className="mt-2 max-w-2xl text-[12px] font-semibold leading-relaxed text-white/78">
+                {course.guaranteeNote}
+              </p>
+            )}
 
             <h1 className="mt-5 max-w-3xl text-[30px] font-black leading-tight drop-shadow-[0_3px_18px_rgba(0,0,0,0.18)] sm:text-[42px]">
               {course.title}
@@ -317,7 +342,7 @@ export default async function CourseDetail({ params }) {
                 {instructor.photo ? (
                   <img
                     src={instructor.photo}
-                    alt={instructor.name}
+                    alt={`${instructor.name} 강사 프로필`}
                     className="h-14 w-14 shrink-0 rounded-full border-2 border-white/45 object-cover"
                     loading="eager"
                   />
@@ -456,6 +481,11 @@ export default async function CourseDetail({ params }) {
                       </li>
                     ))}
                   </ul>
+                  {course.revenueDisclaimer && (
+                    <p className="mt-3 text-[12px] font-semibold leading-relaxed text-ink-soft">
+                      {course.revenueDisclaimer}
+                    </p>
+                  )}
                 </div>
 
                 <div className="mt-6 hidden overflow-hidden rounded-xl border border-line sm:block">
@@ -526,7 +556,7 @@ export default async function CourseDetail({ params }) {
                             <div className="relative aspect-video bg-ink">
                               <img
                                 src={`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
-                                alt=""
+                                alt={`${video.title} 영상 썸네일`}
                                 loading="lazy"
                                 className="h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
                               />
@@ -770,21 +800,28 @@ export default async function CourseDetail({ params }) {
                   </div>
                 </div>
                 {instructor.profileSections ? (
-                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    {instructor.profileSections.map((section) => (
-                      <div key={section.title} className="rounded-xl border border-line bg-cream/60 p-4">
-                        <h3 className="text-[13px] font-black text-brand">{section.title}</h3>
-                        <ul className="mt-3 space-y-1.5">
-                          {section.items.map((item) => (
-                            <li key={item} className="flex gap-2 text-[13px] leading-relaxed text-ink-soft">
-                              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand/60" />
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
+                  <>
+                    <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                      {instructor.profileSections.map((section) => (
+                        <div key={section.title} className="rounded-xl border border-line bg-cream/60 p-4">
+                          <h3 className="text-[13px] font-black text-brand">{section.title}</h3>
+                          <ul className="mt-3 space-y-1.5">
+                            {section.items.map((item) => (
+                              <li key={item} className="flex gap-2 text-[13px] leading-relaxed text-ink-soft">
+                                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand/60" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                    {course.revenueDisclaimer && (
+                      <p className="mt-3 text-[12px] font-semibold leading-relaxed text-ink-soft">
+                        {course.revenueDisclaimer}
+                      </p>
+                    )}
+                  </>
                 ) : (
                   instructor.credentials && (
                     <ul className="mt-5 space-y-1.5">
@@ -807,9 +844,16 @@ export default async function CourseDetail({ params }) {
 
               {/* 보증 배지 */}
               {course.guarantee && (
-                <div className="mb-4 flex items-center gap-2 rounded-xl bg-green-50 px-4 py-3 text-[13px] font-bold text-green-700">
-                  <span className="text-[16px]">✅</span>
-                  {course.guarantee}
+                <div className="mb-4 rounded-xl bg-green-50 px-4 py-3 text-[13px] font-bold text-green-700">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[16px]">✅</span>
+                    <span>{course.guarantee}{course.guaranteeNote ? " · 조건 있음" : ""}</span>
+                  </div>
+                  {course.guaranteeNote && (
+                    <p className="mt-1.5 text-[11px] font-semibold leading-relaxed text-green-800/75">
+                      {course.guaranteeNote}
+                    </p>
+                  )}
                 </div>
               )}
 
