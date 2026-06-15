@@ -37,8 +37,8 @@ export default function StickyEnrollmentBar({
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-2 pointer-events-none">
-      <div className="container-edu pointer-events-auto">
+    <div className="fixed bottom-0 left-0 right-0 z-[100] px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-2 pointer-events-auto">
+      <div className="container-edu">
         <div className="rounded-2xl bg-ink p-3 text-white shadow-[0_18px_50px_-20px_rgba(20,17,15,0.75)] ring-1 ring-white/10 lg:p-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
               {selected && options.length > 0 && (
