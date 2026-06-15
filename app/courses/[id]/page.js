@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CourseShareButton from "@/components/CourseShareButton";
 import ScheduleCheckoutSelector from "@/components/ScheduleCheckoutSelector";
+import StickyEnrollmentBar from "@/components/StickyEnrollmentBar";
 import VideoReviewGrid from "@/components/VideoReviewGrid";
 import {
   COURSES,
@@ -247,7 +248,7 @@ export default async function CourseDetail({ params }) {
   return (
     <>
       <Header />
-      <main className="bg-cream/40 pb-24 lg:pb-0">
+      <main className="bg-cream/40 pb-36 lg:pb-32">
 
         {/* ── HERO ──────────────────────────────────────── */}
         <section
@@ -993,42 +994,14 @@ export default async function CourseDetail({ params }) {
         </section>
       </main>
 
-      {/* ── 모바일 하단 고정 CTA ──────────────────────────── */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-line bg-paper/95 px-4 py-3 backdrop-blur lg:hidden">
-        {course.scheduleOptions?.length ? (
-          <ScheduleCheckoutSelector options={course.scheduleOptions} color={color} compact />
-        ) : (
-          <div className="flex items-center gap-3">
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-[14px] font-extrabold text-ink">{course.title}</p>
-              <p className="text-[13px] font-black" style={{ color }}>
-                {course.priceLabel || (course.free ? "무료" : formatPrice(course.price))}
-              </p>
-            </div>
-            {course.cardPaymentUrl ? (
-              <a
-                href={course.cardPaymentUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="shrink-0 rounded-xl px-5 py-3 text-[14px] font-black text-white"
-                style={{ background: color }}
-              >
-                카드결제
-              </a>
-            ) : (
-              <Link
-                href={`/checkout/${course.id}`}
-                className="shrink-0 rounded-xl px-5 py-3 text-[14px] font-black text-white"
-                style={{ background: color }}
-              >
-                {course.free ? "무료 신청" : "신청하기"}
-              </Link>
-            )}
-          </div>
-        )}
-      </div>
-
       <Footer />
+      <div className="h-28 bg-paper lg:h-24" />
+      <StickyEnrollmentBar
+        course={course}
+        color={color}
+        enrollmentStatus={enrollmentStatus}
+        priceText={course.priceLabel || (course.free ? "무료" : formatPrice(course.price))}
+      />
     </>
   );
 }
