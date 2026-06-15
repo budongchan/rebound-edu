@@ -7,6 +7,13 @@ function getInitialOption(options) {
   return options?.[0]?.id || "";
 }
 
+function getCompactPriceText(priceText) {
+  const numeric = Number(String(priceText || "").replace(/[^\d]/g, ""));
+  if (!numeric) return priceText;
+  if (numeric % 10000 === 0) return `${numeric / 10000}만원`;
+  return priceText;
+}
+
 export default function StickyEnrollmentBar({
   course,
   color = "#14110f",
@@ -22,7 +29,12 @@ export default function StickyEnrollmentBar({
   const checkoutHref = selected
     ? `/checkout/${selected.courseId}${selected.checkoutQuery || ""}`
     : `/checkout/${course.id}`;
-  const ctaLabel = course.free ? "무료 신청" : priceText ? `${priceText} 수강하기` : "수강하기";
+  const compactPriceText = getCompactPriceText(priceText);
+  const ctaLabel = course.free ? "무료 신청" : compactPriceText ? `${compactPriceText} 수강하기` : "수강하기";
+  const goCheckout = (event) => {
+    event.preventDefault();
+    window.location.href = checkoutHref;
+  };
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-[max(12px,env(safe-area-inset-bottom))] pt-2 pointer-events-none">
@@ -45,6 +57,7 @@ export default function StickyEnrollmentBar({
               )}
               <Link
                 href={checkoutHref}
+                onClick={goCheckout}
                 className="flex h-14 items-center justify-center rounded-xl px-5 text-[16px] font-black text-white transition-transform hover:-translate-y-0.5"
                 style={{ background: color }}
               >
