@@ -219,6 +219,40 @@ function ScheduleInfoCards({ course, color }) {
   );
 }
 
+function CourseSectionTabs({ course, hasReviews }) {
+  const reviewCount = course.studentReviews?.length || 0;
+  const tabs = [
+    { href: "#course-intro", label: "강의소개" },
+    { href: "#course-curriculum", label: "커리큘럼" },
+    { href: "#course-instructor", label: "강사소개" },
+    ...(hasReviews ? [{ href: "#course-reviews", label: "수강후기", count: reviewCount }] : []),
+    { href: "#course-refund", label: "환불정책" },
+  ];
+
+  return (
+    <nav className="sticky top-[65px] z-30 border-b border-ink/10 bg-cream/90 py-3 backdrop-blur" aria-label="강의 상세 네비게이션">
+      <div className="container-edu">
+        <div className="grid grid-flow-col auto-cols-[minmax(116px,1fr)] overflow-x-auto rounded-xl bg-ink p-1.5 text-center shadow-[0_12px_32px_-24px_rgba(20,17,15,0.55)]">
+          {tabs.map((tab) => (
+            <a
+              key={tab.href}
+              href={tab.href}
+              className="rounded-lg px-4 py-3 text-[14px] font-black text-white/55 transition-colors hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white focus:outline-none"
+            >
+              {tab.label}
+              {tab.count > 0 && (
+                <span className="ml-1.5 font-black text-emerald-400">
+                  {tab.count.toLocaleString("ko-KR")}
+                </span>
+              )}
+            </a>
+          ))}
+        </div>
+      </div>
+    </nav>
+  );
+}
+
 export default async function CourseDetail({ params }) {
   const { id } = await params;
   const course = getCourse(id);
@@ -243,6 +277,7 @@ export default async function CourseDetail({ params }) {
   const primaryInstructorVideo = course.instructorVideos?.find((video) => video.primary);
   const secondaryInstructorVideos = course.instructorVideos?.filter((video) => !video.primary) || [];
   const hasInstructorPhotos = course.instructorPhotos && course.instructorPhotos.length > 0;
+  const hasReviews = course.studentReviews?.length > 0;
   const DELIVERY_ICON = { 오프라인: "📍", 온라인: "💻", "온라인+오프라인": "📍" };
 
   return (
@@ -376,12 +411,14 @@ export default async function CourseDetail({ params }) {
           </div>
         </section>
 
+        <CourseSectionTabs course={course} hasReviews={hasReviews} />
+
         {/* ── BODY ──────────────────────────────────────── */}
         <section className="container-edu grid gap-10 py-12 lg:grid-cols-[1fr_360px]">
           <div className="min-w-0 space-y-6">
 
             {/* ▸ 수업 소개 */}
-            <div className="rounded-2xl border border-line bg-paper p-7">
+            <div id="course-intro" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
               <h2 className="text-[20px] font-extrabold text-ink">수업 소개</h2>
               <p className="mt-3 text-[15px] leading-[1.85] text-ink-soft">{course.summary}</p>
             </div>
@@ -635,7 +672,7 @@ export default async function CourseDetail({ params }) {
 
             {/* ▸ 수강생 후기 */}
             {course.studentReviews?.length > 0 && (
-              <div className="rounded-2xl border border-line bg-paper p-7">
+              <div id="course-reviews" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
                 <h2 className="text-[20px] font-extrabold text-ink">수강생 후기</h2>
                 <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
                   실제 수강생들의 이야기 — 썸네일을 누르면 영상이 열립니다.
@@ -645,7 +682,7 @@ export default async function CourseDetail({ params }) {
             )}
 
             {/* ▸ 커리큘럼 */}
-            <div className="rounded-2xl border border-line bg-paper p-7">
+            <div id="course-curriculum" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
               <div className="flex items-baseline justify-between">
                 <h2 className="text-[20px] font-extrabold text-ink">커리큘럼</h2>
                 <span className="text-[13px] text-ink-soft">
@@ -725,7 +762,7 @@ export default async function CourseDetail({ params }) {
             )}
 
             {/* ▸ Q&A */}
-            <div className="rounded-2xl border border-line bg-paper p-7">
+            <div id="course-refund" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h2 className="text-[20px] font-extrabold text-ink">수업 관련 Q&A</h2>
@@ -765,7 +802,7 @@ export default async function CourseDetail({ params }) {
 
             {/* ▸ 강사 프로필 */}
             {instructor && (
-              <div className="rounded-2xl border border-line bg-paper p-7">
+              <div id="course-instructor" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
                 <h2 className="text-[20px] font-extrabold text-ink">강사 소개</h2>
                 <div className="mt-5 flex flex-col gap-5 sm:flex-row">
                   {instructor.photo ? (
