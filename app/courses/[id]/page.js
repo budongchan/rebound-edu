@@ -253,56 +253,6 @@ function CourseSectionTabs({ course, hasReviews }) {
   );
 }
 
-function BestReviewBlock({ course, color }) {
-  const bestReview = course.studentReviews?.[0];
-  if (!bestReview) return null;
-
-  return (
-    <div className="rounded-2xl border border-line bg-paper p-7">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-[12px] font-black uppercase tracking-[0.16em]" style={{ color }}>
-            Best Review
-          </p>
-          <h2 className="mt-1 text-[20px] font-extrabold text-ink">베스트 수강 사례</h2>
-        </div>
-        <div className="flex items-center gap-1 text-[13px] font-black text-ink">
-          <span className="text-yellow-400">★★★★★</span>
-          <span>선별 영상 후기</span>
-        </div>
-      </div>
-      <div className="mt-5 grid gap-5 lg:grid-cols-[220px_1fr] lg:items-center">
-        <a
-          href={`https://www.youtube.com/watch?v=${bestReview.id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group overflow-hidden rounded-xl border border-line bg-ink"
-        >
-          <div className="relative aspect-video">
-            <img
-              src={`https://img.youtube.com/vi/${bestReview.id}/hqdefault.jpg`}
-              alt={`${bestReview.title} 베스트 수강 사례 영상 썸네일`}
-              loading="lazy"
-              className="h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
-            />
-            <span className="absolute inset-0 flex items-center justify-center">
-              <span className="rounded-full bg-paper/95 px-3 py-1 text-[12px] font-black text-ink shadow">
-                후기 보기
-              </span>
-            </span>
-          </div>
-        </a>
-        <div>
-          <p className="text-[18px] font-black leading-relaxed text-ink">{bestReview.title}</p>
-          <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
-            실제 공개 영상으로 확인 가능한 수강 사례만 노출합니다. 별도 후기 기능을 열어두지 않고, 운영자가 검증한 사례만 상세페이지에 선별 등록합니다.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function PurchaseGuideBlock({ guide, color }) {
   if (!guide?.steps?.length) return null;
 
@@ -338,6 +288,50 @@ function PurchaseGuideBlock({ guide, color }) {
           </ul>
         </div>
       )}
+    </div>
+  );
+}
+
+function CourseDifferentiatorBlock({ items, color }) {
+  if (!items?.length) return null;
+
+  return (
+    <div className="rounded-2xl border border-line bg-paper p-7">
+      <p className="text-[12px] font-black uppercase tracking-[0.16em]" style={{ color }}>
+        Rebound Difference
+      </p>
+      <h2 className="mt-1 text-[20px] font-extrabold text-ink">리바운드는 다릅니다</h2>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        {items.map((item) => (
+          <div key={item.title} className="rounded-xl border border-line bg-cream/45 p-5">
+            <p className="text-[15px] font-black text-ink">{item.title}</p>
+            <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">{item.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LaunchProcessBlock({ steps, color }) {
+  if (!steps?.length) return null;
+
+  return (
+    <div className="rounded-2xl border border-line bg-paper p-7">
+      <h2 className="text-[20px] font-extrabold text-ink">오픈까지 끌고가는 핵심 5단계</h2>
+      <div className="mt-5 space-y-3">
+        {steps.map((step, index) => (
+          <div key={step} className="flex gap-4 rounded-xl border border-line bg-cream/45 p-4">
+            <span
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-black text-white"
+              style={{ background: color }}
+            >
+              {index + 1}
+            </span>
+            <p className="text-[14px] font-bold leading-relaxed text-ink">{step}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -615,7 +609,7 @@ export default async function CourseDetail({ params }) {
               <p className="mt-3 text-[15px] leading-[1.85] text-ink-soft">{course.summary}</p>
             </div>
 
-            <BestReviewBlock course={course} color={color} />
+            <CourseDifferentiatorBlock items={course.differentiators} color={color} />
 
             {/* ▸ 이런 걸 배웁니다 */}
             <div className="rounded-2xl border border-line bg-paper p-7">
@@ -638,6 +632,8 @@ export default async function CourseDetail({ params }) {
             <ScheduleInfoCards course={course} color={color} />
 
             <PurchaseGuideBlock guide={course.purchaseGuide} color={color} />
+
+            <LaunchProcessBlock steps={course.launchProcess} color={color} />
 
             {/* ▸ 라이브 수업 — 다음 수업 일정 하이라이트 */}
             {course.live && course.schedule && !course.scheduleOptions?.length && (
