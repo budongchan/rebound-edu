@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCourse, formatPrice } from "@/lib/courses";
-import { BANK, COMPANY } from "@/lib/company";
+import { BANK } from "@/lib/company";
 import { getServiceClient } from "@/lib/supabase";
 import { EDU_SERVICE } from "@/lib/depositService";
 import { buildCourseGuidance } from "@/lib/courseGuidance";
@@ -9,9 +9,9 @@ function cleanPhone(value) {
   return String(value || "").replace(/[^\d]/g, "");
 }
 
-async function queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil }) {
+async function queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil, guidance }) {
   const phone = cleanPhone(buyer.phone);
-  if (!phone) return;
+  if (!phone) return { queued: false, error: "missing-phone" };
   const courseTitle = course.checkoutTitle || course.title;
 
   const deadline = new Date(validUntil).toLocaleString("ko-KR", {
@@ -21,22 +21,27 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
 
   const message = [
     "[리바운드에듀]",
-    `${courseTitle} 수강 신청이 접수되었습니다.`,
-    "상태: 입금대기",
-    "─",
-    `금액: ${formatPrice(course.price)}`,
-    `입금자명: ${depositorName}`,
-    `입금기한: ${deadline}까지`,
-    "─",
-    `${BANK.name} ${BANK.account}`,
+    "수강 신청이 접수되었습니다.",
+    "",
+    `신청 수업명: ${courseTitle}`,
+    `수업 일정: ${guidance?.schedule || course.scheduleShort || course.schedule || "신청 확정 후 개별 안내"}`,
+    `수업 장소: ${guidance?.locationName || course.place || "신청 확정 후 개별 안내"}`,
+    "",
+    `입금 금액: ${formatPrice(course.price)}`,
+    `입금 계좌: ${BANK.name} ${BANK.account}`,
     `예금주: ${BANK.holder}`,
+    `입금자명: ${depositorName}`,
+    `입금 기한: ${deadline}까지`,
+    "",
+    "입금 완료 확인 후 수강이 확정되며,",
+    "수강생 단톡방 및 상세 안내를 문자로 보내드립니다.",
+    "",
+    `수강생 단톡방: ${guidance?.groupChatUrl || guidance?.groupChatLabel || "입금 완료 후 안내"}`,
+    `카톡 문의: ${guidance?.inquiryUrl || course.inquiryUrl || "https://pf.kakao.com/_xkxdxgb/chat"}`,
     `주문번호: ${order}`,
-    `상태조회: https://edu.rebound.io.kr/order/${order}`,
-    "─",
-    "입금 알림 수신 후 상태조회 페이지에서 자동 확인됩니다.",
-    "바로 확인이 필요하면 [입금 확인하기] 버튼을 눌러 주세요.",
-    "영업시간 기준 최대 1시간 내 장소와 단톡방 안내 문자가 발송됩니다.",
-    `문의: ${COMPANY.phone}`,
+    "",
+    "이 번호는 문자 발송 전용으로, 유선 응대가 어렵습니다.",
+    "문의는 카카오톡 채널로 남겨 주세요.",
   ].join("\n");
 
   try {
@@ -53,8 +58,14 @@ async function queueOrderSms(supabase, { order, course, buyer, depositorName, va
       dedupe_key: `edu:checkout:${order}`,
       metadata: { source: "checkout", buyer_name: buyer.name.trim() },
     }]);
-    if (error) console.error("edu checkout sms queue failed", error);
-  } catch {}
+    if (error) {
+      console.error("edu checkout sms queue failed", error);
+      return { queued: false, error: error.message || "sms-queue-failed" };
+    }
+    return { queued: true, error: null };
+  } catch (error) {
+    return { queued: false, error: error?.message || "sms-queue-crashed" };
+  }
 }
 
 async function insertOrderWithGuidance(supabase, orderRow, guidance) {
@@ -174,7 +185,7 @@ export async function POST(req) {
     );
   }
 
-  await queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil });
+  const smsResult = await queueOrderSms(supabase, { order, course, buyer, depositorName, validUntil, guidance });
 
   // 유료 강의 — 무통장입금 안내
   return NextResponse.json({
@@ -193,5 +204,7 @@ export async function POST(req) {
     guidance,
     service: EDU_SERVICE.id,
     persisted: true,
+    smsQueued: smsResult.queued,
+    smsError: smsResult.error,
   });
 }
