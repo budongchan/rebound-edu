@@ -557,14 +557,6 @@ export default function CheckoutForm({ course, selectedScheduleOption = null }) 
           <p className="mt-3 text-center text-[12px] text-ink-soft/80">
             {isFree ? "로그인 없이 바로 신청됩니다." : "신청 후 입금 계좌가 안내됩니다."}
           </p>
-
-          {/* TR-04 안심 블록 */}
-          <div className="mt-5 border-t border-line pt-4 text-[11px] leading-relaxed text-ink-soft/70 space-y-0.5">
-            <p className="font-semibold text-ink-soft/80">안심 신청 안내</p>
-            <p>{COMPANY.legalName} | 사업자등록번호: {COMPANY.bizNo}</p>
-            {!isFree && <p>예금주: {BANK.holder} | 미진행 시 전액 환불</p>}
-            <p>문의: {COMPANY.phone}</p>
-          </div>
         </div>
       </aside>
     </form>
