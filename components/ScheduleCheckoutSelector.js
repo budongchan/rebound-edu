@@ -12,6 +12,7 @@ export default function ScheduleCheckoutSelector({ options = [], color = "#14110
   );
 
   if (!options.length || !selected) return null;
+  const checkoutHref = `/checkout/${selected.courseId}${selected.checkoutQuery || ""}`;
 
   if (compact) {
     return (
@@ -29,7 +30,7 @@ export default function ScheduleCheckoutSelector({ options = [], color = "#14110
           ))}
         </select>
         <Link
-          href={`/checkout/${selected.courseId}`}
+          href={checkoutHref}
           className="shrink-0 rounded-xl px-4 py-3 text-[13px] font-black text-white"
           style={{ background: color }}
         >
@@ -78,7 +79,7 @@ export default function ScheduleCheckoutSelector({ options = [], color = "#14110
       </dl>
 
       <Link
-        href={`/checkout/${selected.courseId}`}
+        href={checkoutHref}
         className="mt-4 block rounded-xl px-5 py-4 text-center text-[15px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5"
         style={{ background: color, boxShadow: `0 8px 24px -8px ${color}80` }}
       >
