@@ -47,8 +47,7 @@ export default function CheckoutForm({ course }) {
   useEffect(() => {
     const sb = getSupabaseBrowser();
     if (!sb) { setAuthChecked(true); return; }
-    sb.auth.getSession().then(({ data }) => {
-      const u = data.session?.user ?? null;
+    const applyUser = (u) => {
       setUser(u);
       setAuthChecked(true);
       if (u) {
@@ -58,7 +57,14 @@ export default function CheckoutForm({ course }) {
           email: f.email || u.email || "",
         }));
       }
+    };
+    // 초기 세션 1회 조회
+    sb.auth.getSession().then(({ data }) => applyUser(data.session?.user ?? null));
+    // 세션 복원/로그인/토큰 갱신을 지속 추적 — getSession 단발 호출의 레이스로 로그인이 풀려 보이는 문제 방지
+    const { data: sub } = sb.auth.onAuthStateChange((_event, session) => {
+      applyUser(session?.user ?? null);
     });
+    return () => sub?.subscription?.unsubscribe();
   }, []);
 
   const isFree = course.free || course.price === 0;
@@ -407,6 +413,22 @@ export default function CheckoutForm({ course }) {
             <p className="mt-3 text-center text-[13px] text-ink-soft">
               아직 입금이 확인되지 않았습니다. 입금 후 1~2분 뒤 다시 시도해 주세요.
             </p>
+          )}
+
+          {course.cardPaymentUrl && (
+            <div className="mt-5 border-t border-line pt-5 text-center">
+              <p className="text-[13px] text-ink-soft">계좌이체 대신 카드로 결제를 원하시면</p>
+              <a
+                href={course.cardPaymentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2.5 block rounded-xl border-2 px-5 py-3.5 text-center text-[15px] font-bold transition-transform hover:-translate-y-0.5"
+                style={{ borderColor: "var(--color-brand)", color: "var(--color-brand)" }}
+              >
+                카드로 결제하기
+              </a>
+              <p className="mt-2 text-[12px] text-ink-soft/70">카드결제는 외부 결제창(리바운드 스토어)으로 연결됩니다.</p>
+            </div>
           )}
 
           <Link href="/courses" className="mt-4 block rounded-xl border border-line bg-paper px-6 py-3 text-center text-[14px] font-semibold text-ink-soft hover:text-ink">
