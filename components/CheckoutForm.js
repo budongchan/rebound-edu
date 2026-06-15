@@ -240,7 +240,7 @@ export default function CheckoutForm({ course, selectedScheduleOption = null }) 
           {(course.scheduleShort || course.schedule) && (
             <p className="text-[12px] text-ink-soft">{selectedScheduleOption?.schedule || course.scheduleShort || course.schedule}</p>
           )}
-          <p className="mt-2 text-[16px] font-black text-ink">{formatPrice(course.price)}</p>
+          <p className="mt-2 text-[16px] font-black text-ink">{formatCompactPrice(course.price)}</p>
         </div>
         <Link
           href={`/login?next=${encodeURIComponent(pathname)}`}
