@@ -369,6 +369,49 @@ function CourseBooksBlock({ books, color }) {
   );
 }
 
+function PlatformBenefitsBlock({ benefits, color }) {
+  if (!benefits?.length) return null;
+
+  return (
+    <div className="rounded-2xl border border-line bg-paper p-7">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-[20px] font-extrabold text-ink">수강생 전용 플랫폼 혜택</h2>
+          <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
+            수강 확정 후 아래 플랫폼 6개월 무료 이용권을 함께 제공합니다.
+          </p>
+        </div>
+        <span className="rounded-full px-3 py-1 text-[12px] font-black" style={{ background: `${color}12`, color }}>
+          6개월 무료
+        </span>
+      </div>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        {benefits.map((benefit) => (
+          <a
+            key={benefit.domain}
+            href={benefit.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group rounded-xl border border-line bg-cream/45 p-5 transition-colors hover:bg-paper hover:shadow-[0_16px_32px_-28px_rgba(20,17,15,0.55)]"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[17px] font-black leading-tight text-ink">{benefit.title}</p>
+                <p className="mt-1 text-[13px] font-extrabold" style={{ color }}>{benefit.label}</p>
+              </div>
+              <span className="rounded-full border border-line bg-paper px-2.5 py-1 text-[11px] font-black text-ink-soft group-hover:text-ink">
+                이동
+              </span>
+            </div>
+            <p className="mt-3 text-[13px] leading-relaxed text-ink-soft">{benefit.description}</p>
+            <p className="mt-4 text-[12px] font-black text-ink">{benefit.domain}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function RefundPolicyBlock({ policy, color }) {
   if (!policy?.items?.length) return null;
 
@@ -1044,6 +1087,8 @@ export default async function CourseDetail({ params }) {
                 )}
               </div>
             )}
+
+            <PlatformBenefitsBlock benefits={course.platformBenefits} color={color} />
 
             <CourseBooksBlock books={course.books} color={color} />
 
