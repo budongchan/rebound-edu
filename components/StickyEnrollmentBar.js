@@ -23,7 +23,7 @@ export default function StickyEnrollmentBar({
   const checkoutHref = selected
     ? `/checkout/${selected.courseId}${selected.checkoutQuery || ""}`
     : `/checkout/${course.id}`;
-  const ctaLabel = course.free ? "무료 신청" : "수강하기";
+  const ctaLabel = course.free ? "무료 신청" : priceText ? `${priceText} 수강하기` : "수강하기";
   const statusText = course.free ? "지금 바로 수강 가능" : enrollmentStatus === "신청가능" ? "지금 바로 수강 가능" : enrollmentStatus;
   const benefitText = course.sidebarSummary?.[0] || course.scheduleShort || course.subtitle;
 
@@ -68,7 +68,7 @@ export default function StickyEnrollmentBar({
                 >
                   {options.map((option) => (
                     <option key={option.id} value={option.id} className="text-ink">
-                      {option.label} · {option.weekday}
+                      {option.label} ({option.weekday})
                     </option>
                   ))}
                 </select>
