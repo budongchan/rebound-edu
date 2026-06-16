@@ -922,7 +922,7 @@ export default async function CourseDetail({ params }) {
             {course.socialProof && (
               <div className="rounded-2xl border border-line bg-paper p-7">
                 <h2 className="text-[20px] font-extrabold text-ink">{course.socialProof.title || "숫자로 보는 실적"}</h2>
-                <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                   {course.socialProof.stats.map((s) => (
                     <div key={s.label} className="rounded-xl border border-line bg-cream/40 p-5 text-center">
                       <p className="text-[26px] font-black leading-tight" style={{ color }}>{s.value}</p>
