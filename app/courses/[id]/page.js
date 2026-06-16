@@ -321,7 +321,11 @@ function HeroMediaCard({ media, color }) {
   return (
     <figure className="overflow-hidden rounded-2xl border border-white/20 bg-white/10 shadow-[0_24px_60px_-36px_rgba(0,0,0,0.75)] backdrop-blur-sm">
       <div className="relative">
-        <EvidenceVisual item={media} color={color} className="aspect-[4/3] w-full object-cover" />
+        <EvidenceVisual
+          item={media}
+          color={color}
+          className={`aspect-[4/3] w-full ${media.fit === "contain" ? "bg-gradient-to-br from-white/95 to-white/70 object-contain p-6" : "object-cover"}`}
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
         <div className="absolute left-4 top-4 rounded-full bg-black/70 px-3 py-1 text-[11px] font-black text-white">
           {media.label || "현장형 과정"}
