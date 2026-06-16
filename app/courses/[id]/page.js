@@ -4,7 +4,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CourseShareButton from "@/components/CourseShareButton";
 import ScheduleCheckoutSelector from "@/components/ScheduleCheckoutSelector";
-import StickyEnrollmentBar from "@/components/StickyEnrollmentBar";
 import VideoReviewGrid from "@/components/VideoReviewGrid";
 import {
   COURSES,
@@ -156,6 +155,7 @@ function getCourseScheduleWithDuration(course) {
 
 function ScheduleInfoCards({ course, color }) {
   if (!course.scheduleOptions?.length) return null;
+  const parts = course.scheduleParts || [];
 
   return (
     <div className="rounded-2xl border border-line bg-paper p-7">
@@ -163,10 +163,10 @@ function ScheduleInfoCards({ course, color }) {
         <div>
           <h2 className="text-[20px] font-extrabold text-ink">요일·장소 안내</h2>
           <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
-            수업과 임장은 모두 리바운드 종로점 기준으로 진행됩니다.
+            평일반(수요일)과 주말반(토요일)은 같은 구성으로 진행됩니다.
           </p>
         </div>
-        <span className="text-[13px] font-bold text-ink-soft">정원 3명~20명</span>
+        <span className="text-[13px] font-bold text-ink-soft">인원 5~15인(회차별)</span>
       </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -201,6 +201,47 @@ function ScheduleInfoCards({ course, color }) {
           </div>
         ))}
       </div>
+
+      {parts.length > 0 && (
+        <div className="mt-5 grid gap-4 lg:grid-cols-3">
+          {parts.map((part, index) => (
+            <article key={part.title} className="overflow-hidden rounded-xl border border-line bg-cream/40">
+              {part.image && (
+                <img
+                  src={part.image}
+                  alt={part.imageAlt || part.title}
+                  loading="lazy"
+                  className="aspect-[16/10] w-full object-cover"
+                />
+              )}
+              <div className="p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <span
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white"
+                    style={{ background: color }}
+                  >
+                    {index + 1}
+                  </span>
+                  <span className="text-[13px] font-black" style={{ color }}>
+                    {part.time}
+                  </span>
+                </div>
+                <h3 className="mt-4 text-[17px] font-black text-ink">{part.title}</h3>
+                <dl className="mt-4 space-y-2.5 text-[13px]">
+                  <div className="flex gap-3">
+                    <dt className="w-10 shrink-0 text-ink-soft">장소</dt>
+                    <dd className="font-bold leading-relaxed text-ink">{part.place}</dd>
+                  </div>
+                  <div className="flex gap-3">
+                    <dt className="w-10 shrink-0 text-ink-soft">내용</dt>
+                    <dd className="font-semibold leading-relaxed text-ink-soft">{part.content}</dd>
+                  </div>
+                </dl>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
 
       {course.scheduleNotes?.length > 0 && (
         <div className="mt-5 rounded-xl border border-line bg-paper p-4">
@@ -503,7 +544,7 @@ export default async function CourseDetail({ params }) {
   return (
     <>
       <Header />
-      <main className="bg-cream/40 pb-36 lg:pb-32">
+      <main className="bg-cream/40 pb-16 lg:pb-20">
 
         {/* ── HERO ──────────────────────────────────────── */}
         <section
@@ -1261,13 +1302,6 @@ export default async function CourseDetail({ params }) {
       </main>
 
       <Footer />
-      <div className="h-28 bg-paper lg:h-24" />
-      <StickyEnrollmentBar
-        course={course}
-        color={color}
-        enrollmentStatus={enrollmentStatus}
-        priceText={course.priceLabel || (course.free ? "무료" : formatPrice(course.price))}
-      />
     </>
   );
 }
