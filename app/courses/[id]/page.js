@@ -264,6 +264,113 @@ function ScheduleInfoCards({ course, color }) {
   );
 }
 
+function EvidenceVisual({ item, color, className = "" }) {
+  if (!item) return null;
+  if (item.image || item.src) {
+    return (
+      <img
+        src={item.image || item.src}
+        alt={item.imageAlt || item.alt || item.title || ""}
+        loading="lazy"
+        className={className || "aspect-[16/10] w-full object-cover"}
+      />
+    );
+  }
+
+  const rowsByKind = {
+    document: ["용도: 근린생활시설", "연면적 / 층별 용도", "위반건축물 여부"],
+    structure: ["출입구", "계단", "공용부", "복도"],
+    numbers: ["월매출", "고정비", "공실률", "순이익"],
+    checklist: ["검토 가능", "추가 확인", "제외"],
+    calculator: ["객실 수", "객단가", "가동률", "회수 기간"],
+    permit: ["용도변경", "소방", "정화조", "주차"],
+    contract: ["인허가 조건", "렌트프리", "원상복구", "공사 기간"],
+    briefing: ["신규 매물", "사업성", "개별 임장", "Q&A"],
+  };
+  const rows = rowsByKind[item.kind || item.visualKind] || rowsByKind.document;
+
+  return (
+    <div className={`aspect-[16/10] w-full rounded-lg border border-line bg-paper p-4 ${className}`}>
+      <div className="flex items-center justify-between border-b border-line pb-2">
+        <span className="text-[12px] font-black text-ink">{item.title || "검토 자료"}</span>
+        <span className="rounded-full px-2 py-0.5 text-[10px] font-black text-white" style={{ background: color }}>
+          SAMPLE
+        </span>
+      </div>
+      <div className="mt-3 grid gap-2">
+        {rows.map((row, index) => (
+          <div key={row} className="flex items-center justify-between rounded-md bg-cream/70 px-3 py-2">
+            <span className="text-[11px] font-bold text-ink-soft">{row}</span>
+            <span
+              className="h-2 rounded-full"
+              style={{
+                width: `${36 + index * 12}%`,
+                background: index % 2 ? `${color}55` : color,
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function HeroMediaCard({ media, color }) {
+  if (!media) return null;
+
+  return (
+    <figure className="overflow-hidden rounded-2xl border border-white/20 bg-white/10 shadow-[0_24px_60px_-36px_rgba(0,0,0,0.75)] backdrop-blur-sm">
+      <div className="relative">
+        <EvidenceVisual item={media} color={color} className="aspect-[4/3] w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+        <div className="absolute left-4 top-4 rounded-full bg-black/70 px-3 py-1 text-[11px] font-black text-white">
+          {media.label || "현장형 과정"}
+        </div>
+        {media.type === "video" && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-[18px] font-black" style={{ color }}>
+              ▶
+            </span>
+          </div>
+        )}
+        {media.caption && (
+          <figcaption className="absolute bottom-0 left-0 right-0 p-4 text-[16px] font-black leading-relaxed text-white">
+            {media.caption}
+          </figcaption>
+        )}
+      </div>
+    </figure>
+  );
+}
+
+function VisualTimelineBlock({ items, color }) {
+  if (!items?.length) return null;
+
+  return (
+    <div className="mt-6 rounded-2xl border border-line bg-cream/40 p-5">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h3 className="text-[18px] font-black text-ink">하루 수업 한눈에 보기</h3>
+          <p className="mt-1 text-[13px] font-semibold text-ink-soft">현장, 이론, 운영 실습을 하루에 연결합니다.</p>
+        </div>
+      </div>
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        {items.map((item) => (
+          <article key={item.title} className="overflow-hidden rounded-xl border border-line bg-paper">
+            <EvidenceVisual item={item} color={color} className="aspect-[16/10] w-full object-cover" />
+            <div className="p-4">
+              <p className="text-[12px] font-black" style={{ color }}>{item.time}</p>
+              <h4 className="mt-1 text-[15px] font-black text-ink">{item.title}</h4>
+              <p className="mt-1 text-[12px] font-bold text-ink-soft">{item.place}</p>
+              <p className="mt-3 text-[13px] font-semibold leading-relaxed text-ink-soft">{item.caption}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function CourseSectionTabs({ course, hasReviews }) {
   const reviewCount = course.studentReviews?.length || 0;
   const tabs = [
@@ -358,13 +465,28 @@ function CourseDifferentiatorBlock({ items, color }) {
   );
 }
 
-function ProblemSectionBlock({ section, color }) {
+function ProblemSectionBlock({ section, visuals, color }) {
   if (!section) return null;
+  const visualItems = section.visuals || visuals || [];
 
   return (
     <div className="rounded-2xl border border-line bg-paper p-7">
-      <h2 className="text-[20px] font-extrabold text-ink">{section.title}</h2>
-      {section.body && <p className="mt-3 text-[15px] leading-[1.85] text-ink-soft">{section.body}</p>}
+      <div className={visualItems.length ? "grid gap-6 lg:grid-cols-[1fr_280px]" : ""}>
+        <div>
+          <h2 className="text-[20px] font-extrabold text-ink">{section.title}</h2>
+          {section.body && <p className="mt-3 text-[15px] leading-[1.85] text-ink-soft">{section.body}</p>}
+        </div>
+        {visualItems.length > 0 && (
+          <div className="grid gap-3">
+            {visualItems.slice(0, 3).map((visual) => (
+              <figure key={visual.title} className="overflow-hidden rounded-xl border border-line bg-cream/35">
+                <EvidenceVisual item={visual} color={color} className="aspect-[16/9] w-full rounded-none border-0" />
+                <figcaption className="p-3 text-[12px] font-bold leading-relaxed text-ink-soft">{visual.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+        )}
+      </div>
       {section.risks?.length > 0 && (
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           {section.risks.map((risk, index) => (
@@ -447,6 +569,14 @@ function StepCurriculumBlock({ steps, color }) {
               </span>
             </summary>
             <div className="border-t border-line bg-paper px-5 pb-5 pt-4">
+              {(step.image || step.visualKind) && (
+                <figure className="mb-4 overflow-hidden rounded-xl border border-line bg-cream/35">
+                  <EvidenceVisual item={step} color={color} className="aspect-[16/7] w-full object-cover" />
+                  {step.caption && (
+                    <figcaption className="px-4 py-3 text-[12px] font-bold leading-relaxed text-ink-soft">{step.caption}</figcaption>
+                  )}
+                </figure>
+              )}
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <p className="text-[13px] font-black text-ink">이론</p>
@@ -544,6 +674,26 @@ function ReviewCardsBlock({ reviews, color }) {
       <div className="mt-5 grid gap-4 md:grid-cols-3">
         {reviews.map((review) => (
           <article key={review.title} className="flex flex-col rounded-xl border border-line bg-cream/40 p-5">
+            <a
+              href={review.videoId ? `https://www.youtube.com/watch?v=${review.videoId}` : undefined}
+              target={review.videoId ? "_blank" : undefined}
+              rel={review.videoId ? "noopener noreferrer" : undefined}
+              className="group -mx-1 -mt-1 mb-4 overflow-hidden rounded-lg bg-ink"
+            >
+              <div className="relative aspect-video">
+                <img
+                  src={review.videoId ? `https://img.youtube.com/vi/${review.videoId}/hqdefault.jpg` : "/courses/assets/real/kim-hostel-lecture.jpg"}
+                  alt={`${review.title} 후기 영상 썸네일`}
+                  loading="lazy"
+                  className="h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
+                />
+                <span className="absolute inset-0 flex items-center justify-center">
+                  <span className="rounded-full bg-paper/95 px-3 py-1 text-[12px] font-black text-ink shadow">
+                    영상 보기
+                  </span>
+                </span>
+              </div>
+            </a>
             <h3 className="text-[15px] font-black leading-relaxed text-ink">{review.title}</h3>
             <dl className="mt-4 space-y-3 text-[13px] leading-relaxed">
               <div>
@@ -588,6 +738,23 @@ function PriceGuaranteeBlock({ course, color }) {
     <div className="rounded-2xl border border-line bg-paper p-7">
       <h2 className="text-[20px] font-extrabold text-ink">{section.title}</h2>
       {section.body && <p className="mt-3 text-[15px] leading-[1.85] text-ink-soft">{section.body}</p>}
+      {section.collage?.length > 0 && (
+        <figure className="mt-6 overflow-hidden rounded-xl border border-line bg-cream/35">
+          <div className="grid grid-cols-2 gap-1 bg-line p-1 md:grid-cols-4">
+            {section.collage.map((item, index) => (
+              <EvidenceVisual
+                key={item.alt || index}
+                item={item}
+                color={color}
+                className="aspect-[4/3] w-full rounded-lg border-0 object-cover"
+              />
+            ))}
+          </div>
+          {section.collageCaption && (
+            <figcaption className="px-4 py-3 text-[13px] font-black leading-relaxed text-ink">{section.collageCaption}</figcaption>
+          )}
+        </figure>
+      )}
       <div className="mt-6 grid gap-4 lg:grid-cols-[260px_1fr]">
         <div className="rounded-xl border border-line bg-cream/45 p-5">
           <p className="text-[13px] font-black text-ink-soft">수강료</p>
@@ -642,7 +809,19 @@ function FinalCtaBlock({ course, color }) {
   if (!cta) return null;
 
   return (
-    <div className="rounded-2xl border border-line bg-ink p-7 text-white">
+    <div className="relative overflow-hidden rounded-2xl border border-line bg-ink p-7 text-white">
+      {cta.image && (
+        <>
+          <img
+            src={cta.image}
+            alt={cta.imageAlt || ""}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover opacity-35"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/82 to-ink/50" />
+        </>
+      )}
+      <div className="relative">
       <h2 className="text-[22px] font-black leading-tight">{cta.title}</h2>
       <p className="mt-3 text-[15px] leading-[1.85] text-white/78">{cta.body}</p>
       <div className="mt-6 grid gap-3 md:grid-cols-2">
@@ -658,6 +837,7 @@ function FinalCtaBlock({ course, color }) {
         ))}
       </div>
       {cta.note && <p className="mt-4 text-[13px] font-bold leading-relaxed text-white/70">{cta.note}</p>}
+      </div>
     </div>
   );
 }
@@ -885,8 +1065,10 @@ export default async function CourseDetail({ params }) {
               <CourseShareButton title={course.title} summary={course.subtitle || course.summary} variant="dark" />
             </div>
 
+            <div className={course.heroMedia ? "mt-5 grid gap-8 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center" : ""}>
+            <div>
             {/* 배지 행 */}
-            <div className="mt-5 flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-white px-3 py-1 text-[12px] font-black" style={{ color }}>
                 {enrollmentStatus}
               </span>
@@ -969,7 +1151,7 @@ export default async function CourseDetail({ params }) {
             )}
 
             {/* 강사 */}
-            {instructor && (
+            {instructor && !course.heroMedia && (
               <div className="mt-6 flex max-w-2xl items-center gap-3 rounded-2xl border border-white/18 bg-white/10 p-3 text-white shadow-[0_16px_36px_-26px_rgba(0,0,0,0.45)] backdrop-blur-sm">
                 {instructor.photo ? (
                   <img
@@ -1003,6 +1185,9 @@ export default async function CourseDetail({ params }) {
                 </div>
               </div>
             )}
+            </div>
+            {course.heroMedia && <HeroMediaCard media={course.heroMedia} color={color} />}
+            </div>
           </div>
         </section>
 
@@ -1018,7 +1203,9 @@ export default async function CourseDetail({ params }) {
               <p className="mt-3 text-[15px] leading-[1.85] text-ink-soft">{course.summary}</p>
             </div>
 
-            <ProblemSectionBlock section={course.problemSection} color={color} />
+            <VisualTimelineBlock items={course.visualTimeline} color={color} />
+
+            <ProblemSectionBlock section={course.problemSection} visuals={course.problemVisuals} color={color} />
 
             <PromiseSectionBlock section={course.promiseSection} color={color} />
 
