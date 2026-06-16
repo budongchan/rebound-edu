@@ -439,6 +439,40 @@ function RefundPolicyBlock({ policy, color }) {
   );
 }
 
+function BusinessAreasBlock({ areas, color }) {
+  if (!areas?.length) return null;
+
+  return (
+    <div className="mt-7 border-t border-line pt-6">
+      <h3 className="text-[15px] font-extrabold text-ink">김동찬 대표의 현재 사업</h3>
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        {areas.map((area) => (
+          <article key={area.title} className="overflow-hidden rounded-xl border-2 border-ink bg-paper">
+            <div className="p-4">
+              <h4 className="text-[15px] font-black text-ink">{area.title}</h4>
+              <p className="mt-2 min-h-[4.5rem] text-[13px] leading-relaxed text-ink-soft">{area.description}</p>
+            </div>
+            {area.image && (
+              <img
+                src={area.image}
+                alt={area.imageAlt || area.title}
+                loading="lazy"
+                className="mx-4 aspect-[16/10] w-[calc(100%-2rem)] rounded-md object-cover"
+              />
+            )}
+            {area.footer && (
+              <p className="px-4 pb-4 pt-3 text-right text-[12px] font-semibold text-ink-soft">
+                <span className="inline-block h-1.5 w-1.5 rounded-full align-middle" style={{ background: color }} />{" "}
+                {area.footer}
+              </p>
+            )}
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default async function CourseDetail({ params }) {
   const { id } = await params;
   const course = getCourse(id);
@@ -755,6 +789,8 @@ export default async function CourseDetail({ params }) {
                     </span>
                   ))}
                 </div>
+
+                <BusinessAreasBlock areas={course.businessAreas} color={color} />
 
                 {course.instructorVideos && course.instructorVideos.length > 0 && (
                   <div className="mt-7 border-t border-line pt-6">
