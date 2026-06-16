@@ -60,6 +60,10 @@ function buildFaq(course) {
     faqs.push(...course.faq);
   }
 
+  if (course.detailPageV2 && course.faq?.length) {
+    return faqs.slice(0, 10);
+  }
+
   if (course.live && course.delivery === "오프라인" && !course.faq?.length) {
     faqs.push({
       q: "수업 장소는 어디인가요?",
@@ -354,6 +358,310 @@ function CourseDifferentiatorBlock({ items, color }) {
   );
 }
 
+function ProblemSectionBlock({ section, color }) {
+  if (!section) return null;
+
+  return (
+    <div className="rounded-2xl border border-line bg-paper p-7">
+      <h2 className="text-[20px] font-extrabold text-ink">{section.title}</h2>
+      {section.body && <p className="mt-3 text-[15px] leading-[1.85] text-ink-soft">{section.body}</p>}
+      {section.risks?.length > 0 && (
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          {section.risks.map((risk, index) => (
+            <div key={risk} className="flex gap-3 rounded-xl border border-line bg-cream/45 p-4">
+              <span
+                className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white"
+                style={{ background: color }}
+              >
+                {index + 1}
+              </span>
+              <span className="text-[14px] font-semibold leading-relaxed text-ink">{risk}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {section.closing && (
+        <p className="mt-5 rounded-xl px-4 py-3 text-[14px] font-black leading-relaxed text-ink" style={{ background: `${color}0d` }}>
+          {section.closing}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function PromiseSectionBlock({ section, color }) {
+  if (!section) return null;
+
+  return (
+    <div className="rounded-2xl border border-line bg-paper p-7">
+      <h2 className="text-[20px] font-extrabold text-ink">{section.title}</h2>
+      {section.body && <p className="mt-3 text-[15px] leading-[1.85] text-ink-soft">{section.body}</p>}
+      {section.questions?.length > 0 && (
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          {section.questions.map((question) => (
+            <div key={question} className="flex gap-3 rounded-xl bg-cream/55 px-4 py-3">
+              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: color }} />
+              <span className="text-[14px] font-semibold leading-relaxed text-ink">{question}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {section.closing && <p className="mt-5 text-[15px] font-extrabold leading-relaxed text-ink">{section.closing}</p>}
+    </div>
+  );
+}
+
+function StepCurriculumBlock({ steps, color }) {
+  if (!steps?.length) return null;
+
+  return (
+    <div id="course-curriculum" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-[20px] font-extrabold text-ink">호스텔 창업, 단계별 목표를 세우고 실전으로 검증합니다</h2>
+          <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
+            창업 방향 설정부터 매물 검토, 수익성 계산, 인허가, 계약, 공간 기획, 운영 세팅까지 실제 창업 순서대로 배웁니다.
+          </p>
+        </div>
+        <span className="shrink-0 text-[13px] font-bold text-ink-soft">{steps.length}단계</span>
+      </div>
+      <div className="mt-5 space-y-3">
+        {steps.map((step, index) => (
+          <details key={step.title} className="group overflow-hidden rounded-xl border border-line bg-cream/35">
+            <summary className="flex cursor-pointer list-none items-start gap-4 px-5 py-4">
+              <span
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-black text-white"
+                style={{ background: color }}
+              >
+                {index + 1}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[16px] font-black text-ink">{step.title}</span>
+                <span className="mt-1 block text-[13px] font-semibold leading-relaxed text-ink-soft">{step.goal}</span>
+              </span>
+              <span
+                className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[16px] font-black text-white transition-transform group-open:rotate-45"
+                style={{ background: color }}
+              >
+                +
+              </span>
+            </summary>
+            <div className="border-t border-line bg-paper px-5 pb-5 pt-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <p className="text-[13px] font-black text-ink">이론</p>
+                  <ul className="mt-2 space-y-1.5">
+                    {step.theory?.map((item) => (
+                      <li key={item} className="flex gap-2 text-[13px] leading-relaxed text-ink-soft">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: color }} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-[13px] font-black text-ink">실전</p>
+                  <p className="mt-2 text-[13px] font-semibold leading-relaxed text-ink-soft">{step.practice}</p>
+                </div>
+              </div>
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FollowUpSupportBlock({ support, color }) {
+  if (!support) return null;
+
+  return (
+    <div className="rounded-2xl border border-line bg-paper p-7">
+      <h2 className="text-[20px] font-extrabold text-ink">{support.title}</h2>
+      {support.body && <p className="mt-3 text-[15px] leading-[1.85] text-ink-soft">{support.body}</p>}
+      {support.items?.length > 0 && (
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          {support.items.map((item) => (
+            <div key={item} className="flex gap-3 rounded-xl border border-line bg-cream/45 p-4">
+              <span className="shrink-0 font-black" style={{ color }}>+</span>
+              <span className="text-[14px] font-bold leading-relaxed text-ink">{item}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {support.note && <p className="mt-5 rounded-xl bg-cream/60 px-4 py-3 text-[13px] font-semibold leading-relaxed text-ink-soft">{support.note}</p>}
+    </div>
+  );
+}
+
+function TargetAudienceBlock({ target, notFor, color }) {
+  if (!target?.length && !notFor?.length) return null;
+
+  return (
+    <div className="rounded-2xl border border-line bg-paper p-7">
+      <h2 className="text-[20px] font-extrabold text-ink">이런 분께 맞습니다</h2>
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
+        {target?.length > 0 && (
+          <div className="rounded-xl border border-line bg-cream/40 p-5">
+            <p className="text-[15px] font-black text-ink">추천 대상</p>
+            <ul className="mt-3 space-y-2">
+              {target.map((item) => (
+                <li key={item} className="flex gap-2 text-[13px] leading-relaxed text-ink-soft">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: color }} />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {notFor?.length > 0 && (
+          <div className="rounded-xl border border-line bg-cream/40 p-5">
+            <p className="text-[15px] font-black text-ink">맞지 않는 경우</p>
+            <ul className="mt-3 space-y-2">
+              {notFor.map((item) => (
+                <li key={item} className="flex gap-2 text-[13px] leading-relaxed text-ink-soft">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink-soft/45" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+      <p className="mt-5 rounded-xl px-4 py-3 text-[14px] font-black leading-relaxed text-ink" style={{ background: `${color}0d` }}>
+        이 과정은 쉽게 돈 버는 방법을 알려주는 강의가 아니라, 계약 전에 반드시 확인해야 할 기준을 배우고 실제 매물을 기준으로 창업 가능성을 검토하는 과정입니다.
+      </p>
+    </div>
+  );
+}
+
+function ReviewCardsBlock({ reviews, color }) {
+  if (!reviews?.length) return null;
+
+  return (
+    <div id="course-reviews" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
+      <h2 className="text-[20px] font-extrabold text-ink">수강 전 고민이 실제 검토 기준으로 바뀝니다</h2>
+      <div className="mt-5 grid gap-4 md:grid-cols-3">
+        {reviews.map((review) => (
+          <article key={review.title} className="flex flex-col rounded-xl border border-line bg-cream/40 p-5">
+            <h3 className="text-[15px] font-black leading-relaxed text-ink">{review.title}</h3>
+            <dl className="mt-4 space-y-3 text-[13px] leading-relaxed">
+              <div>
+                <dt className="font-black text-ink">수강 전 고민</dt>
+                <dd className="mt-1 text-ink-soft">{review.before}</dd>
+              </div>
+              <div>
+                <dt className="font-black text-ink">수강 후 알게 된 기준</dt>
+                <dd className="mt-1 text-ink-soft">{review.after}</dd>
+              </div>
+              <div>
+                <dt className="font-black text-ink">가장 도움 된 파트</dt>
+                <dd className="mt-1 text-ink-soft">{review.helpful}</dd>
+              </div>
+            </dl>
+            <p className="mt-4 rounded-lg bg-paper px-3 py-2 text-[13px] font-extrabold leading-relaxed text-ink">
+              {review.quote}
+            </p>
+            {review.videoId && (
+              <a
+                href={`https://www.youtube.com/watch?v=${review.videoId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex justify-center rounded-xl px-4 py-3 text-[13px] font-black text-white"
+                style={{ background: color }}
+              >
+                영상 보기
+              </a>
+            )}
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PriceGuaranteeBlock({ course, color }) {
+  const section = course.priceSection;
+  if (!section) return null;
+
+  return (
+    <div className="rounded-2xl border border-line bg-paper p-7">
+      <h2 className="text-[20px] font-extrabold text-ink">{section.title}</h2>
+      {section.body && <p className="mt-3 text-[15px] leading-[1.85] text-ink-soft">{section.body}</p>}
+      <div className="mt-6 grid gap-4 lg:grid-cols-[260px_1fr]">
+        <div className="rounded-xl border border-line bg-cream/45 p-5">
+          <p className="text-[13px] font-black text-ink-soft">수강료</p>
+          <p className="mt-2 text-[32px] font-black leading-tight text-ink">{formatPrice(course.price)}</p>
+          <p className="mt-2 text-[13px] font-bold" style={{ color }}>
+            6개월 내 계약 실패 시 수강료 100% 환급 조건
+          </p>
+        </div>
+        <div className="rounded-xl border border-line bg-cream/45 p-5">
+          <p className="text-[13px] font-black text-ink">포함 내용</p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {section.included?.map((item) => (
+              <div key={item} className="flex gap-2 text-[13px] font-semibold leading-relaxed text-ink-soft">
+                <span className="shrink-0 font-black" style={{ color }}>+</span>
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="mt-5 grid gap-3 md:grid-cols-2">
+        {course.scheduleOptions?.map((option) => (
+          <Link
+            key={option.id}
+            href={`/checkout/${option.courseId}${option.checkoutQuery || ""}`}
+            className="rounded-xl px-5 py-4 text-center text-[15px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5"
+            style={{ background: color, boxShadow: `0 8px 24px -8px ${color}80` }}
+          >
+            {option.weekday}반 신청하기
+          </Link>
+        ))}
+      </div>
+      {section.notices?.length > 0 && (
+        <div className="mt-5 rounded-xl border border-line bg-paper p-4">
+          <p className="text-[13px] font-black text-ink">신청 전 안내</p>
+          <ul className="mt-2 space-y-1.5">
+            {section.notices.map((notice) => (
+              <li key={notice} className="flex gap-2 text-[13px] leading-relaxed text-ink-soft">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: color }} />
+                {notice}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FinalCtaBlock({ course, color }) {
+  const cta = course.finalCta;
+  if (!cta) return null;
+
+  return (
+    <div className="rounded-2xl border border-line bg-ink p-7 text-white">
+      <h2 className="text-[22px] font-black leading-tight">{cta.title}</h2>
+      <p className="mt-3 text-[15px] leading-[1.85] text-white/78">{cta.body}</p>
+      <div className="mt-6 grid gap-3 md:grid-cols-2">
+        {course.scheduleOptions?.map((option) => (
+          <Link
+            key={option.id}
+            href={`/checkout/${option.courseId}${option.checkoutQuery || ""}`}
+            className="rounded-xl px-5 py-4 text-center text-[15px] font-black text-white transition-transform hover:-translate-y-0.5"
+            style={{ background: color }}
+          >
+            {option.weekday}반 신청하기
+          </Link>
+        ))}
+      </div>
+      {cta.note && <p className="mt-4 text-[13px] font-bold leading-relaxed text-white/70">{cta.note}</p>}
+    </div>
+  );
+}
+
 function LaunchProcessBlock({ steps, color }) {
   if (!steps?.length) return null;
 
@@ -594,13 +902,27 @@ export default async function CourseDetail({ params }) {
               )}
             </div>
 
-            <h1 className="mt-5 max-w-3xl text-[30px] font-black leading-tight drop-shadow-[0_3px_18px_rgba(0,0,0,0.18)] sm:text-[42px]">
-              {course.title}
+            {course.heroTitle && (
+              <p className="mt-5 text-[14px] font-black text-white/75">{course.title}</p>
+            )}
+            <h1 className={course.heroTitle ? "mt-2 max-w-4xl text-[30px] font-black leading-tight drop-shadow-[0_3px_18px_rgba(0,0,0,0.18)] sm:text-[42px]" : "mt-5 max-w-3xl text-[30px] font-black leading-tight drop-shadow-[0_3px_18px_rgba(0,0,0,0.18)] sm:text-[42px]"}>
+              {course.heroTitle || course.title}
             </h1>
-            {course.subtitle && (
+            {(course.heroSubtitle || course.subtitle) && (
               <p className="mt-3 max-w-2xl text-[16px] leading-relaxed text-white/90 drop-shadow-[0_2px_14px_rgba(0,0,0,0.18)]">
-                {course.subtitle}
+                {course.heroSubtitle || course.subtitle}
               </p>
+            )}
+
+            {course.heroStats?.length > 0 && (
+              <div className="mt-6 grid max-w-4xl gap-2 sm:grid-cols-5">
+                {course.heroStats.map((stat) => (
+                  <div key={stat.label} className="rounded-xl border border-white/18 bg-white/12 px-3 py-3 backdrop-blur-sm">
+                    <p className="text-[18px] font-black leading-tight text-white">{stat.value}</p>
+                    <p className="mt-1 text-[11px] font-bold leading-snug text-white/72">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
             )}
 
             {/* 핵심 정보 칩 */}
@@ -627,6 +949,21 @@ export default async function CourseDetail({ params }) {
                     <span className="font-black text-white">+</span>
                     {b}
                   </div>
+                ))}
+              </div>
+            )}
+
+            {course.scheduleOptions?.length > 0 && (
+              <div className="mt-6 flex flex-wrap gap-3">
+                {course.scheduleOptions.map((option) => (
+                  <Link
+                    key={option.id}
+                    href={`/checkout/${option.courseId}${option.checkoutQuery || ""}`}
+                    className="rounded-xl bg-white px-5 py-3 text-[14px] font-black shadow-lg transition-transform hover:-translate-y-0.5"
+                    style={{ color }}
+                  >
+                    {option.weekday}반 신청하기
+                  </Link>
                 ))}
               </div>
             )}
@@ -681,10 +1018,14 @@ export default async function CourseDetail({ params }) {
               <p className="mt-3 text-[15px] leading-[1.85] text-ink-soft">{course.summary}</p>
             </div>
 
-            <CourseDifferentiatorBlock items={course.differentiators} color={color} />
+            <ProblemSectionBlock section={course.problemSection} color={color} />
+
+            <PromiseSectionBlock section={course.promiseSection} color={color} />
+
+            {!course.detailPageV2 && <CourseDifferentiatorBlock items={course.differentiators} color={color} />}
 
             {/* ▸ 이런 걸 배웁니다 */}
-            <div className="rounded-2xl border border-line bg-paper p-7">
+            {!course.detailPageV2 && <div className="rounded-2xl border border-line bg-paper p-7">
               <h2 className="text-[20px] font-extrabold text-ink">이런 걸 배웁니다</h2>
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
                 {course.highlights.map((h, i) => (
@@ -699,13 +1040,15 @@ export default async function CourseDetail({ params }) {
                   </div>
                 ))}
               </div>
-            </div>
+            </div>}
 
             <ScheduleInfoCards course={course} color={color} />
 
-            <PurchaseGuideBlock guide={course.purchaseGuide} color={color} />
+            {course.detailPageV2 && <StepCurriculumBlock steps={course.stepCurriculum} color={color} />}
 
-            <LaunchProcessBlock steps={course.launchProcess} color={color} />
+            {!course.detailPageV2 && <PurchaseGuideBlock guide={course.purchaseGuide} color={color} />}
+
+            {!course.detailPageV2 && <LaunchProcessBlock steps={course.launchProcess} color={color} />}
 
             {/* ▸ 라이브 수업 — 다음 수업 일정 하이라이트 */}
             {course.live && course.schedule && !course.scheduleOptions?.length && (
@@ -731,6 +1074,9 @@ export default async function CourseDetail({ params }) {
             )}
 
             {/* ▸ 이런 분께 추천합니다 */}
+            {course.detailPageV2 ? (
+              <TargetAudienceBlock target={course.target} notFor={course.notFor} color={color} />
+            ) : (
             <div className="rounded-2xl border border-line bg-paper p-7">
               <h2 className="text-[20px] font-extrabold text-ink">이런 분께 추천합니다</h2>
               <div className="mt-5 space-y-2.5">
@@ -747,6 +1093,7 @@ export default async function CourseDetail({ params }) {
                 ))}
               </div>
             </div>
+            )}
 
             {/* ▸ 이 강의를 누가 가르치나 */}
             {hasInstructorTrust && (
@@ -936,8 +1283,12 @@ export default async function CourseDetail({ params }) {
               </div>
             )}
 
+            {course.detailPageV2 && <FollowUpSupportBlock support={course.followUpSupport} color={color} />}
+
             {/* ▸ 수강생 후기 */}
-            {course.studentReviews?.length > 0 && (
+            {course.detailPageV2 ? (
+              <ReviewCardsBlock reviews={course.reviewCards} color={color} />
+            ) : course.studentReviews?.length > 0 && (
               <div id="course-reviews" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
                 <h2 className="text-[20px] font-extrabold text-ink">수강생 후기</h2>
                 <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
@@ -948,7 +1299,7 @@ export default async function CourseDetail({ params }) {
             )}
 
             {/* ▸ 커리큘럼 */}
-            <div id="course-curriculum" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
+            {!course.detailPageV2 && <div id="course-curriculum" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
               <div className="flex items-baseline justify-between">
                 <h2 className="text-[20px] font-extrabold text-ink">커리큘럼</h2>
                 <span className="text-[13px] text-ink-soft">
@@ -983,10 +1334,10 @@ export default async function CourseDetail({ params }) {
                   </div>
                 ))}
               </div>
-            </div>
+            </div>}
 
             {/* ▸ 수강 후 달라지는 것 */}
-            {course.outcomes && course.outcomes.length > 0 && (
+            {!course.detailPageV2 && course.outcomes && course.outcomes.length > 0 && (
               <div className="rounded-2xl border border-line bg-paper p-7">
                 <h2 className="text-[20px] font-extrabold text-ink">수강 후 달라지는 것</h2>
                 <div className="mt-5 space-y-3">
@@ -1008,6 +1359,8 @@ export default async function CourseDetail({ params }) {
                 </div>
               </div>
             )}
+
+            {course.detailPageV2 && <PriceGuaranteeBlock course={course} color={color} />}
 
             {/* ▸ 신청 방법 */}
             {steps && (
@@ -1163,6 +1516,8 @@ export default async function CourseDetail({ params }) {
             <CourseBooksBlock books={course.books} color={color} />
 
             <RefundPolicyBlock policy={course.refundPolicy} color={color} />
+
+            <FinalCtaBlock course={course} color={color} />
           </div>
 
           {/* ── STICKY SIDEBAR ──────────────────────────────── */}
