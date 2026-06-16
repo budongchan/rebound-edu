@@ -1108,7 +1108,7 @@ export default async function CourseDetail({ params }) {
             )}
 
             {/* 핵심 정보 칩 */}
-            {(scheduleWithDuration || placeLabel) && (
+            {!course.detailPageV2 && (scheduleWithDuration || placeLabel) && (
               <div className="mt-6 flex flex-wrap gap-2.5">
                 {scheduleWithDuration && (
                   <div className="flex items-center gap-2 rounded-lg bg-white/15 px-4 py-2.5 text-[13px] font-semibold text-white ring-1 ring-white/20">
