@@ -537,6 +537,30 @@ function PromiseSectionBlock({ section, color }) {
   );
 }
 
+function StageDifficultyBlock({ section, color }) {
+  if (!section?.stages?.length) return null;
+
+  return (
+    <div className="rounded-2xl border border-line bg-paper p-7">
+      <h2 className="text-[20px] font-extrabold text-ink">{section.title}</h2>
+      {section.body && <p className="mt-3 text-[15px] leading-[1.85] text-ink-soft">{section.body}</p>}
+      <div className="mt-5 grid gap-3 md:grid-cols-2">
+        {section.stages.map((stage) => (
+          <article key={stage.title} className="rounded-xl border border-line bg-cream/40 p-5">
+            <p className="text-[14px] font-black text-ink">{stage.title}</p>
+            <p className="mt-2 text-[15px] font-extrabold leading-relaxed text-ink">{stage.difficulty}</p>
+            <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">{stage.detail}</p>
+            <p className="mt-4 rounded-lg bg-paper px-3 py-2 text-[13px] font-black leading-relaxed text-ink">
+              <span className="mr-1" style={{ color }}>수업에서는</span>
+              {stage.courseAnswer}
+            </p>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function StepCurriculumBlock({ steps, color }) {
   if (!steps?.length) return null;
 
@@ -1210,6 +1234,8 @@ export default async function CourseDetail({ params }) {
             <VisualTimelineBlock items={course.visualTimeline} color={color} />
 
             <ProblemSectionBlock section={course.problemSection} visuals={course.problemVisuals} color={color} />
+
+            <StageDifficultyBlock section={course.stageDifficulties} color={color} />
 
             <PromiseSectionBlock section={course.promiseSection} color={color} />
 
