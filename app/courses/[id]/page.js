@@ -758,7 +758,7 @@ export default async function CourseDetail({ params }) {
                       {KDC_BIO.name} <span className="font-semibold text-ink-soft">— {KDC_BIO.role}</span>
                     </p>
                     <p className="mt-2 text-[14px] leading-relaxed text-ink-soft">
-                      15년간 20개가 넘는 공간을 직접 창업·운영·매각하고, 약 280개 AI 에이전트로 6개 법인을 직접 굴리고 있는 사람. 강의에서 말하는 건 다 본인이 지금도 하고 있는 일입니다.
+                      15년간 20개+ 공간사업을 직접 창업·운영·매각해온 현업 사업가입니다.
                     </p>
                   </div>
                 </div>
