@@ -1316,6 +1316,79 @@ export default async function CourseDetail({ params }) {
                     </div>
                   )}
                   {course.revenueDisclaimer && <p className="mt-4 text-[12px] font-semibold leading-relaxed text-ink-soft">{course.revenueDisclaimer}</p>}
+
+                  {/* 저자 저서 */}
+                  {course.books?.length > 0 && (
+                    <div className="mt-7 border-t border-line pt-6">
+                      <h3 className="text-[15px] font-extrabold text-ink">저자 저서</h3>
+                      <div className="mt-4 grid gap-3 grid-cols-3 sm:grid-cols-5">
+                        {course.books.filter(b => b.cover).map((book) => (
+                          <div key={book.title} className="flex flex-col gap-2">
+                            <div className="overflow-hidden rounded-lg border border-line bg-cream/40 shadow-sm">
+                              <img
+                                src={book.cover}
+                                alt={book.title}
+                                loading="lazy"
+                                className="w-full object-cover"
+                              />
+                            </div>
+                            <p className="text-center text-[11px] font-bold leading-tight text-ink-soft">{book.title}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 강사 운영 사업장 */}
+                  {course.businessAreas?.length > 0 && (
+                    <div className="mt-7 border-t border-line pt-6">
+                      <h3 className="text-[15px] font-extrabold text-ink">강사가 운영하는 사업장</h3>
+                      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {course.businessAreas.map((area) => (
+                          <article key={area.title} className="overflow-hidden rounded-xl border border-line bg-cream/40">
+                            {area.image && (
+                              <img
+                                src={area.image}
+                                alt={area.imageAlt || area.title}
+                                loading="lazy"
+                                className="aspect-[4/3] w-full object-cover"
+                              />
+                            )}
+                            <div className="p-4">
+                              <p className="text-[14px] font-black text-ink">{area.title}</p>
+                              <p className="mt-1.5 text-[12px] leading-relaxed text-ink-soft">{area.description}</p>
+                              {area.footer && (
+                                <p className="mt-3 text-[11px] font-semibold text-ink-soft">{area.footer}</p>
+                              )}
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 강사 운영 플랫폼 */}
+                  {course.platformBenefits?.length > 0 && (
+                    <div className="mt-7 border-t border-line pt-6">
+                      <h3 className="text-[15px] font-extrabold text-ink">강사가 운영하는 플랫폼</h3>
+                      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                        {course.platformBenefits.map((p) => (
+                          <a
+                            key={p.domain}
+                            href={p.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group flex flex-col rounded-xl border border-line bg-cream/40 p-4 transition-colors hover:bg-paper"
+                          >
+                            <p className="text-[15px] font-black text-ink">{p.title}</p>
+                            <p className="mt-0.5 text-[12px] font-extrabold" style={{ color }}>{p.label}</p>
+                            <p className="mt-2 text-[12px] leading-relaxed text-ink-soft">{p.description}</p>
+                            <p className="mt-3 text-[11px] font-black text-ink-soft">{p.domain}</p>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1326,9 +1399,6 @@ export default async function CourseDetail({ params }) {
               {/* 7. 수강 혜택 */}
               <FollowUpSupportBlock support={course.followUpSupport} color={color} />
               <PriceGuaranteeBlock course={course} color={color} />
-
-              {/* 8. 강사 저서 */}
-              <CourseBooksBlock books={course.books} color={color} />
 
               {/* 9. 수업후기 */}
               <ReviewCardsBlock reviews={course.reviewCards} color={color} />
