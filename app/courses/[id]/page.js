@@ -1222,8 +1222,177 @@ export default async function CourseDetail({ params }) {
         <CourseSectionTabs course={course} hasReviews={hasReviews} />
 
         {/* ── BODY ──────────────────────────────────────── */}
-        <section className="container-edu grid gap-10 py-12 lg:grid-cols-[1fr_360px]">
+        <section className={course.detailPageV3 ? "container-edu py-12" : "container-edu grid gap-10 py-12 lg:grid-cols-[1fr_360px]"}>
           <div className="min-w-0 space-y-6">
+
+            {/* ── V3 전용 섹션 순서 ─────────────────────────── */}
+            {course.detailPageV3 && <>
+
+              {/* 1. 호스텔 창업 어려운 이유 */}
+              <ProblemSectionBlock section={course.problemSection} visuals={course.problemVisuals} color={color} />
+
+              {/* 2. 그럼에도 호스텔 창업을 추천하는 이유 */}
+              {course.whySection && (
+                <div className="rounded-2xl border border-line bg-paper p-7">
+                  <h2 className="text-[20px] font-extrabold text-ink">{course.whySection.title}</h2>
+                  {course.whySection.body && <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{course.whySection.body}</p>}
+                  <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                    {course.whySection.reasons.map((r, i) => (
+                      <div key={i} className="rounded-xl border border-line bg-cream/40 p-5">
+                        <div className="flex items-start gap-3">
+                          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white" style={{ background: color }}>{i + 1}</span>
+                          <h3 className="text-[14px] font-extrabold text-ink leading-snug">{r.title}</h3>
+                        </div>
+                        <p className="mt-2 text-[13px] leading-relaxed text-ink-soft pl-9">{r.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 3. 단계별 리스크 / 부동찬 솔루션 */}
+              <StageDifficultyBlock section={course.stageDifficulties} color={color} />
+
+              {/* 4. 추천 대상 */}
+              <TargetAudienceBlock target={course.target} notFor={course.notFor} color={color} />
+
+              {/* 5. 수업 구성 */}
+              <ScheduleInfoCards course={course} color={color} />
+              <StepCurriculumBlock steps={course.stepCurriculum} color={color} />
+
+              {/* 6. 수강 혜택 */}
+              <FollowUpSupportBlock support={course.followUpSupport} color={color} />
+              <PriceGuaranteeBlock course={course} color={color} />
+
+              {/* 7. 강사소개 */}
+              {instructor && (
+                <div id="course-instructor" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
+                  <h2 className="text-[20px] font-extrabold text-ink">강사소개</h2>
+                  <div className="mt-5 flex flex-col gap-5 sm:flex-row">
+                    {instructor.photo ? (
+                      <img src={instructor.photo} alt={`${instructor.name} 강사 프로필`} className="h-24 w-24 shrink-0 rounded-full border border-line object-cover" />
+                    ) : (
+                      <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full text-[28px] font-black text-white" style={{ background: instructor.color || color }}>
+                        {instructor.initial || instructor.name.charAt(0)}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-[17px] font-extrabold text-ink">{course.instructorCompactProfile?.name || instructor.name}</p>
+                      <p className="mt-0.5 text-[13px] text-ink-soft">{course.instructorCompactProfile?.role || instructor.title}</p>
+                      {course.instructorCompactProfile?.tagline && <p className="mt-3 text-[13px] font-extrabold leading-relaxed text-ink">{course.instructorCompactProfile.tagline}</p>}
+                      <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">{course.instructorCompactProfile?.bio || instructor.bio}</p>
+                    </div>
+                  </div>
+                  {course.instructorVideos?.length > 0 && (
+                    <div className="mt-7 border-t border-line pt-6">
+                      {primaryInstructorVideo && (
+                        <div className="overflow-hidden rounded-xl border border-line bg-ink">
+                          <iframe className="aspect-video w-full" src={`https://www.youtube-nocookie.com/embed/${primaryInstructorVideo.id}`} title={primaryInstructorVideo.title} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen />
+                        </div>
+                      )}
+                      {secondaryInstructorVideos.length > 0 && (
+                        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                          {secondaryInstructorVideos.map((video) => (
+                            <a key={video.id} href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" className="group overflow-hidden rounded-xl border border-line bg-cream/40 transition-colors hover:bg-cream">
+                              <div className="relative aspect-video bg-ink">
+                                <img src={`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`} alt={video.title} loading="lazy" className="h-full w-full object-cover opacity-90 group-hover:opacity-100" />
+                                <span className="absolute inset-0 flex items-center justify-center"><span className="rounded-full bg-paper/95 px-3 py-1 text-[12px] font-black text-ink shadow">재생</span></span>
+                              </div>
+                              <p className="p-3 text-[13px] font-extrabold leading-relaxed text-ink">{video.title}</p>
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {course.revenueDisclaimer && <p className="mt-4 text-[12px] font-semibold leading-relaxed text-ink-soft">{course.revenueDisclaimer}</p>}
+                </div>
+              )}
+
+              {/* 8. 수업후기 */}
+              <ReviewCardsBlock reviews={course.reviewCards} color={color} />
+
+              {/* 9. 결제박스 (인라인) */}
+              <div id="course-payment" className="scroll-mt-24 rounded-2xl border-2 bg-paper p-7 shadow-[0_18px_40px_-26px_rgba(20,17,15,0.25)]" style={{ borderColor: color }}>
+                <h2 className="text-[20px] font-extrabold text-ink">수강신청</h2>
+                {course.guarantee && (
+                  <div className="mt-4 rounded-xl bg-green-50 px-4 py-3 text-[13px] font-bold text-green-700 flex items-center gap-2">
+                    <span className="text-[16px]">✅</span>
+                    <span>{course.guarantee}{course.guaranteeNote ? " · 조건 있음" : ""}</span>
+                  </div>
+                )}
+                <div className="mt-4 flex items-baseline gap-3">
+                  {course.priceLabel ? (
+                    <span className="text-[28px] font-black text-ink">{course.priceLabel}</span>
+                  ) : (
+                    <span className="text-[28px] font-black text-ink">{formatPrice(course.price)}</span>
+                  )}
+                </div>
+                {course.sidebarSummary?.length > 0 && (
+                  <div className="mt-4 space-y-2 rounded-xl border border-line bg-cream/60 p-4">
+                    {course.sidebarSummary.map((line) => (
+                      <p key={line} className="text-[13px] font-extrabold leading-relaxed text-ink">{line}</p>
+                    ))}
+                  </div>
+                )}
+                {course.scheduleOptions?.length ? (
+                  <div className="mt-5">
+                    <ScheduleCheckoutSelector options={course.scheduleOptions} color={color} priceText={course.priceLabel || (course.free ? "무료" : formatPrice(course.price))} />
+                  </div>
+                ) : course.cardPaymentUrl ? (
+                  <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                    <a href={course.cardPaymentUrl} target="_blank" rel="noopener noreferrer" className="flex-1 rounded-xl px-5 py-4 text-center text-[15px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5" style={{ background: color }}>카드로 결제하기</a>
+                    <Link href={`/checkout/${course.id}`} className="flex-1 rounded-xl border border-line bg-paper px-5 py-4 text-center text-[15px] font-black text-ink transition-transform hover:-translate-y-0.5">무통장 입금으로 신청</Link>
+                  </div>
+                ) : (
+                  <Link href={`/checkout/${course.id}`} className="mt-5 block rounded-xl px-5 py-4 text-center text-[15px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5" style={{ background: color }}>수강 신청하기</Link>
+                )}
+                <dl className="mt-6 space-y-2.5 border-t border-line pt-5 text-[13px]">
+                  {[
+                    ["상태", enrollmentStatus],
+                    ...(course.schedule ? [["일정", course.scheduleShort || course.schedule]] : []),
+                    ...(deliveryLabel ? [["방식", deliveryLabel]] : []),
+                    ...(course.duration ? [["시간", course.duration]] : []),
+                    ["강사", course.instructor],
+                  ].map(([dt, dd]) => (
+                    <div key={dt} className="flex justify-between gap-2">
+                      <dt className="shrink-0 text-ink-soft">{dt}</dt>
+                      <dd className="text-right font-semibold text-ink">{dd}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <a href={inquiryUrl} target="_blank" rel="noopener noreferrer" className="mt-5 flex items-center justify-center gap-2 rounded-xl border border-line py-3 text-[13px] font-semibold text-ink-soft transition-colors hover:bg-cream hover:text-ink">카카오톡으로 문의하기</a>
+              </div>
+
+              {/* 10. Q&A */}
+              <div id="course-refund" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <h2 className="text-[20px] font-extrabold text-ink">수업 관련 Q&A</h2>
+                    <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">일정, 장소, 결제, 환불처럼 수강 전에 자주 묻는 내용을 정리했습니다.</p>
+                  </div>
+                  <a href={inquiryUrl} target="_blank" rel="noopener noreferrer" className="shrink-0 rounded-xl border border-line bg-cream px-4 py-2.5 text-[13px] font-black text-ink transition-colors hover:bg-paper">질문하기</a>
+                </div>
+                <div className="mt-5 divide-y divide-line rounded-xl border border-line">
+                  {faqs.map((f, i) => (
+                    <details key={i} className="group">
+                      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-[14px] font-bold text-ink">
+                        {f.q}
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[16px] font-black text-white transition-transform group-open:rotate-45" style={{ background: color }}>+</span>
+                      </summary>
+                      <div className="px-5 pb-5 text-[14px] leading-relaxed text-ink-soft">{f.a}</div>
+                    </details>
+                  ))}
+                </div>
+              </div>
+
+              <PlatformBenefitsBlock benefits={course.platformBenefits} color={color} />
+              <CourseBooksBlock books={course.books} color={color} />
+              <RefundPolicyBlock policy={course.refundPolicy} color={color} />
+            </>}
+
+            {/* ── 기존 V1/V2 섹션 (V3 아닐 때만) ────────────── */}
+            {!course.detailPageV3 && <>
 
             {/* ▸ 수업 소개 */}
             <div id="course-intro" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
@@ -1259,9 +1428,9 @@ export default async function CourseDetail({ params }) {
               </div>
             </div>}
 
-            <ScheduleInfoCards course={course} color={color} />
+            {!course.detailPageV3 && <ScheduleInfoCards course={course} color={color} />}
 
-            {course.detailPageV2 && <StepCurriculumBlock steps={course.stepCurriculum} color={color} />}
+            {course.detailPageV2 && !course.detailPageV3 && <StepCurriculumBlock steps={course.stepCurriculum} color={color} />}
 
             {!course.detailPageV2 && <PurchaseGuideBlock guide={course.purchaseGuide} color={color} />}
 
@@ -1291,7 +1460,7 @@ export default async function CourseDetail({ params }) {
             )}
 
             {/* ▸ 이런 분께 추천합니다 */}
-            {course.detailPageV2 ? (
+            {!course.detailPageV3 && (course.detailPageV2 ? (
               <TargetAudienceBlock target={course.target} notFor={course.notFor} color={color} />
             ) : (
             <div className="rounded-2xl border border-line bg-paper p-7">
@@ -1310,10 +1479,10 @@ export default async function CourseDetail({ params }) {
                 ))}
               </div>
             </div>
-            )}
+            ))}
 
             {/* ▸ 이 강의를 누가 가르치나 */}
-            {hasInstructorTrust && (
+            {!course.detailPageV3 && hasInstructorTrust && (
               <div className="rounded-2xl border border-line bg-paper p-7">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
@@ -1483,7 +1652,7 @@ export default async function CourseDetail({ params }) {
             )}
 
             {/* ▸ 숫자로 보는 실적 (사회적 증거) */}
-            {course.socialProof && (
+            {!course.detailPageV3 && course.socialProof && (
               <div className="rounded-2xl border border-line bg-paper p-7">
                 <h2 className="text-[20px] font-extrabold text-ink">{course.socialProof.title || "숫자로 보는 실적"}</h2>
                 <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -1500,10 +1669,10 @@ export default async function CourseDetail({ params }) {
               </div>
             )}
 
-            {course.detailPageV2 && <FollowUpSupportBlock support={course.followUpSupport} color={color} />}
+            {course.detailPageV2 && !course.detailPageV3 && <FollowUpSupportBlock support={course.followUpSupport} color={color} />}
 
             {/* ▸ 수강생 후기 */}
-            {course.detailPageV2 ? (
+            {!course.detailPageV3 && (course.detailPageV2 ? (
               <ReviewCardsBlock reviews={course.reviewCards} color={color} />
             ) : course.studentReviews?.length > 0 && (
               <div id="course-reviews" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
@@ -1513,7 +1682,7 @@ export default async function CourseDetail({ params }) {
                 </p>
                 <VideoReviewGrid videos={course.studentReviews} color={color} />
               </div>
-            )}
+            ))}
 
             {/* ▸ 커리큘럼 */}
             {!course.detailPageV2 && <div id="course-curriculum" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
@@ -1577,10 +1746,10 @@ export default async function CourseDetail({ params }) {
               </div>
             )}
 
-            {course.detailPageV2 && <PriceGuaranteeBlock course={course} color={color} />}
+            {course.detailPageV2 && !course.detailPageV3 && <PriceGuaranteeBlock course={course} color={color} />}
 
             {/* ▸ 신청 방법 */}
-            {steps && (
+            {!course.detailPageV3 && steps && (
               <div className="rounded-2xl border border-line bg-paper p-7">
                 <h2 className="text-[20px] font-extrabold text-ink">신청 방법</h2>
                 <div className="mt-5 grid gap-4 sm:grid-cols-3">
@@ -1597,8 +1766,8 @@ export default async function CourseDetail({ params }) {
               </div>
             )}
 
-            {/* ▸ Q&A */}
-            <div id={course.refundPolicy ? undefined : "course-refund"} className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
+            {/* ▸ Q&A (V1/V2 전용, V3는 위에서 별도 렌더) */}
+            {!course.detailPageV3 && <div id={course.refundPolicy ? undefined : "course-refund"} className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h2 className="text-[20px] font-extrabold text-ink">수업 관련 Q&A</h2>
@@ -1634,10 +1803,10 @@ export default async function CourseDetail({ params }) {
                   );
                 })}
               </div>
-            </div>
+            </div>}
 
-            {/* ▸ 강사 프로필 */}
-            {instructor && (
+            {/* ▸ 강사 프로필 (V1/V2 전용) */}
+            {!course.detailPageV3 && instructor && (
               <div id="course-instructor" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
                 <h2 className="text-[20px] font-extrabold text-ink">강사 소개</h2>
                 <div className="mt-5 flex flex-col gap-5 sm:flex-row">
@@ -1735,10 +1904,12 @@ export default async function CourseDetail({ params }) {
             <RefundPolicyBlock policy={course.refundPolicy} color={color} />
 
             <FinalCtaBlock course={course} color={color} />
+
+            </>}
           </div>
 
-          {/* ── STICKY SIDEBAR ──────────────────────────────── */}
-          <aside className="lg:sticky lg:top-24 lg:self-start">
+          {/* ── STICKY SIDEBAR (V1/V2 전용) ──────────────────── */}
+          {!course.detailPageV3 && <aside className="lg:sticky lg:top-24 lg:self-start">
             <div className="rounded-2xl border border-line bg-paper p-6 shadow-[0_18px_40px_-26px_rgba(20,17,15,0.35)]">
 
               {/* 보증 배지 */}
@@ -1869,7 +2040,7 @@ export default async function CourseDetail({ params }) {
                 <CourseShareButton title={course.title} summary={course.subtitle || course.summary} color={color} />
               </div>
             </div>
-          </aside>
+          </aside>}
         </section>
       </main>
 
