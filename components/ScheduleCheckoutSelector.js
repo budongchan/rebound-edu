@@ -65,15 +65,30 @@ export default function ScheduleCheckoutSelector({ options = [], color = "#14110
       </div>
 
       <dl className="mt-4 space-y-2 text-[12px]">
-        {[
-          ["수업", selected.schedule],
-          ["임장", selected.fieldwork],
-        ].filter(([, value]) => value).map(([label, value]) => (
-          <div key={label} className="flex justify-between gap-3">
-            <dt className="shrink-0 text-ink-soft">{label}</dt>
-            <dd className="text-right font-extrabold text-ink">{value}</dd>
+        {selected.theorySchedule && (
+          <div className="flex justify-between gap-3">
+            <dt className="shrink-0 text-ink-soft">» 이론수업</dt>
+            <dd className="text-right font-extrabold text-ink">{selected.theorySchedule}</dd>
           </div>
-        ))}
+        )}
+        {!selected.theorySchedule && selected.schedule && (
+          <div className="flex justify-between gap-3">
+            <dt className="shrink-0 text-ink-soft">» 이론수업</dt>
+            <dd className="text-right font-extrabold text-ink">{selected.schedule.split('·')[0]?.trim()}</dd>
+          </div>
+        )}
+        {selected.fieldworkSchedule && (
+          <div className="flex justify-between gap-3">
+            <dt className="shrink-0 text-ink-soft">임장수업</dt>
+            <dd className="text-right font-extrabold text-ink">{selected.fieldworkSchedule}</dd>
+          </div>
+        )}
+        {!selected.fieldworkSchedule && selected.schedule?.includes('·') && (
+          <div className="flex justify-between gap-3">
+            <dt className="shrink-0 text-ink-soft">임장수업</dt>
+            <dd className="text-right font-extrabold text-ink">{selected.schedule.split('·')[1]?.trim()}</dd>
+          </div>
+        )}
       </dl>
 
       <Link
