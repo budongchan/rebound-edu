@@ -1321,17 +1321,26 @@ export default async function CourseDetail({ params }) {
                   {course.books?.length > 0 && (
                     <div className="mt-7 border-t border-line pt-6">
                       <h3 className="text-[15px] font-extrabold text-ink">저자 저서</h3>
-                      <div className="mt-4 grid gap-3 grid-cols-3 sm:grid-cols-5">
-                        {course.books.filter(b => b.cover).map((book) => (
+                      <div className="mt-4 grid gap-3 grid-cols-3 sm:grid-cols-4">
+                        {course.books.map((book) => (
                           <div key={book.title} className="flex flex-col gap-2">
-                            <div className="overflow-hidden rounded-lg border border-line bg-cream/40 shadow-sm">
-                              <img
-                                src={book.cover}
-                                alt={book.title}
-                                loading="lazy"
-                                className="w-full object-cover"
-                              />
-                            </div>
+                            {book.cover ? (
+                              <div className="relative overflow-hidden rounded-lg border border-line bg-cream/40 shadow-sm">
+                                <img
+                                  src={book.cover}
+                                  alt={book.title}
+                                  loading="lazy"
+                                  className="w-full object-cover"
+                                />
+                                {book.badge && (
+                                  <span className="absolute top-1.5 right-1.5 rounded-full bg-accent px-1.5 py-0.5 text-[9px] font-extrabold text-white">{book.badge}</span>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="flex aspect-[2/3] items-center justify-center rounded-lg border border-line bg-cream/40">
+                                <span className="text-center text-[13px] font-extrabold leading-snug text-ink-soft px-2">{book.title}</span>
+                              </div>
+                            )}
                             <p className="text-center text-[11px] font-bold leading-tight text-ink-soft">{book.title}</p>
                           </div>
                         ))}
