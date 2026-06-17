@@ -790,17 +790,19 @@ function PriceGuaranteeBlock({ course, color }) {
             6개월 내 계약 실패 시 수강료 100% 환급 조건
           </p>
         </div>
-        <div className="rounded-xl border border-line bg-cream/45 p-5">
-          <p className="text-[13px] font-black text-ink">포함 내용</p>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {section.included?.map((item) => (
-              <div key={item} className="flex gap-2 text-[13px] font-semibold leading-relaxed text-ink-soft">
-                <span className="shrink-0 font-black" style={{ color }}>+</span>
-                {item}
-              </div>
-            ))}
+        {section.included?.length > 0 && (
+          <div className="rounded-xl border border-line bg-cream/45 p-5">
+            <p className="text-[13px] font-black text-ink">포함 내용</p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {section.included.map((item) => (
+                <div key={item} className="flex gap-2 text-[13px] font-semibold leading-relaxed text-ink-soft">
+                  <span className="shrink-0 font-black" style={{ color }}>+</span>
+                  {item}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <div className="mt-5 grid gap-3 md:grid-cols-2">
         {course.scheduleOptions?.map((option) => (
