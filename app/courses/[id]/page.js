@@ -1274,15 +1274,7 @@ export default async function CourseDetail({ params }) {
               {/* 4. 추천 대상 */}
               <TargetAudienceBlock target={course.target} notFor={course.notFor} color={color} />
 
-              {/* 5. 수업 구성 */}
-              <ScheduleInfoCards course={course} color={color} />
-              <StepCurriculumBlock steps={course.stepCurriculum} color={color} />
-
-              {/* 6. 수강 혜택 */}
-              <FollowUpSupportBlock support={course.followUpSupport} color={color} />
-              <PriceGuaranteeBlock course={course} color={color} />
-
-              {/* 7. 강사소개 */}
+              {/* 5. 강사소개 */}
               {instructor && (
                 <div id="course-instructor" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
                   <h2 className="text-[20px] font-extrabold text-ink">강사소개</h2>
@@ -1326,6 +1318,14 @@ export default async function CourseDetail({ params }) {
                   {course.revenueDisclaimer && <p className="mt-4 text-[12px] font-semibold leading-relaxed text-ink-soft">{course.revenueDisclaimer}</p>}
                 </div>
               )}
+
+              {/* 6. 수업 구성 */}
+              <ScheduleInfoCards course={course} color={color} />
+              <StepCurriculumBlock steps={course.stepCurriculum} color={color} />
+
+              {/* 7. 수강 혜택 */}
+              <FollowUpSupportBlock support={course.followUpSupport} color={color} />
+              <PriceGuaranteeBlock course={course} color={color} />
 
               {/* 8. 강사 저서 */}
               <CourseBooksBlock books={course.books} color={color} />
