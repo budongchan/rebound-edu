@@ -170,7 +170,6 @@ function ScheduleInfoCards({ course, color }) {
             평일반(수요일)과 주말반(토요일)은 같은 구성으로 진행됩니다.
           </p>
         </div>
-        <span className="text-[13px] font-bold text-ink-soft">인원 5~15인(회차별)</span>
       </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -358,7 +357,7 @@ function VisualTimelineBlock({ items, color }) {
           <p className="mt-1 text-[13px] font-semibold text-ink-soft">현장, 이론, 운영 실습을 하루에 연결합니다.</p>
         </div>
       </div>
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => (
           <article key={item.title} className="overflow-hidden rounded-xl border border-line bg-paper">
             <EvidenceVisual item={item} color={color} className="aspect-[16/10] w-full object-cover" />
@@ -899,20 +898,37 @@ function CourseBooksBlock({ books, color }) {
   return (
     <div className="rounded-2xl border border-line bg-paper p-7">
       <h2 className="text-[20px] font-extrabold text-ink">강사 저서</h2>
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {books.map((book) => (
-          <div key={book.title} className="rounded-xl border border-line bg-cream/45 p-5">
-            <p className="text-[17px] font-black text-ink">{book.title}</p>
-            <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">{book.description}</p>
-            {book.tags?.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {book.tags.map((tag) => (
-                  <span key={tag} className="rounded-full px-3 py-1 text-[12px] font-extrabold" style={{ background: `${color}12`, color }}>
-                    #{tag}
+          <div key={book.title} className="rounded-xl border border-line bg-cream/45 overflow-hidden">
+            {book.cover ? (
+              <div className="relative w-full" style={{ paddingTop: "140%" }}>
+                <img src={book.cover} alt={book.title} className="absolute inset-0 h-full w-full object-cover" />
+                {book.badge && (
+                  <span className="absolute top-2 left-2 rounded-full px-2.5 py-1 text-[11px] font-black text-white" style={{ background: color }}>
+                    {book.badge}
                   </span>
-                ))}
+                )}
               </div>
-            )}
+            ) : null}
+            <div className="p-5">
+              {!book.cover && book.badge && (
+                <span className="mb-2 inline-block rounded-full px-2.5 py-1 text-[11px] font-black text-white" style={{ background: color }}>
+                  {book.badge}
+                </span>
+              )}
+              <p className="text-[16px] font-black text-ink">{book.title}</p>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-ink-soft">{book.description}</p>
+              {book.tags?.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {book.tags.map((tag) => (
+                    <span key={tag} className="rounded-full px-3 py-1 text-[12px] font-extrabold" style={{ background: `${color}12`, color }}>
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>
@@ -1309,10 +1325,28 @@ export default async function CourseDetail({ params }) {
                 </div>
               )}
 
-              {/* 8. 수업후기 */}
+              {/* 8. 강사 저서 */}
+              <CourseBooksBlock books={course.books} color={color} />
+
+              {/* 9. 수업후기 */}
               <ReviewCardsBlock reviews={course.reviewCards} color={color} />
 
-              {/* 9. 결제박스 (인라인) */}
+              {/* 10. 결제박스 (인라인) */}
+              {/* 특별 혜택 배너 */}
+              {course.cohortBenefits && (
+                <div className="rounded-2xl p-7 text-white" style={{ background: color }}>
+                  <p className="inline-block rounded-full bg-white/20 px-3 py-1 text-[12px] font-black tracking-wide uppercase">{course.cohortBenefits.label}</p>
+                  <ul className="mt-5 space-y-3">
+                    {course.cohortBenefits.items.map((item) => (
+                      <li key={item} className="flex items-start gap-3 text-[15px] font-extrabold leading-snug">
+                        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/25 text-[11px] font-black">✓</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               <div id="course-payment" className="scroll-mt-24 rounded-2xl border-2 bg-paper p-7 shadow-[0_18px_40px_-26px_rgba(20,17,15,0.25)]" style={{ borderColor: color }}>
                 <h2 className="text-[20px] font-extrabold text-ink">수강신청</h2>
                 {course.guarantee && (
@@ -1387,8 +1421,7 @@ export default async function CourseDetail({ params }) {
               </div>
 
               <PlatformBenefitsBlock benefits={course.platformBenefits} color={color} />
-              <CourseBooksBlock books={course.books} color={color} />
-              <RefundPolicyBlock policy={course.refundPolicy} color={color} />
+              {!course.detailPageV3 && <RefundPolicyBlock policy={course.refundPolicy} color={color} />}
             </>}
 
             {/* ── 기존 V1/V2 섹션 (V3 아닐 때만) ────────────── */}
