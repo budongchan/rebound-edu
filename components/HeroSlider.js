@@ -9,7 +9,7 @@ const SLIDES = [
     bg: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 60%, #0f766e 100%)",
     tag: "호스텔 올인원 창업과정",
     heading: "호스텔 중개 - 임차 - 매입까지\n직접 다 해본 전문가",
-    sub: "목요일·토요일 선택 · 이론 마스터 13:00-19:00 · 현장 임장 별도 공지",
+    sub: "목요일·토요일 선택 · 이론 13:00-19:00 · 임장 수업 금요일 17시·토요일 14시",
     cta: { label: "자세히 보기", href: "/courses/hostel-live-sat" },
     accent: "#2563eb",
     schedule: "일정 : 목요일·토요일 13:00-19:00",
