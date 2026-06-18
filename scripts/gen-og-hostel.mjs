@@ -145,6 +145,43 @@ const html = `<!DOCTYPE html>
     color: rgba(255,255,255,0.25);
     letter-spacing: 0.5px;
   }
+  .schedule-block {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .schedule-pill {
+    background: rgba(255,70,32,0.12);
+    border: 1px solid rgba(255,70,32,0.35);
+    border-radius: 6px;
+    padding: 6px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .schedule-pill .day-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,70,32,0.7);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .schedule-pill .time-val {
+    font-size: 14px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+  }
+  .guarantee-pill {
+    background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.35);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #6ee7b7;
+    line-height: 1.5;
+  }
   .orange-corner {
     position: absolute;
     right: 0; bottom: 0;
@@ -175,12 +212,16 @@ const html = `<!DOCTYPE html>
       <div class="subtitle">이론부터 매물까지<br><span class="by">by 부동찬</span></div>
     </div>
     <div class="bottom">
-      <div class="tags">
-        <span class="tag">현장 실무</span>
-        <span class="tag">매물 분석</span>
-        <span class="tag">인허가 절차</span>
-        <span class="tag">수익 구조</span>
-        <span class="tag">운영 시스템</span>
+      <div class="schedule-block">
+        <div class="schedule-pill">
+          <span class="day-label">평일반</span>
+          <span class="time-val">목 13:00-19:00</span>
+        </div>
+        <div class="schedule-pill">
+          <span class="day-label">주말반</span>
+          <span class="time-val">토 13:00-19:00</span>
+        </div>
+        <div class="guarantee-pill">6개월 내 계약 실패 시<br>수강료 100% 환급</div>
       </div>
       <div class="domain">edu.rebound.io.kr</div>
     </div>

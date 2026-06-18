@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px;
+    height: 630px;
+    overflow: hidden;
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1a4a3a 100%);
+    position: relative;
+  }
+
+  /* 배경 장식 */
+  .bg-circle-1 {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.06);
+    top: -200px; right: -100px;
+  }
+  .bg-circle-2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    border: 1px solid rgba(37,99,235,0.2);
+    bottom: -150px; left: -100px;
+  }
+
+  .container {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    padding: 56px 72px;
+  }
+
+  /* 상단 태그 */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .tag {
+    background: rgba(37,99,235,0.25);
+    border: 1px solid rgba(37,99,235,0.5);
+    color: #93c5fd;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+  .brand {
+    color: rgba(255,255,255,0.5);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  /* 메인 헤딩 */
+  .headline {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+  }
+  .title {
+    font-size: 52px;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .title em {
+    font-style: normal;
+    color: #60a5fa;
+  }
+  .subtitle {
+    font-size: 19px;
+    color: rgba(255,255,255,0.65);
+    font-weight: 400;
+    line-height: 1.5;
+    max-width: 620px;
+  }
+
+  /* 하단 정보 */
+  .bottom-bar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+  .schedule-pills {
+    display: flex;
+    gap: 10px;
+  }
+  .pill {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .pill .day {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.05em;
+  }
+  .pill .time {
+    font-size: 16px;
+    font-weight: 800;
+    color: #ffffff;
+  }
+  .guarantee {
+    background: rgba(16,185,129,0.15);
+    border: 1px solid rgba(16,185,129,0.4);
+    color: #6ee7b7;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 10px;
+    line-height: 1.4;
+    text-align: right;
+  }
+  .guarantee .label {
+    font-size: 11px;
+    color: rgba(110,231,183,0.7);
+    margin-bottom: 3px;
+  }
+</style>
+</head>
+<body>
+  <div class="bg-circle-1"></div>
+  <div class="bg-circle-2"></div>
+
+  <div class="container">
+    <!-- 상단 -->
+    <div class="top-bar">
+      <span class="tag">호스텔 올인원 창업과정</span>
+      <span class="brand">REBOUND EDU</span>
+    </div>
+
+    <!-- 메인 -->
+    <div class="headline">
+      <div class="title">
+        호스텔 창업,<br>
+        <em>직접 해본 사람</em>이<br>
+        가르칩니다
+      </div>
+      <div class="subtitle">
+        호스텔 중개 18건 · 임차형 창업 1건 · 매입형 창업 1건<br>
+        매입부터 운영·엑시트까지 전 과정 6시간 압축
+      </div>
+    </div>
+
+    <!-- 하단 -->
+    <div class="bottom-bar">
+      <div class="schedule-pills">
+        <div class="pill">
+          <span class="day">평일반</span>
+          <span class="time">목 13:00-19:00</span>
+        </div>
+        <div class="pill">
+          <span class="day">주말반</span>
+          <span class="time">토 13:00-19:00</span>
+        </div>
+      </div>
+      <div class="guarantee">
+        <div class="label">환급 보장</div>
+        6개월 내 계약 실패 시<br>수강료 100% 환급
+      </div>
+    </div>
+  </div>
+</body>
+</html>
