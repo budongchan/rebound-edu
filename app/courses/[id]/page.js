@@ -167,7 +167,7 @@ function ScheduleInfoCards({ course, color }) {
         <div>
           <h2 className="text-[20px] font-extrabold text-ink">요일·장소 안내</h2>
           <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
-            평일반(수요일)과 주말반(토요일)은 같은 구성으로 진행됩니다.
+            평일반(목요일)과 주말반(토요일)은 같은 구성으로 진행됩니다.
           </p>
         </div>
       </div>
