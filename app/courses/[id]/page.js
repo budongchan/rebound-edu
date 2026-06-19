@@ -474,9 +474,10 @@ function CourseDifferentiatorBlock({ items, color }) {
 function ProblemSectionBlock({ section, visuals, color }) {
   if (!section) return null;
   const visualItems = section.visuals || visuals || [];
+  const c = section.color || color;
 
   return (
-    <div className="rounded-2xl border p-7" style={{ borderColor: `${color}44`, background: `${color}08` }}>
+    <div className="rounded-2xl border p-7" style={{ borderColor: `${c}44`, background: `${c}08` }}>
       <div className={visualItems.length ? "grid gap-6 lg:grid-cols-[1fr_280px]" : ""}>
         <div>
           <h2 className="text-[20px] font-extrabold text-ink">{section.title}</h2>
@@ -486,7 +487,7 @@ function ProblemSectionBlock({ section, visuals, color }) {
           <div className="grid gap-3">
             {visualItems.slice(0, 3).map((visual) => (
               <figure key={visual.title} className="overflow-hidden rounded-xl border border-line bg-cream/35">
-                <EvidenceVisual item={visual} color={color} className="aspect-[16/9] w-full rounded-none border-0" />
+                <EvidenceVisual item={visual} color={c} className="aspect-[16/9] w-full rounded-none border-0" />
                 <figcaption className="p-3 text-[12px] font-bold leading-relaxed text-ink-soft">{visual.caption}</figcaption>
               </figure>
             ))}
@@ -495,17 +496,25 @@ function ProblemSectionBlock({ section, visuals, color }) {
       </div>
       {section.risks?.length > 0 && (
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          {section.risks.map((risk, index) => (
-            <div key={risk} className="flex gap-3 rounded-xl border p-4" style={{ borderColor: `${color}33`, background: `${color}0d` }}>
+          {section.risks.map((risk, index) => {
+            const isObj = typeof risk === "object" && risk !== null;
+            const title = isObj ? risk.title : risk;
+            const desc = isObj ? risk.desc : null;
+            return (
+            <div key={title} className="flex gap-3 rounded-xl border p-4" style={{ borderColor: `${c}33`, background: `${c}0d` }}>
               <span
                 className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white"
-                style={{ background: color }}
+                style={{ background: c }}
               >
                 {index + 1}
               </span>
-              <span className="text-[14px] font-semibold leading-relaxed text-ink">{risk}</span>
+              <div className="min-w-0">
+                <span className="text-[14px] font-semibold leading-relaxed text-ink">{title}</span>
+                {desc && <p className="mt-1 text-[13px] leading-relaxed text-ink-soft">{desc}</p>}
+              </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
       {section.closing && (
