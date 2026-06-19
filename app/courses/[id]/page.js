@@ -1256,15 +1256,18 @@ export default async function CourseDetail({ params }) {
                   <h2 className="text-[20px] font-extrabold text-ink">{course.whySection.title}</h2>
                   {course.whySection.body && <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{course.whySection.body}</p>}
                   <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                    {course.whySection.reasons.map((r, i) => (
-                      <div key={i} className="rounded-xl border border-line bg-cream/40 p-5">
-                        <div className="flex items-start gap-3">
-                          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white" style={{ background: color }}>{i + 1}</span>
-                          <h3 className="text-[14px] font-extrabold text-ink leading-snug">{r.title}</h3>
+                    {course.whySection.reasons.map((r, i) => {
+                      const ac = course.whySection.accentColor || color;
+                      return (
+                        <div key={i} className="rounded-xl border p-5" style={{ borderColor: ac + "33", background: ac + "0d" }}>
+                          <div className="flex items-start gap-3">
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white" style={{ background: ac }}>{i + 1}</span>
+                            <h3 className="text-[14px] font-extrabold text-ink leading-snug">{r.title}</h3>
+                          </div>
+                          <p className="mt-2 text-[13px] leading-relaxed text-ink-soft pl-9">{r.desc}</p>
                         </div>
-                        <p className="mt-2 text-[13px] leading-relaxed text-ink-soft pl-9">{r.desc}</p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
