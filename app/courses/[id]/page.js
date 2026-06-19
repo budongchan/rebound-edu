@@ -991,19 +991,28 @@ function PlatformBenefitsBlock({ benefits, color }) {
             href={benefit.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group rounded-xl border border-line bg-cream/45 p-5 transition-colors hover:bg-paper hover:shadow-[0_16px_32px_-28px_rgba(20,17,15,0.55)]"
+            className="group overflow-hidden rounded-xl border border-line bg-cream/45 transition-colors hover:bg-paper hover:shadow-[0_16px_32px_-28px_rgba(20,17,15,0.55)]"
           >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[17px] font-black leading-tight text-ink">{benefit.title}</p>
-                <p className="mt-1 text-[13px] font-extrabold" style={{ color }}>{benefit.label}</p>
+            {benefit.cover && (
+              <img
+                src={benefit.cover}
+                alt={benefit.title}
+                className="h-36 w-full object-cover object-top"
+              />
+            )}
+            <div className="p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[17px] font-black leading-tight text-ink">{benefit.title}</p>
+                  <p className="mt-1 text-[13px] font-extrabold" style={{ color }}>{benefit.label}</p>
+                </div>
+                <span className="rounded-full border border-line bg-paper px-2.5 py-1 text-[11px] font-black text-ink-soft group-hover:text-ink">
+                  이동
+                </span>
               </div>
-              <span className="rounded-full border border-line bg-paper px-2.5 py-1 text-[11px] font-black text-ink-soft group-hover:text-ink">
-                이동
-              </span>
+              <p className="mt-3 text-[13px] leading-relaxed text-ink-soft">{benefit.description}</p>
+              <p className="mt-4 text-[12px] font-black text-ink">{benefit.domain}</p>
             </div>
-            <p className="mt-3 text-[13px] leading-relaxed text-ink-soft">{benefit.description}</p>
-            <p className="mt-4 text-[12px] font-black text-ink">{benefit.domain}</p>
           </a>
         ))}
       </div>
@@ -1420,7 +1429,7 @@ export default async function CourseDetail({ params }) {
                   {/* 강사 운영 플랫폼 — 설명 텍스트 형식 */}
                   {course.platformBenefits?.length > 0 && (
                     <div className="mt-7 border-t border-line pt-6">
-                      <h3 className="text-[15px] font-extrabold text-ink">강사가 운영하는 서비스</h3>
+                      <h3 className="text-[15px] font-extrabold text-ink">수강생 무료 이용 플랫폼</h3>
                       <div className="mt-4 space-y-3">
                         {course.platformBenefits.map((p) => (
                           <a
