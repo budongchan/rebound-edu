@@ -495,17 +495,24 @@ function ProblemSectionBlock({ section, visuals, color }) {
       </div>
       {section.risks?.length > 0 && (
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          {section.risks.map((risk, index) => (
-            <div key={risk} className="flex gap-3 rounded-xl border p-4" style={{ borderColor: `${color}33`, background: `${color}0d` }}>
+          {section.risks.map((risk, index) => {
+            const title = typeof risk === "string" ? risk : risk.title;
+            const desc = typeof risk === "string" ? "" : risk.desc;
+            return (
+            <div key={title || index} className="flex gap-3 rounded-xl border p-4" style={{ borderColor: `${color}33`, background: `${color}0d` }}>
               <span
                 className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white"
                 style={{ background: color }}
               >
                 {index + 1}
               </span>
-              <span className="text-[14px] font-semibold leading-relaxed text-ink">{risk}</span>
+              <span className="text-[14px] font-semibold leading-relaxed text-ink">
+                <span className="block font-black">{title}</span>
+                {desc && <span className="mt-1 block text-[13px] font-semibold text-ink-soft">{desc}</span>}
+              </span>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
       {section.closing && (
@@ -968,7 +975,7 @@ function PlatformBenefitsBlock({ benefits, color }) {
     <div className="rounded-2xl border border-line bg-paper p-7">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-[20px] font-extrabold text-ink">수강생 전용 플랫폼 혜택</h2>
+          <h2 className="text-[20px] font-extrabold text-ink">수강생 무료 이용 가능한 플랫폼</h2>
           <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
             수강 확정 후 아래 플랫폼 6개월 무료 이용권을 함께 제공합니다.
           </p>
