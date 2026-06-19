@@ -496,7 +496,7 @@ function ProblemSectionBlock({ section, visuals, color }) {
       {section.risks?.length > 0 && (
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           {section.risks.map((risk, index) => (
-            <div key={risk} className="flex gap-3 rounded-xl border border-line bg-cream/45 p-4">
+            <div key={risk} className="flex gap-3 rounded-xl border p-4" style={{ borderColor: `${color}33`, background: `${color}0d` }}>
               <span
                 className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white"
                 style={{ background: color }}
