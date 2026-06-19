@@ -685,9 +685,7 @@ function TargetAudienceBlock({ target, notFor, color }) {
           </div>
         )}
       </div>
-      <p className="mt-5 rounded-xl px-4 py-3 text-[14px] font-black leading-relaxed text-ink" style={{ background: `${color}0d` }}>
-        이 과정은 쉽게 돈 버는 방법을 알려주는 강의가 아니라, 계약 전에 반드시 확인해야 할 기준을 배우고 실제 매물을 기준으로 창업 가능성을 검토하는 과정입니다.
-      </p>
+
     </div>
   );
 }
@@ -1387,12 +1385,19 @@ export default async function CourseDetail({ params }) {
                             href={p.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group flex flex-col rounded-xl border border-line bg-cream/40 p-4 transition-colors hover:bg-paper"
+                            className="group flex flex-col rounded-xl border border-line bg-cream/40 overflow-hidden transition-colors hover:bg-paper"
                           >
+                            {p.cover && (
+                              <div className="h-28 w-full overflow-hidden bg-paper">
+                                <img src={p.cover} alt={p.title + " 미리보기"} className="h-full w-full object-cover object-top" />
+                              </div>
+                            )}
+                            <div className="p-4">
                             <p className="text-[15px] font-black text-ink">{p.title}</p>
                             <p className="mt-0.5 text-[12px] font-extrabold" style={{ color }}>{p.label}</p>
                             <p className="mt-2 text-[12px] leading-relaxed text-ink-soft">{p.description}</p>
                             <p className="mt-3 text-[11px] font-black text-ink-soft">{p.domain}</p>
+                            </div>
                           </a>
                         ))}
                       </div>
@@ -1462,6 +1467,7 @@ export default async function CourseDetail({ params }) {
                 ) : (
                   <Link href={`/checkout/${course.id}`} className="mt-5 block rounded-xl px-5 py-4 text-center text-[15px] font-black text-white shadow-lg transition-transform hover:-translate-y-0.5" style={{ background: color }}>수강 신청하기</Link>
                 )}
+                {!course.hideSidebarInfoTable && (
                 <dl className="mt-6 space-y-2.5 border-t border-line pt-5 text-[13px]">
                   {[
                     ["상태", enrollmentStatus],
@@ -1476,6 +1482,7 @@ export default async function CourseDetail({ params }) {
                     </div>
                   ))}
                 </dl>
+                )}
                 <a href={inquiryUrl} target="_blank" rel="noopener noreferrer" className="mt-5 flex items-center justify-center gap-2 rounded-xl border border-line py-3 text-[13px] font-semibold text-ink-soft transition-colors hover:bg-cream hover:text-ink">카카오톡으로 문의하기</a>
               </div>
 
