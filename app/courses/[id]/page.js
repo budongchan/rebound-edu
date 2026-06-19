@@ -795,7 +795,7 @@ function PriceGuaranteeBlock({ course, color }) {
           <p className="text-[13px] font-black text-ink-soft">수강료</p>
           <p className="mt-2 text-[32px] font-black leading-tight text-ink">{formatPrice(course.price)}</p>
           <p className="mt-2 text-[13px] font-bold" style={{ color }}>
-            6개월 내 계약 실패 시 수강료 100% 환급 조건
+            1년 이내 계약 실패 시 수강료 100% 환급 조건
           </p>
         </div>
         {section.included?.length > 0 && (
