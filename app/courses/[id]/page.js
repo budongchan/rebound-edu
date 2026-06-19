@@ -854,15 +854,37 @@ function FinalCtaBlock({ course, color }) {
       <div className="relative">
       <h2 className="text-[22px] font-black leading-tight">{cta.title}</h2>
       <p className="mt-3 text-[15px] leading-[1.85] text-white/78">{cta.body}</p>
-      <div className="mt-6 grid gap-3 md:grid-cols-2">
+      {/* 가격 + 보증 + 과정 요약 */}
+      <div className="mt-6 rounded-xl bg-white/10 px-5 py-4">
+        <div className="flex flex-wrap items-baseline gap-3">
+          <span className="text-[28px] font-black text-white">{course.priceLabel || formatPrice(course.price)}</span>
+          {course.guarantee && (
+            <span className="text-[13px] font-bold text-white/70">{course.guarantee}</span>
+          )}
+        </div>
+        {course.courseSummaryChips?.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {course.courseSummaryChips.map((chip) => (
+              <span key={chip} className="rounded-full bg-white/15 px-3 py-1 text-[12px] font-extrabold text-white/90">{chip}</span>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="mt-5 grid gap-3 md:grid-cols-2">
         {course.scheduleOptions?.map((option) => (
           <Link
             key={option.id}
             href={`/checkout/${option.courseId}${option.checkoutQuery || ""}`}
-            className="rounded-xl px-5 py-4 text-center text-[15px] font-black text-white transition-transform hover:-translate-y-0.5"
+            className="rounded-xl px-5 py-4 text-center transition-transform hover:-translate-y-0.5"
             style={{ background: color }}
           >
-            {option.weekday}반 신청하기
+            <span className="block text-[15px] font-black text-white">{option.weekday}반 신청하기</span>
+            {option.theorySchedule && (
+              <span className="mt-1 block text-[11px] font-bold text-white/75">이론 {option.theorySchedule.replace("이론수업 ", "")}</span>
+            )}
+            {option.fieldworkSchedule && (
+              <span className="block text-[11px] font-bold text-white/75">임장 {option.fieldworkSchedule}</span>
+            )}
           </Link>
         ))}
       </div>
@@ -1436,7 +1458,7 @@ export default async function CourseDetail({ params }) {
                 </div>
               )}
 
-              <div id="course-payment" className="scroll-mt-24 rounded-2xl border-2 bg-paper p-7 shadow-[0_18px_40px_-26px_rgba(20,17,15,0.25)]" style={{ borderColor: color }}>
+              {!course.finalCta && <div id="course-payment" className="scroll-mt-24 rounded-2xl border-2 bg-paper p-7 shadow-[0_18px_40px_-26px_rgba(20,17,15,0.25)]" style={{ borderColor: color }}>
                 <h2 className="text-[20px] font-extrabold text-ink">수강신청</h2>
                 {course.guarantee && (
                   <div className="mt-4 rounded-xl bg-green-50 px-4 py-3 text-[13px] font-bold text-green-700 flex items-center gap-2">
@@ -1487,7 +1509,7 @@ export default async function CourseDetail({ params }) {
                 </dl>
                 )}
                 <a href={inquiryUrl} target="_blank" rel="noopener noreferrer" className="mt-5 flex items-center justify-center gap-2 rounded-xl border border-line py-3 text-[13px] font-semibold text-ink-soft transition-colors hover:bg-cream hover:text-ink">카카오톡으로 문의하기</a>
-              </div>
+              </div>}
 
               {/* 10. Q&A */}
               <div id="course-refund" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
