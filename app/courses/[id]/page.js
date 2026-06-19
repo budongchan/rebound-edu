@@ -1165,7 +1165,7 @@ export default async function CourseDetail({ params }) {
               </p>
             )}
 
-            {course.heroStats?.length > 0 && (
+            {course.heroStats?.length > 0 && !course.detailPageV3 && (
               <div className="mt-6 grid max-w-4xl gap-2 sm:grid-cols-5">
                 {course.heroStats.map((stat) => (
                   <div key={stat.label} className="rounded-xl border border-white/18 bg-white/12 px-3 py-3 backdrop-blur-sm">
@@ -1176,8 +1176,16 @@ export default async function CourseDetail({ params }) {
               </div>
             )}
 
+            {course.courseSummaryChips?.length > 0 && course.detailPageV3 && (
+              <div className="mt-6 flex flex-wrap gap-2">
+                {course.courseSummaryChips.map((chip) => (
+                  <span key={chip} className="rounded-full bg-white/15 px-3 py-1.5 text-[13px] font-extrabold text-white ring-1 ring-white/25">{chip}</span>
+                ))}
+              </div>
+            )}
+
             {/* 핵심 정보 칩 */}
-            {!course.detailPageV2 && (scheduleWithDuration || placeLabel) && (
+            {(!course.detailPageV2 || course.detailPageV3) && (scheduleWithDuration || placeLabel) && (
               <div className="mt-6 flex flex-wrap gap-2.5">
                 {scheduleWithDuration && (
                   <div className="flex items-center gap-2 rounded-lg bg-white/15 px-4 py-2.5 text-[13px] font-semibold text-white ring-1 ring-white/20">
@@ -1242,7 +1250,7 @@ export default async function CourseDetail({ params }) {
                   {instructor.affiliation && (
                     <p className="mt-1 text-[12px] font-semibold leading-snug text-white/70">{instructor.affiliation}</p>
                   )}
-                  {instructor.specialties && instructor.specialties.length > 0 && (
+                  {instructor.specialties && instructor.specialties.length > 0 && !course.detailPageV3 && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {instructor.specialties.slice(0, 3).map((specialty) => (
                         <span key={specialty} className="rounded-full bg-white/16 px-2 py-0.5 text-[11px] font-bold text-white/82">
