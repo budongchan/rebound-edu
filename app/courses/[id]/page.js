@@ -1383,30 +1383,25 @@ export default async function CourseDetail({ params }) {
                     </div>
                   )}
 
-                  {/* 강사 운영 플랫폼 */}
+                  {/* 강사 운영 플랫폼 — 설명 텍스트 형식 */}
                   {course.platformBenefits?.length > 0 && (
                     <div className="mt-7 border-t border-line pt-6">
-                      <h3 className="text-[15px] font-extrabold text-ink">강사가 운영하는 플랫폼</h3>
-                      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                      <h3 className="text-[15px] font-extrabold text-ink">강사가 운영하는 서비스</h3>
+                      <div className="mt-4 space-y-3">
                         {course.platformBenefits.map((p) => (
                           <a
                             key={p.domain}
                             href={p.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group flex flex-col rounded-xl border border-line bg-cream/40 overflow-hidden transition-colors hover:bg-paper"
+                            className="flex items-start gap-3 rounded-xl border border-line bg-cream/40 px-4 py-3 transition-colors hover:bg-paper"
                           >
-                            {p.cover && (
-                              <div className="h-28 w-full overflow-hidden bg-paper">
-                                <img src={p.cover} alt={p.title + " 미리보기"} className="h-full w-full object-cover object-top" />
-                              </div>
-                            )}
-                            <div className="p-4">
-                            <p className="text-[15px] font-black text-ink">{p.title}</p>
-                            <p className="mt-0.5 text-[12px] font-extrabold" style={{ color }}>{p.label}</p>
-                            <p className="mt-2 text-[12px] leading-relaxed text-ink-soft">{p.description}</p>
-                            <p className="mt-3 text-[11px] font-black text-ink-soft">{p.domain}</p>
+                            <div className="min-w-0 flex-1">
+                              <span className="text-[14px] font-black text-ink">{p.title}</span>
+                              <span className="ml-2 text-[12px] font-extrabold" style={{ color }}>{p.label}</span>
+                              <p className="mt-1 text-[12px] leading-relaxed text-ink-soft">{p.description}</p>
                             </div>
+                            <span className="shrink-0 text-[11px] font-bold text-ink-soft/60">{p.domain}</span>
                           </a>
                         ))}
                       </div>
@@ -2025,8 +2020,6 @@ export default async function CourseDetail({ params }) {
                 )}
               </div>
             )}
-
-            <PlatformBenefitsBlock benefits={course.platformBenefits} color={color} />
 
             <CourseBooksBlock books={course.books} color={color} />
 
