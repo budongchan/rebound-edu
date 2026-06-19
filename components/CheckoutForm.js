@@ -239,9 +239,6 @@ export default function CheckoutForm({ course, selectedScheduleOption = null }) 
         </p>
         <div className="mt-4 rounded-xl bg-cream/80 p-4 text-left">
           <p className="text-[13px] font-bold text-ink">{courseTitle}</p>
-          {(course.scheduleShort || course.schedule) && (
-            <p className="text-[12px] text-ink-soft">{selectedScheduleOption?.schedule || course.scheduleShort || course.schedule}</p>
-          )}
           <p className="mt-2 text-[16px] font-black text-ink">{formatCompactPrice(course.price)}</p>
         </div>
         <Link
@@ -525,15 +522,6 @@ export default function CheckoutForm({ course, selectedScheduleOption = null }) 
           <h2 className="text-[16px] font-extrabold text-ink">주문 요약</h2>
           <div className="mt-4 border-t border-line pt-4">
             <div className="text-[14px] font-bold text-ink">{courseTitle}</div>
-            {course.schedule && (
-              <div className="mt-2 rounded-lg bg-cream px-3 py-2 text-[12px] font-semibold text-ink-soft">
-                {selectedScheduleOption
-                  ? `${selectedScheduleOption.schedule} · ${selectedScheduleOption.place}`
-                  : course.place
-                    ? `${course.schedule} · ${course.place}`
-                    : course.schedule}
-              </div>
-            )}
           </div>
           <dl className="mt-5 space-y-2 text-[13px]">
             {course.discountPct ? (
