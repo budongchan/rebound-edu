@@ -1254,9 +1254,6 @@ export default async function CourseDetail({ params }) {
                     <p className="text-[15px] font-black leading-tight text-white">{instructor.name}</p>
                     <p className="text-[12px] font-semibold leading-tight text-white/78">{instructor.title}</p>
                   </div>
-                  {instructor.affiliation && (
-                    <p className="mt-1 text-[12px] font-semibold leading-snug text-white/70">{instructor.affiliation}</p>
-                  )}
                   {instructor.specialties && instructor.specialties.length > 0 && !course.detailPageV3 && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {instructor.specialties.slice(0, 3).map((specialty) => (
