@@ -476,7 +476,7 @@ function ProblemSectionBlock({ section, visuals, color }) {
   const visualItems = section.visuals || visuals || [];
 
   return (
-    <div className="rounded-2xl border border-line bg-paper p-7">
+    <div className="rounded-2xl border p-7" style={{ borderColor: `${color}44`, background: `${color}08` }}>
       <div className={visualItems.length ? "grid gap-6 lg:grid-cols-[1fr_280px]" : ""}>
         <div>
           <h2 className="text-[20px] font-extrabold text-ink">{section.title}</h2>
@@ -1252,7 +1252,7 @@ export default async function CourseDetail({ params }) {
 
               {/* 2. 그럼에도 호스텔 창업을 추천하는 이유 */}
               {course.whySection && (
-                <div className="rounded-2xl border border-line bg-paper p-7">
+                <div className="rounded-2xl border p-7" style={{ borderColor: `${(course.whySection.accentColor || color)}44`, background: `${(course.whySection.accentColor || color)}08` }}>
                   <h2 className="text-[20px] font-extrabold text-ink">{course.whySection.title}</h2>
                   {course.whySection.body && <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{course.whySection.body}</p>}
                   <div className="mt-6 grid gap-4 sm:grid-cols-2">
