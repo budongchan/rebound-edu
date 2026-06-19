@@ -178,7 +178,6 @@ function ScheduleInfoCards({ course, color }) {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-[18px] font-black text-ink">{option.label}</p>
-                <p className="mt-1 text-[13px] font-semibold text-ink-soft">{option.note}</p>
               </div>
               <span
                 className="shrink-0 rounded-full px-3 py-1 text-[12px] font-black text-white"
@@ -188,13 +187,17 @@ function ScheduleInfoCards({ course, color }) {
               </span>
             </div>
             <dl className="mt-5 space-y-2.5 text-[13px]">
-              {[
+              {(option.theorySchedule ? [
+                ["이론수업", option.theorySchedule],
+                ["임장수업", option.fieldworkSchedule],
+              ] : [
                 ["수업", option.schedule],
+              ]).concat([
                 ["장소", option.place],
                 ["인원", option.capacity],
                 ["임장", option.fieldwork],
                 ["저녁", option.dinner],
-              ].filter(([, value]) => value).map(([label, value]) => (
+              ]).filter(([, value]) => value).map(([label, value]) => (
                 <div key={label} className="flex justify-between gap-3">
                   <dt className="shrink-0 text-ink-soft">{label}</dt>
                   <dd className="text-right font-bold text-ink">{value}</dd>
@@ -1272,7 +1275,10 @@ export default async function CourseDetail({ params }) {
               {/* 4. 추천 대상 */}
               <TargetAudienceBlock target={course.target} notFor={course.notFor} color={color} />
 
-              {/* 5. 강사소개 */}
+              {/* 5. 단계별 커리큘럼 */}
+              <StepCurriculumBlock steps={course.stepCurriculum} color={color} />
+
+              {/* 6. 강사소개 */}
               {instructor && (
                 <div id="course-instructor" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
                   <h2 className="text-[20px] font-extrabold text-ink">강사소개</h2>
@@ -1406,9 +1412,8 @@ export default async function CourseDetail({ params }) {
                 </div>
               )}
 
-              {/* 6. 수업 구성 */}
+              {/* 7. 수업 구성 */}
               <ScheduleInfoCards course={course} color={color} />
-              <StepCurriculumBlock steps={course.stepCurriculum} color={color} />
 
               {/* 7. 수강 혜택 */}
               <FollowUpSupportBlock support={course.followUpSupport} color={color} />
