@@ -1426,30 +1426,6 @@ export default async function CourseDetail({ params }) {
                     </div>
                   )}
 
-                  {/* 강사 운영 플랫폼 — 설명 텍스트 형식 */}
-                  {course.platformBenefits?.length > 0 && (
-                    <div className="mt-7 border-t border-line pt-6">
-                      <h3 className="text-[15px] font-extrabold text-ink">수강생 무료 이용 플랫폼</h3>
-                      <div className="mt-4 space-y-3">
-                        {course.platformBenefits.map((p) => (
-                          <a
-                            key={p.domain}
-                            href={p.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-start gap-3 rounded-xl border border-line bg-cream/40 px-4 py-3 transition-colors hover:bg-paper"
-                          >
-                            <div className="min-w-0 flex-1">
-                              <span className="text-[14px] font-black text-ink">{p.title}</span>
-                              <span className="ml-2 text-[12px] font-extrabold" style={{ color }}>{p.label}</span>
-                              <p className="mt-1 text-[12px] leading-relaxed text-ink-soft">{p.description}</p>
-                            </div>
-                            <span className="shrink-0 text-[11px] font-bold text-ink-soft/60">{p.domain}</span>
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
 
