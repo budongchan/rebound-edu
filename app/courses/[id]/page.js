@@ -1349,9 +1349,15 @@ export default async function CourseDetail({ params }) {
                   {course.instructorVideos?.length > 0 && (
                     <div className="mt-7 border-t border-line pt-6">
                       {primaryInstructorVideo && (
-                        <div className="overflow-hidden rounded-xl border border-line bg-ink">
-                          <iframe className="aspect-video w-full" src={`https://www.youtube-nocookie.com/embed/${primaryInstructorVideo.id}`} title={primaryInstructorVideo.title} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen />
-                        </div>
+                        <a href={`https://www.youtube.com/watch?v=${primaryInstructorVideo.id}`} target="_blank" rel="noopener noreferrer" className="group block overflow-hidden rounded-xl border border-line bg-cream/40 transition-colors hover:bg-cream">
+                          <div className="relative aspect-video">
+                            <img src={`https://img.youtube.com/vi/${primaryInstructorVideo.id}/hqdefault.jpg`} alt={primaryInstructorVideo.title} loading="lazy" className="h-full w-full object-cover opacity-90 group-hover:opacity-100" />
+                            <span className="absolute inset-0 flex items-center justify-center">
+                              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-paper/95 text-[20px] font-black text-ink shadow-lg">▶</span>
+                            </span>
+                          </div>
+                          <p className="p-4 text-[14px] font-extrabold leading-relaxed text-ink">{primaryInstructorVideo.title}</p>
+                        </a>
                       )}
                       {secondaryInstructorVideos.length > 0 && (
                         <div className="mt-4 grid gap-3 sm:grid-cols-2">
