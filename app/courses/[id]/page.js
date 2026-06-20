@@ -476,7 +476,7 @@ function ProblemSectionBlock({ section, visuals, color }) {
   const visualItems = section.visuals || visuals || [];
 
   return (
-    <div className="rounded-2xl border border-line bg-paper p-7">
+    <div className="rounded-2xl border p-7" style={{ borderColor: `${color}44`, background: `${color}08` }}>
       <div className={visualItems.length ? "grid gap-6 lg:grid-cols-[1fr_280px]" : ""}>
         <div>
           <h2 className="text-[20px] font-extrabold text-ink">{section.title}</h2>
@@ -495,17 +495,24 @@ function ProblemSectionBlock({ section, visuals, color }) {
       </div>
       {section.risks?.length > 0 && (
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          {section.risks.map((risk, index) => (
-            <div key={risk} className="flex gap-3 rounded-xl border p-4" style={{ borderColor: `${color}33`, background: `${color}0d` }}>
+          {section.risks.map((risk, index) => {
+            const title = typeof risk === "string" ? risk : risk.title;
+            const desc = typeof risk === "string" ? "" : risk.desc;
+            return (
+            <div key={title || index} className="flex gap-3 rounded-xl border p-4" style={{ borderColor: `${color}33`, background: `${color}0d` }}>
               <span
                 className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white"
                 style={{ background: color }}
               >
                 {index + 1}
               </span>
-              <span className="text-[14px] font-semibold leading-relaxed text-ink">{risk}</span>
+              <span className="text-[14px] font-semibold leading-relaxed text-ink">
+                <span className="block font-black">{title}</span>
+                {desc && <span className="mt-1 block text-[13px] font-semibold text-ink-soft">{desc}</span>}
+              </span>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
       {section.closing && (
@@ -788,7 +795,7 @@ function PriceGuaranteeBlock({ course, color }) {
           <p className="text-[13px] font-black text-ink-soft">수강료</p>
           <p className="mt-2 text-[32px] font-black leading-tight text-ink">{formatPrice(course.price)}</p>
           <p className="mt-2 text-[13px] font-bold" style={{ color }}>
-            6개월 내 계약 실패 시 수강료 100% 환급 조건
+            1년 이내 계약 실패 시 수강료 100% 환급 조건
           </p>
         </div>
         {section.included?.length > 0 && (
@@ -854,15 +861,37 @@ function FinalCtaBlock({ course, color }) {
       <div className="relative">
       <h2 className="text-[22px] font-black leading-tight">{cta.title}</h2>
       <p className="mt-3 text-[15px] leading-[1.85] text-white/78">{cta.body}</p>
-      <div className="mt-6 grid gap-3 md:grid-cols-2">
+      {/* 가격 + 보증 + 과정 요약 */}
+      <div className="mt-6 rounded-xl bg-white/10 px-5 py-4">
+        <div className="flex flex-wrap items-baseline gap-3">
+          <span className="text-[28px] font-black text-white">{course.priceLabel || formatPrice(course.price)}</span>
+          {course.guarantee && (
+            <span className="text-[13px] font-bold text-white/70">{course.guarantee}</span>
+          )}
+        </div>
+        {course.courseSummaryChips?.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {course.courseSummaryChips.map((chip) => (
+              <span key={chip} className="rounded-full bg-white/15 px-3 py-1 text-[12px] font-extrabold text-white/90">{chip}</span>
+            ))}
+          </div>
+        )}
+      </div>
+      <div className="mt-5 grid gap-3 md:grid-cols-2">
         {course.scheduleOptions?.map((option) => (
           <Link
             key={option.id}
             href={`/checkout/${option.courseId}${option.checkoutQuery || ""}`}
-            className="rounded-xl px-5 py-4 text-center text-[15px] font-black text-white transition-transform hover:-translate-y-0.5"
+            className="rounded-xl px-5 py-4 text-center transition-transform hover:-translate-y-0.5"
             style={{ background: color }}
           >
-            {option.weekday}반 신청하기
+            <span className="block text-[15px] font-black text-white">{option.weekday}반 신청하기</span>
+            {option.theorySchedule && (
+              <span className="mt-1 block text-[11px] font-bold text-white/75">이론 {option.theorySchedule.replace("이론수업 ", "")}</span>
+            )}
+            {option.fieldworkSchedule && (
+              <span className="block text-[11px] font-bold text-white/75">임장 {option.fieldworkSchedule}</span>
+            )}
           </Link>
         ))}
       </div>
@@ -946,7 +975,7 @@ function PlatformBenefitsBlock({ benefits, color }) {
     <div className="rounded-2xl border border-line bg-paper p-7">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-[20px] font-extrabold text-ink">수강생 전용 플랫폼 혜택</h2>
+          <h2 className="text-[20px] font-extrabold text-ink">수강생 무료 이용 가능한 플랫폼</h2>
           <p className="mt-1.5 text-[14px] leading-relaxed text-ink-soft">
             수강 확정 후 아래 플랫폼 6개월 무료 이용권을 함께 제공합니다.
           </p>
@@ -962,19 +991,28 @@ function PlatformBenefitsBlock({ benefits, color }) {
             href={benefit.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group rounded-xl border border-line bg-cream/45 p-5 transition-colors hover:bg-paper hover:shadow-[0_16px_32px_-28px_rgba(20,17,15,0.55)]"
+            className="group overflow-hidden rounded-xl border border-line bg-cream/45 transition-colors hover:bg-paper hover:shadow-[0_16px_32px_-28px_rgba(20,17,15,0.55)]"
           >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[17px] font-black leading-tight text-ink">{benefit.title}</p>
-                <p className="mt-1 text-[13px] font-extrabold" style={{ color }}>{benefit.label}</p>
+            {benefit.cover && (
+              <img
+                src={benefit.cover}
+                alt={benefit.title}
+                className="h-36 w-full object-cover object-top"
+              />
+            )}
+            <div className="p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[17px] font-black leading-tight text-ink">{benefit.title}</p>
+                  <p className="mt-1 text-[13px] font-extrabold" style={{ color }}>{benefit.label}</p>
+                </div>
+                <span className="rounded-full border border-line bg-paper px-2.5 py-1 text-[11px] font-black text-ink-soft group-hover:text-ink">
+                  이동
+                </span>
               </div>
-              <span className="rounded-full border border-line bg-paper px-2.5 py-1 text-[11px] font-black text-ink-soft group-hover:text-ink">
-                이동
-              </span>
+              <p className="mt-3 text-[13px] leading-relaxed text-ink-soft">{benefit.description}</p>
+              <p className="mt-4 text-[12px] font-black text-ink">{benefit.domain}</p>
             </div>
-            <p className="mt-3 text-[13px] leading-relaxed text-ink-soft">{benefit.description}</p>
-            <p className="mt-4 text-[12px] font-black text-ink">{benefit.domain}</p>
           </a>
         ))}
       </div>
@@ -1143,7 +1181,7 @@ export default async function CourseDetail({ params }) {
               </p>
             )}
 
-            {course.heroStats?.length > 0 && (
+            {course.heroStats?.length > 0 && !course.detailPageV3 && (
               <div className="mt-6 grid max-w-4xl gap-2 sm:grid-cols-5">
                 {course.heroStats.map((stat) => (
                   <div key={stat.label} className="rounded-xl border border-white/18 bg-white/12 px-3 py-3 backdrop-blur-sm">
@@ -1154,8 +1192,16 @@ export default async function CourseDetail({ params }) {
               </div>
             )}
 
+            {course.courseSummaryChips?.length > 0 && course.detailPageV3 && (
+              <div className="mt-6 flex flex-wrap gap-2">
+                {course.courseSummaryChips.map((chip) => (
+                  <span key={chip} className="rounded-full bg-white/15 px-3 py-1.5 text-[13px] font-extrabold text-white ring-1 ring-white/25">{chip}</span>
+                ))}
+              </div>
+            )}
+
             {/* 핵심 정보 칩 */}
-            {!course.detailPageV2 && (scheduleWithDuration || placeLabel) && (
+            {(!course.detailPageV2 || course.detailPageV3) && (scheduleWithDuration || placeLabel) && (
               <div className="mt-6 flex flex-wrap gap-2.5">
                 {scheduleWithDuration && (
                   <div className="flex items-center gap-2 rounded-lg bg-white/15 px-4 py-2.5 text-[13px] font-semibold text-white ring-1 ring-white/20">
@@ -1217,10 +1263,7 @@ export default async function CourseDetail({ params }) {
                     <p className="text-[15px] font-black leading-tight text-white">{instructor.name}</p>
                     <p className="text-[12px] font-semibold leading-tight text-white/78">{instructor.title}</p>
                   </div>
-                  {instructor.affiliation && (
-                    <p className="mt-1 text-[12px] font-semibold leading-snug text-white/70">{instructor.affiliation}</p>
-                  )}
-                  {instructor.specialties && instructor.specialties.length > 0 && (
+                  {instructor.specialties && instructor.specialties.length > 0 && !course.detailPageV3 && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {instructor.specialties.slice(0, 3).map((specialty) => (
                         <span key={specialty} className="rounded-full bg-white/16 px-2 py-0.5 text-[11px] font-bold text-white/82">
@@ -1252,19 +1295,22 @@ export default async function CourseDetail({ params }) {
 
               {/* 2. 그럼에도 호스텔 창업을 추천하는 이유 */}
               {course.whySection && (
-                <div className="rounded-2xl border border-line bg-paper p-7">
+                <div className="rounded-2xl border p-7" style={{ borderColor: `${(course.whySection.accentColor || color)}44`, background: `${(course.whySection.accentColor || color)}08` }}>
                   <h2 className="text-[20px] font-extrabold text-ink">{course.whySection.title}</h2>
                   {course.whySection.body && <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{course.whySection.body}</p>}
                   <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                    {course.whySection.reasons.map((r, i) => (
-                      <div key={i} className="rounded-xl border border-line bg-cream/40 p-5">
-                        <div className="flex items-start gap-3">
-                          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white" style={{ background: color }}>{i + 1}</span>
-                          <h3 className="text-[14px] font-extrabold text-ink leading-snug">{r.title}</h3>
+                    {course.whySection.reasons.map((r, i) => {
+                      const ac = course.whySection.accentColor || color;
+                      return (
+                        <div key={i} className="rounded-xl border p-5" style={{ borderColor: ac + "33", background: ac + "0d" }}>
+                          <div className="flex items-start gap-3">
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white" style={{ background: ac }}>{i + 1}</span>
+                            <h3 className="text-[14px] font-extrabold text-ink leading-snug">{r.title}</h3>
+                          </div>
+                          <p className="mt-2 text-[13px] leading-relaxed text-ink-soft pl-9">{r.desc}</p>
                         </div>
-                        <p className="mt-2 text-[13px] leading-relaxed text-ink-soft pl-9">{r.desc}</p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -1380,30 +1426,25 @@ export default async function CourseDetail({ params }) {
                     </div>
                   )}
 
-                  {/* 강사 운영 플랫폼 */}
+                  {/* 강사 운영 플랫폼 — 설명 텍스트 형식 */}
                   {course.platformBenefits?.length > 0 && (
                     <div className="mt-7 border-t border-line pt-6">
-                      <h3 className="text-[15px] font-extrabold text-ink">강사가 운영하는 플랫폼</h3>
-                      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                      <h3 className="text-[15px] font-extrabold text-ink">수강생 무료 이용 플랫폼</h3>
+                      <div className="mt-4 space-y-3">
                         {course.platformBenefits.map((p) => (
                           <a
                             key={p.domain}
                             href={p.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group flex flex-col rounded-xl border border-line bg-cream/40 overflow-hidden transition-colors hover:bg-paper"
+                            className="flex items-start gap-3 rounded-xl border border-line bg-cream/40 px-4 py-3 transition-colors hover:bg-paper"
                           >
-                            {p.cover && (
-                              <div className="h-28 w-full overflow-hidden bg-paper">
-                                <img src={p.cover} alt={p.title + " 미리보기"} className="h-full w-full object-cover object-top" />
-                              </div>
-                            )}
-                            <div className="p-4">
-                            <p className="text-[15px] font-black text-ink">{p.title}</p>
-                            <p className="mt-0.5 text-[12px] font-extrabold" style={{ color }}>{p.label}</p>
-                            <p className="mt-2 text-[12px] leading-relaxed text-ink-soft">{p.description}</p>
-                            <p className="mt-3 text-[11px] font-black text-ink-soft">{p.domain}</p>
+                            <div className="min-w-0 flex-1">
+                              <span className="text-[14px] font-black text-ink">{p.title}</span>
+                              <span className="ml-2 text-[12px] font-extrabold" style={{ color }}>{p.label}</span>
+                              <p className="mt-1 text-[12px] leading-relaxed text-ink-soft">{p.description}</p>
                             </div>
+                            <span className="shrink-0 text-[11px] font-bold text-ink-soft/60">{p.domain}</span>
                           </a>
                         ))}
                       </div>
@@ -1438,7 +1479,7 @@ export default async function CourseDetail({ params }) {
                 </div>
               )}
 
-              <div id="course-payment" className="scroll-mt-24 rounded-2xl border-2 bg-paper p-7 shadow-[0_18px_40px_-26px_rgba(20,17,15,0.25)]" style={{ borderColor: color }}>
+              {!course.finalCta && <div id="course-payment" className="scroll-mt-24 rounded-2xl border-2 bg-paper p-7 shadow-[0_18px_40px_-26px_rgba(20,17,15,0.25)]" style={{ borderColor: color }}>
                 <h2 className="text-[20px] font-extrabold text-ink">수강신청</h2>
                 {course.guarantee && (
                   <div className="mt-4 rounded-xl bg-green-50 px-4 py-3 text-[13px] font-bold text-green-700 flex items-center gap-2">
@@ -1489,7 +1530,7 @@ export default async function CourseDetail({ params }) {
                 </dl>
                 )}
                 <a href={inquiryUrl} target="_blank" rel="noopener noreferrer" className="mt-5 flex items-center justify-center gap-2 rounded-xl border border-line py-3 text-[13px] font-semibold text-ink-soft transition-colors hover:bg-cream hover:text-ink">카카오톡으로 문의하기</a>
-              </div>
+              </div>}
 
               {/* 10. Q&A */}
               <div id="course-refund" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
@@ -2022,8 +2063,6 @@ export default async function CourseDetail({ params }) {
                 )}
               </div>
             )}
-
-            <PlatformBenefitsBlock benefits={course.platformBenefits} color={color} />
 
             <CourseBooksBlock books={course.books} color={color} />
 

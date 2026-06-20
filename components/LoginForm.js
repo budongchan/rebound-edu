@@ -30,6 +30,10 @@ export default function LoginForm() {
     }
     setLoading(true);
     setError("");
+    // sessionStorage에 next 저장 — OAuth 리다이렉트 후 query string이 소실되는 경우 대비
+    if (typeof window !== "undefined" && next !== "/") {
+      sessionStorage.setItem("auth_next", next);
+    }
     const { error: err } = await sb.auth.signInWithOAuth({
       provider: "google",
       options: {

@@ -21,7 +21,11 @@ function CallbackHandler() {
 
   useEffect(() => {
     const sb = getSupabaseBrowser();
-    const next = searchParams.get("next") || "/";
+    // query string의 next 우선, 없으면 sessionStorage fallback
+    const nextFromQuery = searchParams.get("next");
+    const nextFromStorage = typeof window !== "undefined" ? sessionStorage.getItem("auth_next") : null;
+    const next = nextFromQuery || nextFromStorage || "/";
+    if (nextFromStorage) sessionStorage.removeItem("auth_next");
     const code = searchParams.get("code");
 
     if (!sb) {
