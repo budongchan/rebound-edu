@@ -1324,7 +1324,10 @@ export default async function CourseDetail({ params }) {
               {/* 5. 단계별 커리큘럼 */}
               <StepCurriculumBlock steps={course.stepCurriculum} color={color} />
 
-              {/* 6. 강사소개 */}
+              {/* 6. 수강생 무료 이용 플랫폼 */}
+              <PlatformBenefitsBlock benefits={course.platformBenefits} color={color} />
+
+              {/* 7. 강사소개 */}
               {instructor && (
                 <div id="course-instructor" className="scroll-mt-36 rounded-2xl border border-line bg-paper p-7">
                   <h2 className="text-[20px] font-extrabold text-ink">강사소개</h2>
@@ -1371,29 +1374,35 @@ export default async function CourseDetail({ params }) {
                   {course.books?.length > 0 && (
                     <div className="mt-7 border-t border-line pt-6">
                       <h3 className="text-[15px] font-extrabold text-ink">저자 저서</h3>
-                      <div className="mt-4 grid gap-3 grid-cols-3 sm:grid-cols-4">
-                        {course.books.map((book) => (
-                          <div key={book.title} className="flex flex-col gap-2">
-                            {book.cover ? (
-                              <div className="relative overflow-hidden rounded-lg border border-line bg-cream/40 shadow-sm">
-                                <img
-                                  src={book.cover}
-                                  alt={book.title}
-                                  loading="lazy"
-                                  className="w-full object-cover"
-                                />
-                                {book.badge && (
-                                  <span className="absolute top-1.5 right-1.5 rounded-full bg-accent px-1.5 py-0.5 text-[9px] font-extrabold text-white">{book.badge}</span>
-                                )}
+                      <div className="mt-4 flex flex-col gap-3">
+                        {course.books.map((book) => {
+                          const inner = (
+                            <div className="flex items-center gap-4 rounded-xl border border-line bg-cream/40 p-4 transition-colors hover:bg-cream">
+                              {book.cover && (
+                                <div className="relative h-16 w-11 shrink-0 overflow-hidden rounded-md border border-line shadow-sm">
+                                  <img src={book.cover} alt={book.title} loading="lazy" className="h-full w-full object-cover" />
+                                </div>
+                              )}
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <p className="text-[14px] font-black text-ink">{book.title}</p>
+                                  {book.badge && (
+                                    <span className="rounded-full px-2 py-0.5 text-[10px] font-black text-white" style={{ background: color }}>{book.badge}</span>
+                                  )}
+                                </div>
+                                <p className="mt-1 text-[12px] leading-relaxed text-ink-soft">{book.description}</p>
                               </div>
-                            ) : (
-                              <div className="flex aspect-[2/3] items-center justify-center rounded-lg border border-line bg-cream/40">
-                                <span className="text-center text-[13px] font-extrabold leading-snug text-ink-soft px-2">{book.title}</span>
-                              </div>
-                            )}
-                            <p className="text-center text-[11px] font-bold leading-tight text-ink-soft">{book.title}</p>
-                          </div>
-                        ))}
+                              {book.url && (
+                                <span className="shrink-0 rounded-lg px-3 py-1.5 text-[12px] font-black text-white" style={{ background: color }}>{book.urlLabel || "구매하기"}</span>
+                              )}
+                            </div>
+                          );
+                          return book.url ? (
+                            <a key={book.title} href={book.url} target="_blank" rel="noopener noreferrer">{inner}</a>
+                          ) : (
+                            <div key={book.title}>{inner}</div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -1530,7 +1539,6 @@ export default async function CourseDetail({ params }) {
                 </div>
               </div>
 
-              <PlatformBenefitsBlock benefits={course.platformBenefits} color={color} />
               {!course.detailPageV3 && <RefundPolicyBlock policy={course.refundPolicy} color={color} />}
             </>}
 
