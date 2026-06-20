@@ -395,7 +395,7 @@ function CourseSectionTabs({ course, hasReviews }) {
             <a
               key={tab.href}
               href={tab.href}
-              className="flex-1 whitespace-nowrap rounded-lg px-4 py-3 text-[14px] font-black text-white/55 transition-colors hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white focus:outline-none"
+              className="flex-1 whitespace-nowrap rounded-lg px-4 py-3 text-[14px] font-black text-white/90 transition-colors hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white focus:outline-none"
             >
               {tab.label}
               {tab.count > 0 && (
