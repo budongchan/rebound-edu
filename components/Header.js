@@ -4,7 +4,7 @@ import UserMenu from "@/components/UserMenu";
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-paper/85 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-line bg-white">
       <div className="container-edu flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <span

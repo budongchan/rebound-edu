@@ -388,7 +388,7 @@ function CourseSectionTabs({ course, hasReviews }) {
   ];
 
   return (
-    <nav className="sticky top-[65px] z-30 border-b border-line bg-paper/95 py-3 backdrop-blur" aria-label="강의 상세 네비게이션">
+    <nav className="sticky top-[65px] z-30 border-b border-line bg-white py-3" aria-label="강의 상세 네비게이션">
       <div className="container-edu">
         <div className="flex overflow-x-auto rounded-xl border border-line bg-white p-1.5 text-center shadow-sm">
           {tabs.map((tab) => (
