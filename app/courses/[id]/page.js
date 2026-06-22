@@ -388,18 +388,18 @@ function CourseSectionTabs({ course, hasReviews }) {
   ];
 
   return (
-    <nav className="sticky top-[65px] z-30 border-b border-ink/10 bg-cream/90 py-3 backdrop-blur" aria-label="강의 상세 네비게이션">
+    <nav className="sticky top-[65px] z-30 border-b border-line bg-paper/95 py-3 backdrop-blur" aria-label="강의 상세 네비게이션">
       <div className="container-edu">
-        <div className="flex overflow-x-auto rounded-xl bg-ink p-1.5 text-center shadow-[0_12px_32px_-24px_rgba(20,17,15,0.55)]">
+        <div className="flex overflow-x-auto rounded-xl border border-line bg-white p-1.5 text-center shadow-sm">
           {tabs.map((tab) => (
             <a
               key={tab.href}
               href={tab.href}
-              className="flex-1 whitespace-nowrap rounded-lg px-4 py-3 text-[14px] font-black text-white/90 transition-colors hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white focus:outline-none"
+              className="flex-1 whitespace-nowrap rounded-lg px-4 py-3 text-[14px] font-bold text-ink-soft transition-colors hover:bg-cream hover:text-ink focus:bg-cream focus:text-ink focus:outline-none"
             >
               {tab.label}
               {tab.count > 0 && (
-                <span className="ml-1.5 font-black text-emerald-400">
+                <span className="ml-1.5 font-black text-brand">
                   {tab.count.toLocaleString("ko-KR")}
                 </span>
               )}
